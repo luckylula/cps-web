@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const sportsImages = [
-  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&q=80",
-  "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&q=80",
-  "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1920&q=80",
-  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
-  "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1920&q=80",
-  "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1920&q=80",
+  "https://images.unsplash.com/photo-1576678927484-cc907f088d4c?w=1920&q=80",
+  "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1920&q=80",
+  "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1920&q=80",
+  "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1920&q=80",
+  "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1920&q=80",
+  "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920&q=80",
 ];
 
 export default function ImageCarousel() {

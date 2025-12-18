@@ -136,7 +136,7 @@ export default function Home() {
             >
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80"
+                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80"
                   alt="Material escolar"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -186,7 +186,7 @@ export default function Home() {
             >
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&q=80"
+                  src="https://images.unsplash.com/photo-1622163642999-2022b27f8d0e?w=600&q=80"
                   alt="Material deportivo individual"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -282,8 +282,8 @@ export default function Home() {
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
             <div className="relative h-[400px]">
               <Image
-                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200&q=80"
-                alt="Niños durante la lección de educación física"
+                src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80"
+                alt="Colegio con instalaciones deportivas"
                 fill
                 className="object-cover"
               />
@@ -319,7 +319,7 @@ export default function Home() {
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
             <div className="relative h-[400px]">
               <Image
-                src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&q=80"
+                src="https://images.unsplash.com/photo-1622163642999-2022b27f8d0e?w=1200&q=80"
                 alt="Tenista profesional"
                 fill
                 className="object-cover"
