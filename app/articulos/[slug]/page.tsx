@@ -47,7 +47,7 @@ const articulos: Record<string, Articulo> = {
       peso: "12 kg",
       capacidadMaxima: "100 kg",
       edadRecomendada: "5+ años"
-    }
+    } as ArticuloSpecifications
   },
   "balon-voleibol-silva": {
     id: "balon-voleibol-silva",
@@ -62,7 +62,7 @@ const articulos: Record<string, Articulo> = {
       dimensiones: "Ø 65-67 cm",
       peso: "260-280 g",
       presion: "0.30-0.325 kg/cm²"
-    }
+    } as ArticuloSpecifications
   },
   "colchoneta-escolar": {
     id: "colchoneta-escolar",
@@ -78,7 +78,7 @@ const articulos: Record<string, Articulo> = {
       peso: "8 kg",
       color: "Azul, Rojo, Verde",
       certificacion: "EN 12503"
-    }
+    } as ArticuloSpecifications
   },
   "set-percusion-mediano": {
     id: "set-percusion-mediano",
@@ -93,7 +93,7 @@ const articulos: Record<string, Articulo> = {
       piezas: "12 instrumentos",
       edadRecomendada: "4+ años",
       incluye: "Maleta de transporte"
-    }
+    } as ArticuloSpecifications
   },
   "pelota-foam-delux90": {
     id: "pelota-foam-delux90",
