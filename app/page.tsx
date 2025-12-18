@@ -134,9 +134,9 @@ export default function Home() {
               href="#material-escolar"
               className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-64 overflow-hidden bg-gray-200">
                 <Image
-                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80"
+                  src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                   alt="Material escolar"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -184,9 +184,9 @@ export default function Home() {
               href="#deporte-individual"
               className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-64 overflow-hidden bg-gray-200">
                 <Image
-                  src="https://images.unsplash.com/photo-1622163642999-2022b27f8d0e?w=600&q=80"
+                  src="https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                   alt="Material deportivo individual"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -280,9 +280,9 @@ export default function Home() {
             </p>
           </div>
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px]">
+            <div className="relative h-[400px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80"
+                src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
                 alt="Colegio con instalaciones deportivas"
                 fill
                 className="object-cover"
@@ -317,9 +317,9 @@ export default function Home() {
             </p>
           </div>
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px]">
+            <div className="relative h-[400px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1622163642999-2022b27f8d0e?w=1200&q=80"
+                src="https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
                 alt="Tenista profesional"
                 fill
                 className="object-cover"
