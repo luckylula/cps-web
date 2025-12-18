@@ -136,8 +136,8 @@ export default function Home() {
             >
               <div className="relative h-64 overflow-hidden bg-gray-200">
                 <Image
-                  src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                  alt="Material escolar"
+                  src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
+                  alt="Niños jugando en el recreo"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
                 />
@@ -186,11 +186,10 @@ export default function Home() {
             >
               <div className="relative h-64 overflow-hidden bg-gray-200">
                 <Image
-                  src="https://images.unsplash.com/photo-1622163642999-2022b27f8d0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                  alt="Material deportivo individual"
+                  src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
+                  alt="Jugador de pádel"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
-                  unoptimized
                 />
               </div>
               <div className="bg-[#003366] px-4 py-3">
@@ -283,7 +282,7 @@ export default function Home() {
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
             <div className="relative h-[400px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600&q=80"
                 alt="Niños jugando en el recreo"
                 fill
                 className="object-cover"
@@ -320,11 +319,10 @@ export default function Home() {
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
             <div className="relative h-[400px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1622163642999-2022b27f8d0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                alt="Tenista jugando en tierra batida"
+                src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600&q=80"
+                alt="Jugador de pádel"
                 fill
                 className="object-cover"
-                unoptimized
               />
             </div>
           </div>
