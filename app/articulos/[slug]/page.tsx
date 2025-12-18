@@ -11,13 +11,7 @@ const articulos: Record<string, {
   price?: number;
   image: string;
   category: string;
-  specifications?: {
-    material?: string;
-    dimensiones?: string;
-    peso?: string;
-    color?: string;
-    edadRecomendada?: string;
-  };
+  specifications?: Record<string, string>;
 }> = {
   "ladrillo-con-soporte": {
     id: "ladrillo-con-soporte",
