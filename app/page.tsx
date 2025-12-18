@@ -120,10 +120,8 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Carrusel de Imágenes */}
-      <div className="w-full">
-        <ImageCarousel />
-      </div>
+      {/* Hero Carousel */}
+      <ImageCarousel />
 
       {/* Sección de Tarjetas de Categorías */}
       <section className="py-16 md:py-24 px-4 md:px-8 bg-orange-50">
@@ -136,8 +134,8 @@ export default function Home() {
             >
               <div className="relative h-64 overflow-hidden bg-gray-200">
                 <Image
-                  src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
-                  alt="Niños jugando en el recreo"
+                  src="/material_escolar_cps.png"
+                  alt="Material escolar"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
                 />
@@ -150,31 +148,6 @@ export default function Home() {
                   <span className="font-medium">Para aprender</span>
                   <br />
                   Artículos que te permiten enseñar y crear un entorno de aprendizaje. Entre ellos, deportivo.
-                </p>
-              </div>
-            </a>
-
-            {/* Tarjeta Material Deportivo Colectivo */}
-            <a
-              href="#deportes-colectivos"
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
-            >
-              <div className="relative h-64 overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80"
-                  alt="Material deportivo colectivo"
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="bg-[#003366] px-4 py-3">
-                <h3 className="text-white font-semibold text-lg">Material deportivo colectivo</h3>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  <span className="font-medium">Rinde en equipo</span>
-                  <br />
-                  Cada deporte cuenta con su equipación. Encuentra material para entrenar y practicar deportes en equipo.
                 </p>
               </div>
             </a>
@@ -200,6 +173,31 @@ export default function Home() {
                   <span className="font-medium">Logra tus propios méritos</span>
                   <br />
                   Accede a una variedad de material para tu deporte y supérate a ti mismo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Material Deportivo Colectivo */}
+            <a
+              href="#deportes-colectivos"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80"
+                  alt="Material deportivo colectivo"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material deportivo colectivo</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Rinde en equipo</span>
+                  <br />
+                  Cada deporte cuenta con su equipación. Encuentra material para entrenar y practicar deportes en equipo.
                 </p>
               </div>
             </a>
@@ -282,8 +280,8 @@ export default function Home() {
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
             <div className="relative h-[400px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600&q=80"
-                alt="Niños jugando en el recreo"
+                src="/material_escolar_cps.png"
+                alt="Material escolar"
                 fill
                 className="object-cover"
               />
