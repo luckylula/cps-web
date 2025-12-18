@@ -125,6 +125,113 @@ export default function Home() {
         <ImageCarousel />
       </div>
 
+      {/* Sección de Tarjetas de Categorías */}
+      <section className="py-16 md:py-24 px-4 md:px-8 bg-orange-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Tarjeta Material Escolar */}
+            <a
+              href="#material-escolar"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80"
+                  alt="Material escolar"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material escolar</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Para aprender</span>
+                  <br />
+                  Artículos que te permiten enseñar y crear un entorno de aprendizaje. Entre ellos, deportivo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Material Deportivo Colectivo */}
+            <a
+              href="#deportes-colectivos"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80"
+                  alt="Material deportivo colectivo"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material deportivo colectivo</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Rinde en equipo</span>
+                  <br />
+                  Cada deporte cuenta con su equipación. Encuentra material para entrenar y practicar deportes en equipo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Material Deportivo Individual */}
+            <a
+              href="#deporte-individual"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&q=80"
+                  alt="Material deportivo individual"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material deportivo individual</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Logra tus propios méritos</span>
+                  <br />
+                  Accede a una variedad de material para tu deporte y supérate a ti mismo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Material Deportivo Complementario */}
+            <a
+              href="#material-complementario"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
+                  alt="Material deportivo complementario"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material deportivo complementario</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Entrénate</span>
+                  <br />
+                  Imprescindibles para tus instalaciones deportivas y ejercitar tu cuerpo.
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="pt-24 pb-32 px-8 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
