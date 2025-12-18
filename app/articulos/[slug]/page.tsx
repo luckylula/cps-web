@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 // Mock data - En producción esto vendría de una base de datos o API
-const articulos: Record<string, {
+type ArticuloSpecifications = Record<string, string>;
+
+type Articulo = {
   id: string;
   title: string;
   description: string;
@@ -11,8 +13,10 @@ const articulos: Record<string, {
   price?: number;
   image: string;
   category: string;
-  specifications?: Record<string, string>;
-}> = {
+  specifications?: ArticuloSpecifications;
+};
+
+const articulos: Record<string, Articulo> = {
   "ladrillo-con-soporte": {
     id: "ladrillo-con-soporte",
     title: "Ladrillo con soporte para pica y aro",
