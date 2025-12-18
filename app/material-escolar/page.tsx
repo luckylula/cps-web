@@ -296,11 +296,26 @@ export default function MaterialEscolarPage() {
                 {categories.psicomotricidad.title}
               </h2>
               <ul className="space-y-3">
-                {categories.psicomotricidad.items.map((item, index) => (
-                  <li key={index} className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer">
-                    {item}
-                  </li>
-                ))}
+                {categories.psicomotricidad.items.map((item, index) => {
+                  const slug = item.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+                  const hasPage = ['ladrillo-con-soporte-para-pica-y-aro', 'trampolin'].includes(slug);
+                  return (
+                    <li key={index}>
+                      {hasPage ? (
+                        <Link 
+                          href={`/articulos/${slug === 'ladrillo-con-soporte-para-pica-y-aro' ? 'ladrillo-con-soporte' : slug}`}
+                          className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer block"
+                        >
+                          {item}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-700">{item}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -310,11 +325,26 @@ export default function MaterialEscolarPage() {
                 {categories.figurasEspuma.title}
               </h2>
               <ul className="space-y-3">
-                {categories.figurasEspuma.items.map((item, index) => (
-                  <li key={index} className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer">
-                    {item}
-                  </li>
-                ))}
+                {categories.figurasEspuma.items.map((item, index) => {
+                  const slug = item.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+                  const hasPage = slug.includes('balon-voleibol-silva');
+                  return (
+                    <li key={index}>
+                      {hasPage ? (
+                        <Link 
+                          href="/articulos/balon-voleibol-silva"
+                          className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer block"
+                        >
+                          {item}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-700">{item}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -366,11 +396,26 @@ export default function MaterialEscolarPage() {
                 {categories.malabares.title}
               </h2>
               <ul className="space-y-3">
-                {categories.malabares.items.map((item, index) => (
-                  <li key={index} className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer">
-                    {item}
-                  </li>
-                ))}
+                {categories.malabares.items.map((item, index) => {
+                  const slug = item.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+                  const hasPage = slug === 'pelota-foam-delux90';
+                  return (
+                    <li key={index}>
+                      {hasPage ? (
+                        <Link 
+                          href="/articulos/pelota-foam-delux90"
+                          className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer block"
+                        >
+                          {item}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-700">{item}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -394,11 +439,26 @@ export default function MaterialEscolarPage() {
                 {categories.colchonetas.title}
               </h2>
               <ul className="space-y-3">
-                {categories.colchonetas.items.map((item, index) => (
-                  <li key={index} className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer">
-                    {item}
-                  </li>
-                ))}
+                {categories.colchonetas.items.map((item, index) => {
+                  const slug = item.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+                  const hasPage = slug === 'colchoneta-escolar';
+                  return (
+                    <li key={index}>
+                      {hasPage ? (
+                        <Link 
+                          href="/articulos/colchoneta-escolar"
+                          className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer block"
+                        >
+                          {item}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-700">{item}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -408,11 +468,26 @@ export default function MaterialEscolarPage() {
                 {categories.educacionMusical.title}
               </h2>
               <ul className="space-y-3">
-                {categories.educacionMusical.items.map((item, index) => (
-                  <li key={index} className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer">
-                    {item}
-                  </li>
-                ))}
+                {categories.educacionMusical.items.map((item, index) => {
+                  const slug = item.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+                  const hasPage = slug === 'set-percussion-mediano';
+                  return (
+                    <li key={index}>
+                      {hasPage ? (
+                        <Link 
+                          href="/articulos/set-percusion-mediano"
+                          className="text-gray-700 hover:text-orange-500 transition-colors cursor-pointer block"
+                        >
+                          {item}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-700">{item}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
