@@ -1,62 +1,410 @@
-import ProductCard from './components/ProductCard';
+import Image from "next/image";
 
-async function getProducts() {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/products`, {
-      cache: 'no-store'
-    });
-    
-    if (!res.ok) {
-      console.error('Error fetching products:', res.status);
-      return [];
+export default function Home() {
+  const categories = {
+    escolar: {
+      title: "Material Escolar",
+      subtitle: "Para aprender",
+      description: "Artículos que te permiten enseñar y crear un entorno de aprendizaje deportivo.",
+      items: [
+        "Psicomotricidad",
+        "Figuras espuma",
+        "Balones de uso escolar",
+        "Juegos alternativos",
+        "Malabares",
+        "Juegos en Educación infantil",
+        "Material foam",
+        "Colchonetas",
+        "Educación musical"
+      ]
+    },
+    individual: {
+      title: "Deporte Individual",
+      subtitle: "Logra tus propios méritos",
+      description: "Accede a una variedad de material para tu deporte y supérate a ti mismo.",
+      items: [
+        "Tenis de Mesa",
+        "Tenis",
+        "Padel",
+        "Badminton",
+        "Atletismo",
+        "Gimnasia rítmica",
+        "Piscina",
+        "Yoga",
+        "Pilates"
+      ]
+    },
+    colectivo: {
+      title: "Deportes Colectivos",
+      subtitle: "Rinde en equipo",
+      description: "Cada deporte cuenta con su equipación. Encuentra material para entrenar y practicar deportes en equipo.",
+      items: [
+        "Fútbol / F. Sala",
+        "Baloncesto",
+        "Balonmano",
+        "Voleibol / Voley Playa",
+        "Waterpolo",
+        "Rugby",
+        "Hockey",
+        "Béisbol"
+      ]
+    },
+    complementario: {
+      title: "Material Deportivo Complementario",
+      subtitle: "Entrénate",
+      description: "Imprescindibles para tus instalaciones deportivas y ejercitar tu cuerpo.",
+      items: [
+        "Material Entrenamiento",
+        "Complemento de balones",
+        "Preparación física",
+        "Equipamiento gimnasio",
+        "Balones medicinales"
+      ]
+    },
+    textil: {
+      title: "Equipación Textil",
+      subtitle: "Viste tu equipo",
+      description: "Equipación completa para todas tus necesidades deportivas.",
+      items: []
     }
-    
-    return res.json();
-  } catch (error) {
-    console.error('Error in getProducts:', error);
-    return [];
-  }
-}
-
-export default async function Home() {
-  const products = await getProducts();
+  };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            CPS Material Deportivo
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Material deportivo para profesionales
-          </p>
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="w-full px-8 py-6 flex items-center justify-between bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-xl bg-white/80">
+        <div className="text-gray-900 text-xl font-semibold tracking-tight">
+          CPS Material Deportivo
         </div>
-      </header>
+        <ul className="flex gap-10">
+          <li>
+            <a href="#material-escolar" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
+              Material Escolar
+            </a>
+          </li>
+          <li>
+            <a href="#deporte-individual" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
+              Deporte Individual
+            </a>
+          </li>
+          <li>
+            <a href="#deportes-colectivos" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
+              Deportes Colectivos
+            </a>
+          </li>
+          <li>
+            <a href="#contacto" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
+              Contacto
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-      {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6">Productos Destacados</h2>
-        
-        {products.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">
-              No hay productos disponibles en este momento
+      {/* Hero Section */}
+      <section className="pt-24 pb-32 px-8 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-center md:text-left">
+              <h1 className="text-6xl md:text-7xl font-light text-gray-900 mb-6 tracking-tight">
+                Material Deportivo
+                <br />
+                <span className="font-normal">de Alta Calidad</span>
+              </h1>
+              <p className="text-xl text-gray-500 mb-12 font-light max-w-2xl leading-relaxed">
+                Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
+                instalaciones deportivas, piscinas y gimnasios en toda España.
+              </p>
+              <div className="flex gap-4 justify-center md:justify-start">
+                <a
+                  href="/catalogo.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+                >
+                  Descargar Catálogo
+                </a>
+                <a
+                  href="#contacto"
+                  className="px-8 py-3 bg-white text-gray-900 border border-gray-300 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Contactar
+                </a>
+              </div>
+            </div>
+            <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+              <Image
+                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80"
+                alt="Material deportivo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Material Escolar Section */}
+      <section id="material-escolar" className="py-24 px-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
+              {categories.escolar.subtitle}
             </p>
-            <p className="text-sm text-gray-400">
-              Estamos trabajando para traerte el mejor contenido
+            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.escolar.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.escolar.description}
             </p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product: any) => (
-              <ProductCard key={product.id} {...product} />
+          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
+            <div className="relative h-[400px]">
+              <Image
+                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200&q=80"
+                alt="Niños durante la lección de educación física"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.escolar.items.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+              >
+                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+              </div>
             ))}
           </div>
-        )}
-      </div>
-    </main>
+        </div>
+      </section>
+
+      {/* Deporte Individual Section */}
+      <section id="deporte-individual" className="py-24 px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
+              {categories.individual.subtitle}
+            </p>
+            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.individual.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.individual.description}
+            </p>
+          </div>
+          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
+            <div className="relative h-[400px]">
+              <Image
+                src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&q=80"
+                alt="Tenista profesional"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.individual.items.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+              >
+                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Deportes Colectivos Section */}
+      <section id="deportes-colectivos" className="py-24 px-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
+              {categories.colectivo.subtitle}
+            </p>
+            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.colectivo.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.colectivo.description}
+            </p>
+          </div>
+          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
+            <div className="relative h-[400px]">
+              <Image
+                src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=80"
+                alt="Niños durante una práctica deportiva en equipo"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {categories.colectivo.items.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+              >
+                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Material Complementario Section */}
+      <section id="material-complementario" className="py-24 px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
+              {categories.complementario.subtitle}
+            </p>
+            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.complementario.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.complementario.description}
+            </p>
+          </div>
+          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
+            <div className="relative h-[400px]">
+              <Image
+                src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80"
+                alt="Gimnasio moderno con equipamiento deportivo"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.complementario.items.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+              >
+                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Equipación Textil Section */}
+      <section id="equipacion-textil" className="py-24 px-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
+              {categories.textil.subtitle}
+            </p>
+            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.textil.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.textil.description}
+            </p>
+          </div>
+          <div className="rounded-3xl overflow-hidden shadow-xl">
+            <div className="relative h-[400px]">
+              <Image
+                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&q=80"
+                alt="Equipación textil deportiva"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-24 px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="rounded-3xl overflow-hidden shadow-xl">
+              <div className="relative h-[500px]">
+                <Image
+                  src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800&q=80"
+                  alt="Equipamiento deportivo profesional"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div>
+              <h2 className="text-5xl font-light text-gray-900 mb-8 tracking-tight">
+                ¿Quiénes somos?
+              </h2>
+              <div className="prose prose-lg text-gray-600 font-light leading-relaxed">
+                <p className="text-xl mb-6">
+                  Control Play Sports tiene la finalidad de distribuir en toda España material deportivo 
+                  para colectivos (Colegios, clubs deportivos, ayuntamientos, instalaciones deportivas, 
+                  piscinas, gimnasios...).
+                </p>
+                <p className="text-xl mb-6">
+                  Podemos comercializar cualquier material deportivo relacionado con el deporte, 
+                  disponemos de los mejores proveedores.
+                </p>
+                <p className="text-xl font-medium text-gray-900">
+                  Todo lo que necesitas, aquí lo encontrarás!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contacto" className="py-24 px-8 bg-gray-900 text-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-light mb-4 tracking-tight">
+              Contacto
+            </h2>
+            <p className="text-lg text-gray-400 font-light">
+              ¿Tienes preguntas? Estamos aquí para ayudarte.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-12">
+            <div>
+              <h3 className="text-xl font-medium mb-6">Información de contacto</h3>
+              <div className="space-y-4 text-gray-300">
+                <p className="font-light">
+                  <strong className="text-white">Control Play Sports S.L.</strong>
+                </p>
+                <p className="font-light">
+                  C/ Sant Miquel, 63<br />
+                  Sant Vicenç dels Horts 08620<br />
+                  Barcelona, Spain
+                </p>
+                <p className="font-light">
+                  <strong className="text-white">Tel:</strong> 639.36.22.53
+                </p>
+                <p className="font-light">
+                  <strong className="text-white">Email:</strong><br />
+                  pedidos@cpsmaterialdeportivo.com
+                </p>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-medium mb-6">Horarios de oficina</h3>
+              <div className="space-y-2 text-gray-300 font-light">
+                <p>Lunes - Jueves: 9:00 a 13:00 y 15:00 a 19:00</p>
+                <p>Viernes: 9:00 a 13:00 y 15:00 a 18:00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 px-8 border-t border-gray-200">
+        <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
+          <p>© 2024 Control Play Sports S.L. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+    </div>
   );
 }
