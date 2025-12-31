@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ImageCarousel from "./components/ImageCarousel";
 
 export default function Home() {
   const categories = {
@@ -71,74 +72,192 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="w-full px-8 py-6 flex items-center justify-between bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-xl bg-white/80">
-        <div className="text-gray-900 text-xl font-semibold tracking-tight">
-          CPS Material Deportivo
+      {/* Navigation Banner Azul Fijo */}
+      <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
+          <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
+            <div className="text-white text-lg md:text-xl font-semibold tracking-tight">
+              CPS Material Deportivo
+            </div>
+            <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
+              <li>
+                <a href="#" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="/material-escolar" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                  Material Escolar
+                </a>
+              </li>
+              <li>
+                <a href="#deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                  Deporte Individual
+                </a>
+              </li>
+              <li>
+                <a href="#deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                  Deportes Colectivos
+                </a>
+              </li>
+              <li>
+                <a href="#material-complementario" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
+                  Material Complementario
+                </a>
+              </li>
+              <li>
+                <a href="#equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
+                  Equipación Textil
+                </a>
+              </li>
+              <li>
+                <a href="#cesta" className="text-white hover:text-orange-300 transition-colors font-medium bg-orange-500 px-3 md:px-4 py-1.5 md:py-2 rounded-full hover:bg-orange-600 whitespace-nowrap">
+                  Mi Cesta
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <ul className="flex gap-10">
-          <li>
-            <a href="#material-escolar" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
-              Material Escolar
-            </a>
-          </li>
-          <li>
-            <a href="#deporte-individual" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
-              Deporte Individual
-            </a>
-          </li>
-          <li>
-            <a href="#deportes-colectivos" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
-              Deportes Colectivos
-            </a>
-          </li>
-          <li>
-            <a href="#contacto" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
-              Contacto
-            </a>
-          </li>
-        </ul>
       </nav>
+
+      {/* Hero Carousel */}
+      <ImageCarousel />
+
+      {/* Sección de Tarjetas de Categorías */}
+      <section className="py-16 md:py-24 px-4 md:px-8 bg-orange-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Tarjeta Material Escolar */}
+            <a
+              href="/material-escolar"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden bg-gray-200">
+                <Image
+                  src="/material_escolar_cps.png"
+                  alt="Material escolar"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material escolar</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Para aprender</span>
+                  <br />
+                  Artículos que te permiten enseñar y crear un entorno de aprendizaje. Entre ellos, deportivo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Material Deportivo Individual */}
+            <a
+              href="#deporte-individual"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden bg-gray-200">
+                <Image
+                  src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
+                  alt="Jugador de pádel"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material deportivo individual</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Logra tus propios méritos</span>
+                  <br />
+                  Accede a una variedad de material para tu deporte y supérate a ti mismo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Material Deportivo Colectivo */}
+            <a
+              href="#deportes-colectivos"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80"
+                  alt="Material deportivo colectivo"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material deportivo colectivo</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Rinde en equipo</span>
+                  <br />
+                  Cada deporte cuenta con su equipación. Encuentra material para entrenar y practicar deportes en equipo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Material Deportivo Complementario */}
+            <a
+              href="#material-complementario"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
+                  alt="Material deportivo complementario"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Material deportivo complementario</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Entrénate</span>
+                  <br />
+                  Imprescindibles para tus instalaciones deportivas y ejercitar tu cuerpo.
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* Hero Section */}
       <section className="pt-24 pb-32 px-8 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-center md:text-left">
-              <h1 className="text-6xl md:text-7xl font-light text-gray-900 mb-6 tracking-tight">
-                Material Deportivo
-                <br />
-                <span className="font-normal">de Alta Calidad</span>
-              </h1>
-              <p className="text-xl text-gray-500 mb-12 font-light max-w-2xl leading-relaxed">
-                Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
-                instalaciones deportivas, piscinas y gimnasios en toda España.
-              </p>
-              <div className="flex gap-4 justify-center md:justify-start">
-                <a
-                  href="/catalogo.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
-                >
-                  Descargar Catálogo
-                </a>
-                <a
-                  href="#contacto"
-                  className="px-8 py-3 bg-white text-gray-900 border border-gray-300 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Contactar
-                </a>
-              </div>
-            </div>
-            <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
-              <Image
-                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80"
-                alt="Material deportivo"
-                fill
-                className="object-cover"
-                priority
-              />
+          <div className="text-center">
+            <h1 className="text-6xl md:text-7xl font-light text-gray-900 mb-6 tracking-tight">
+              Material Deportivo
+              <br />
+              <span className="font-normal">de Alta Calidad</span>
+            </h1>
+            <p className="text-xl text-gray-500 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
+              Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
+              instalaciones deportivas, piscinas y gimnasios en toda España.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <a
+                href="/catalogo.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+              >
+                Descargar Catálogo
+              </a>
+              <a
+                href="#contacto"
+                className="px-8 py-3 bg-white text-gray-900 border border-gray-300 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors"
+              >
+                Contactar
+              </a>
             </div>
           </div>
         </div>
@@ -159,10 +278,10 @@ export default function Home() {
             </p>
           </div>
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px]">
+            <div className="relative h-[400px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200&q=80"
-                alt="Niños durante la lección de educación física"
+                src="/material_escolar_cps.png"
+                alt="Material escolar"
                 fill
                 className="object-cover"
               />
@@ -196,10 +315,10 @@ export default function Home() {
             </p>
           </div>
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px]">
+            <div className="relative h-[400px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&q=80"
-                alt="Tenista profesional"
+                src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600&q=80"
+                alt="Jugador de pádel"
                 fill
                 className="object-cover"
               />
