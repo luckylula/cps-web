@@ -7,7 +7,7 @@ import { useState } from "react";
 const categories = {
   psicomotricidad: {
     title: "Psicomotricidad",
-    image: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&q=80",
+    image: "/categorias/psicomotricidad.png",
     items: [
       "Ladrillo con soporte para pica y aro",
       "Cono con soporte",
@@ -48,7 +48,7 @@ const categories = {
   },
   figurasEspuma: {
     title: "Figuras espuma",
-    image: "https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?w=800&q=80",
+    image: "/categorias/figuras-espuma.jpg",
     items: [
       "Balón Voleibol SILVA",
       "Minirugbi Caucho (Celular) T3",
@@ -74,7 +74,7 @@ const categories = {
   },
   balonesEscolares: {
     title: "Balones de uso escolar",
-    image: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
+    image: "/categorias/balones-escolares.jpg",
     items: [
       "Cuerda salto colectivo 5mts",
       "Juego de Bolos",
@@ -100,7 +100,7 @@ const categories = {
   },
   juegosAlternativos: {
     title: "Juegos alternativos",
-    image: "https://images.unsplash.com/photo-1613294110392-f37d51af368f?w=800&q=80",
+    image: "/categorias/juegos-alternativos.jpg",
     items: [
       "Marcador campos",
       "Set arena Junior",
@@ -126,7 +126,7 @@ const categories = {
   },
   educacionInfantil: {
     title: "Juegos en Educación infantil",
-    image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80",
+    image: "/categorias/educacion-infantil.jpg",
     items: [
       "Plato chino",
       "Palos del Diablo",
@@ -138,7 +138,19 @@ const categories = {
   },
   malabares: {
     title: "Malabares",
-    image: "https://images.unsplash.com/photo-1620503374956-c942862f0372?w=800&q=80",
+    image: "/categorias/malabares.jpg",
+    items: [
+      "Plato chino",
+      "Palos del Diablo",
+      "Malabares",
+      "Juego de 3 aros",
+      "Diábolo Escolar",
+      "Diábolo Deluxe"
+    ]
+  },
+  materialFoam: {
+    title: "Material foam",
+    image: "/categorias/material-foam.jpg",
     items: [
       "Testigo relevo FOAM",
       "Anti-stress",
@@ -157,14 +169,12 @@ const categories = {
       "Kit béisbol FOAM",
       "Bate Béisbol FOAM regulable",
       "Bate Béisbol FOAM",
-      "Rugby FOAM",
-      "Pelota FOAM delux90",
-      "Mini Pelota Tenis FOAM"
+      "Rugby FOAM"
     ]
   },
   colchonetas: {
     title: "Colchonetas",
-    image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80",
+    image: "/categorias/colchonetas.jpg",
     items: [
       "Colchoneta caída max.",
       "Colchoneta caída grande",
@@ -177,7 +187,7 @@ const categories = {
   },
   educacionMusical: {
     title: "Educación musical",
-    image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80",
+    image: "/categorias/educacion-musical.jpg",
     items: [
       "Set percussión mediano",
       "Equipo de audio portátil",
@@ -307,7 +317,7 @@ export default function MaterialEscolarPage() {
             <h2 className="text-4xl font-light text-gray-900 mb-12 text-center">
               Categorías
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Object.entries(categories).map(([key, category]) => (
                 <button
                   key={key}
