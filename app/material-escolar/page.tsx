@@ -7,7 +7,7 @@ import { useState } from "react";
 const categories = {
   psicomotricidad: {
     title: "Psicomotricidad",
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&q=80",
     items: [
       "Ladrillo con soporte para pica y aro",
       "Cono con soporte",
@@ -48,7 +48,7 @@ const categories = {
   },
   figurasEspuma: {
     title: "Figuras espuma",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?w=800&q=80",
     items: [
       "Balón Voleibol SILVA",
       "Minirugbi Caucho (Celular) T3",
@@ -74,7 +74,7 @@ const categories = {
   },
   balonesEscolares: {
     title: "Balones de uso escolar",
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
     items: [
       "Cuerda salto colectivo 5mts",
       "Juego de Bolos",
@@ -100,7 +100,7 @@ const categories = {
   },
   juegosAlternativos: {
     title: "Juegos alternativos",
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1613294110392-f37d51af368f?w=800&q=80",
     items: [
       "Marcador campos",
       "Set arena Junior",
@@ -126,7 +126,7 @@ const categories = {
   },
   educacionInfantil: {
     title: "Juegos en Educación infantil",
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80",
     items: [
       "Plato chino",
       "Palos del Diablo",
@@ -138,7 +138,7 @@ const categories = {
   },
   malabares: {
     title: "Malabares",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1620503374956-c942862f0372?w=800&q=80",
     items: [
       "Testigo relevo FOAM",
       "Anti-stress",
@@ -164,7 +164,7 @@ const categories = {
   },
   colchonetas: {
     title: "Colchonetas",
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80",
     items: [
       "Colchoneta caída max.",
       "Colchoneta caída grande",
@@ -177,7 +177,7 @@ const categories = {
   },
   educacionMusical: {
     title: "Educación musical",
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80",
     items: [
       "Set percussión mediano",
       "Equipo de audio portátil",
