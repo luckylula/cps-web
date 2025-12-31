@@ -1,15 +1,22 @@
 import ProductCard from './components/ProductCard';
 
 async function getProducts() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/products`, {
-    cache: 'no-store'
-  });
-  
-  if (!res.ok) {
-    throw new Error('Error al cargar productos');
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/products`, {
+      cache: 'no-store'
+    });
+    
+    if (!res.ok) {
+      console.error('Error fetching products:', res.status);
+      return [];
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.error('Error in getProducts:', error);
+    return [];
   }
-  
-  return res.json();
 }
 
 export default async function Home() {
@@ -34,9 +41,14 @@ export default async function Home() {
         <h2 className="text-2xl font-bold mb-6">Productos Destacados</h2>
         
         {products.length === 0 ? (
-          <p className="text-gray-500 text-center py-12">
-            No hay productos disponibles
-          </p>
+          <div className="text-center py-12">
+            <p className="text-gray-500 mb-4">
+              No hay productos disponibles en este momento
+            </p>
+            <p className="text-sm text-gray-400">
+              Estamos trabajando para traerte el mejor contenido
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product: any) => (
