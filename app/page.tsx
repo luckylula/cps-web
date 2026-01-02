@@ -106,7 +106,7 @@ export default function Home() {
                 </a>
               </li>
               <li>
-                <a href="#equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
+                <a href="/equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
                   Equipación Textil
                 </a>
               </li>
@@ -126,7 +126,7 @@ export default function Home() {
       {/* Sección de Tarjetas de Categorías */}
       <section className="py-16 md:py-24 px-4 md:px-8 bg-orange-50">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {/* Tarjeta Material Escolar */}
             <a
               href="/material-escolar"
@@ -223,6 +223,31 @@ export default function Home() {
                   <span className="font-medium">Entrénate</span>
                   <br />
                   Imprescindibles para tus instalaciones deportivas y ejercitar tu cuerpo.
+                </p>
+              </div>
+            </a>
+
+            {/* Tarjeta Equipación Textil */}
+            <a
+              href="/equipacion-textil"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80"
+                  alt="Equipación textil"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-[#003366] px-4 py-3">
+                <h3 className="text-white font-semibold text-lg">Equipación textil</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  <span className="font-medium">Viste tu equipo</span>
+                  <br />
+                  Equipación completa para todas tus necesidades deportivas.
                 </p>
               </div>
             </a>
