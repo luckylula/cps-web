@@ -34,7 +34,7 @@ const categories = {
   },
   padel: {
     title: "Padel",
-    image: "https://images.unsplash.com/photo-1617883861744-1ca411f1f6b3?w=800&q=80",
+    image: "/categorias/deporte-individual/padel.jpg",
     items: [
       "Pala pádel PR700",
       "Pala pádel PR900",
@@ -75,7 +75,7 @@ const categories = {
   },
   gimnasiaRitmica: {
     title: "Gimnasia Rítmica",
-    image: "https://images.unsplash.com/photo-1556817411-58c45dd94e8c?w=800&q=80",
+    image: "/categorias/deporte-individual/gimnasia_ritmica.jpg",
     items: [
       "Cinta rítmica 4m",
       "Cinta rítmica 6m",
@@ -88,7 +88,7 @@ const categories = {
   },
   piscina: {
     title: "Piscina",
-    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=800&q=80",
+    image: "/categorias/deporte-individual/piscina.jpg",
     items: [
       "Gafas natación",
       "Gorro natación",
@@ -116,7 +116,7 @@ const categories = {
   },
   pilates: {
     title: "Pilates",
-    image: "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=800&q=80",
+    image: "/categorias/deporte-individual/pilates.png",
     items: [
       "Esterilla pilates",
       "Pelota pilates 55cm",
