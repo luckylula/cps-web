@@ -91,7 +91,7 @@ export default function Home() {
                 </a>
               </li>
               <li>
-                <a href="#deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <a href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
                   Deporte Individual
                 </a>
               </li>
@@ -154,7 +154,7 @@ export default function Home() {
 
             {/* Tarjeta Material Deportivo Individual */}
             <a
-              href="#deporte-individual"
+              href="/deporte-individual"
               className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
             >
               <div className="relative h-64 overflow-hidden bg-gray-200">
