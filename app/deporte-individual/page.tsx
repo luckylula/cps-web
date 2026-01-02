@@ -22,7 +22,7 @@ const categories = {
   },
   tenis: {
     title: "Tenis",
-    image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80",
     items: [
       "Raqueta tenis TR130",
       "Raqueta tenis TR530",
@@ -34,7 +34,7 @@ const categories = {
   },
   padel: {
     title: "Padel",
-    image: "https://images.unsplash.com/photo-1612534847738-b7ea1df75d74?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1623012188306-fe3272ec0a92?w=800&q=80",
     items: [
       "Pala pádel PR700",
       "Pala pádel PR900",
@@ -75,7 +75,7 @@ const categories = {
   },
   gimnasiaRitmica: {
     title: "Gimnasia Rítmica",
-    image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?w=800&q=80",
     items: [
       "Cinta rítmica 4m",
       "Cinta rítmica 6m",
@@ -88,7 +88,7 @@ const categories = {
   },
   piscina: {
     title: "Piscina",
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=800&q=80",
     items: [
       "Gafas natación",
       "Gorro natación",
@@ -116,7 +116,7 @@ const categories = {
   },
   pilates: {
     title: "Pilates",
-    image: "https://images.unsplash.com/photo-1518310952931-b1de897abd40?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80",
     items: [
       "Esterilla pilates",
       "Pelota pilates 55cm",
