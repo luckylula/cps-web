@@ -5,133 +5,151 @@ import Link from "next/link";
 import { useState } from "react";
 
 const categories = {
-  tenisDeMesa: {
-    title: "Tenis de Mesa",
-    image: "https://images.unsplash.com/photo-1534158914592-062992fbe900?w=800&q=80",
+  futbol: {
+    title: "Fútbol / Fútbol Sala",
+    image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&q=80",
     items: [
-      "Mesa tenis de exterior",
-      "Mesa ping pong interior",
-      "Kit tablero",
-      "Tarro 60 pelotas pvc",
-      "Pelotas ping pong 6 und.",
-      "Raqueta de tenis mesa P900",
-      "Raqueta de tenis mesa P700",
-      "Raqueta de tenis P300",
-      "Pala Tenis de mesa Uso escolar"
+      "Portería multiusos plegable metálica",
+      "Portería desmontable",
+      "Balón de fútbol TPU",
+      "Balón Softee Strike Fut. 11",
+      "Balón Softee Seal",
+      "Balón Softee React",
+      "Balón Softee Position",
+      "Balón Softee Maximum",
+      "Balón Softee Iconic Fut 11",
+      "Balón Softee Denim",
+      "Balón Inter Fut.11",
+      "Balón Molten T7",
+      "Balón Molten T6",
+      "Balón Molten T5",
+      "Balón Softee Park",
+      "Red de fútbol",
+      "Conos de entrenamiento",
+      "Petos deportivos"
     ]
   },
-  tenis: {
-    title: "Tenis",
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80",
+  baloncesto: {
+    title: "Baloncesto",
+    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80",
     items: [
-      "Raqueta tenis TR130",
-      "Raqueta tenis TR530",
-      "Raqueta tenis niño",
-      "Pelotas tenis",
-      "Red tenis",
-      "Cesto porta pelotas"
+      "Balón Cuero Rox Dunk",
+      "Basket Naranja Caucho Celular del 5-7",
+      "Nylon del 3-7",
+      "Balón MIKASA B-6",
+      "Balón Minibasket N-7",
+      "Balón Minibasket",
+      "Juego de canastas trasladables",
+      "Aro macizo galvanizado",
+      "Aro tubo Deluxe",
+      "Red de baloncesto",
+      "Canasta baloncesto portátil",
+      "Bomba de inflado"
     ]
   },
-  padel: {
-    title: "Padel",
-    image: "/categorias/deporte-individual/padel.jpg",
+  balonmano: {
+    title: "Balonmano",
+    image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&q=80",
     items: [
-      "Pala pádel PR700",
-      "Pala pádel PR900",
-      "Pelotas pádel",
-      "Bolsa pádel",
-      "Red pádel"
+      "Portería desmontable",
+      "Balón balonmano Softee Heros",
+      "Balón balonmano Flash Elite",
+      "Balón balonmano Softee Flash",
+      "Balón balonmano Softee Microcelular",
+      "Balón balonmano Soft TPE",
+      "Carro de portería",
+      "Red de balonmano",
+      "Resina para balonmano"
     ]
   },
-  badminton: {
-    title: "Badminton",
-    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&q=80",
+  voleibol: {
+    title: "Voleibol / Voley Playa",
+    image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&q=80",
     items: [
-      "Set mini Badminton i tenis",
-      "Red Badminton sencilla",
-      "Juego postes Badminton Fijos",
-      "Raqueta badminton B500 junior",
-      "Raqueta Badminton B5000",
-      "Raqueta Badminton B3000",
-      "Raqueta Badminton junior",
-      "Volantes Badminton Nylon",
-      "Volantes Badminton",
-      "Cordaje badminton 10mt"
+      "Voleibol Playa Cuero Sintético",
+      "Balón Volley Playa Cuero Cosido",
+      "Balón Voleybeach",
+      "Volley Cuero",
+      "Balón Voley MIKASA 200",
+      "Balón Voley MIKASA",
+      "Balón Molten Voley",
+      "Balón Voleibol SILVA",
+      "Balón Voleibol Softee Soft",
+      "Balón Voleibol Softee Iniciación PVC",
+      "Red de voleibol",
+      "Postes de voleibol",
+      "Antenas de voleibol"
     ]
   },
-  atletismo: {
-    title: "Atletismo",
-    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&q=80",
+  waterpolo: {
+    title: "Waterpolo",
+    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=800&q=80",
     items: [
-      "Vallas atletismo",
-      "Testigo relevo",
-      "Disco atletismo",
-      "Peso atletismo",
-      "Jabalina",
-      "Saltómetro",
-      "Cronómetro digital",
-      "Cinta métrica 50m"
+      "Portería Waterpolo",
+      "Waterpolo Caucho Celular",
+      "Mini Waterpolo Caucho Celular",
+      "Balón waterpolo talla 5",
+      "Balón waterpolo talla 4",
+      "Balón waterpolo talla 3",
+      "Gorro waterpolo",
+      "Red waterpolo"
     ]
   },
-  gimnasiaRitmica: {
-    title: "Gimnasia Rítmica",
-    image: "/categorias/deporte-individual/gimnasia-ritmica.jpg",
+  rugby: {
+    title: "Rugby",
+    image: "https://images.unsplash.com/photo-1512224540965-556597a1bff?w=800&q=80",
     items: [
-      "Cinta rítmica 4m",
-      "Cinta rítmica 6m",
-      "Aro gimnasia rítmica 60cm",
-      "Aro gimnasia rítmica 80cm",
-      "Mazas gimnasia rítmica",
-      "Pelota gimnasia rítmica",
-      "Cuerda gimnasia rítmica"
+      "Plot Rugby",
+      "Minirugbi Caucho Celular T3",
+      "Rugbi Caucho Celular T5",
+      "Balón Rugby DERBY",
+      "Pelota Rugby con Relieve",
+      "Pelota Rugby Torbellino",
+      "Balón rugby talla 4",
+      "Balón rugby talla 3",
+      "Conos de entrenamiento"
     ]
   },
-  piscina: {
-    title: "Piscina",
-    image: "/categorias/deporte-individual/piscina.jpg",
+  hockey: {
+    title: "Hockey",
+    image: "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?w=800&q=80",
     items: [
-      "Gafas natación",
-      "Gorro natación",
-      "Aletas natación",
-      "Pull buoy",
-      "Tabla natación",
-      "Manguitos infantiles",
-      "Churro flotador",
-      "Aros hundibles",
-      "Corchera piscina"
+      "Portería Hockey Acero",
+      "Set Hockey Foam 12 Mazas + Pelota",
+      "Stick De Hockey Deluxe",
+      "Stick Hockey Hierba",
+      "Stick Hockey 0,95mt",
+      "Stick Hockey 0,85mt",
+      "Set mini Hockey",
+      "Pelota Hockey",
+      "Pelota Hockey 100mm",
+      "Pelota Hockey 70mm",
+      "Pastilla Hockey"
     ]
   },
-  yoga: {
-    title: "Yoga",
-    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80",
+  beisbol: {
+    title: "Béisbol",
+    image: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=800&q=80",
     items: [
-      "Esterilla yoga 4mm",
-      "Esterilla yoga 6mm",
-      "Bloque yoga",
-      "Cinturón yoga",
-      "Bolster yoga",
-      "Cojín meditación",
-      "Manta yoga"
-    ]
-  },
-  pilates: {
-    title: "Pilates",
-    image: "/categorias/deporte-individual/pilates.png",
-    items: [
-      "Esterilla pilates",
-      "Pelota pilates 55cm",
-      "Pelota pilates 65cm",
-      "Aro pilates",
-      "Banda elástica pilates",
-      "Rodillo foam",
-      "Plataforma equilibrio"
+      "Bases de Caucho",
+      "Soporte Prebéisbol",
+      "Pelota Piel Baseball",
+      "Pelota Béisbol Soft",
+      "Pelota béisbol FOAM",
+      "Guante Béisbol Adulto",
+      "Bate de Béisbol Regulable",
+      "Bate de Béisbol Aluminio",
+      "Bate de Béisbol Madera 69cm",
+      "Bate de Béisbol de madera 90cm",
+      "Guante de Béisbol Junior",
+      "Bate de béisbol FOAM"
     ]
   }
 };
 
 type CategoryKey = keyof typeof categories;
 
-export default function DeporteIndividualPage() {
+export default function DeportesColectivosPage() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
 
   const handleCategoryClick = (categoryKey: CategoryKey) => {
@@ -167,12 +185,12 @@ export default function DeporteIndividualPage() {
                 </Link>
               </li>
               <li>
-                <Link href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 border-b-2 border-orange-300">
+                <Link href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
                   Deporte Individual
                 </Link>
               </li>
               <li>
-                <Link href="/#deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link href="/deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 border-b-2 border-orange-300">
                   Deportes Colectivos
                 </Link>
               </li>
@@ -200,11 +218,11 @@ export default function DeporteIndividualPage() {
       <section className="pt-32 pb-16 px-8 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-light text-gray-900 mb-6 tracking-tight">
-            Deporte Individual
+            Deportes Colectivos
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-            Logra tus propios méritos. Accede a una variedad de material para tu deporte
-            y supérate a ti mismo.
+            El éxito del equipo es tu éxito. Encuentra todo el material necesario
+            para entrenar y competir con tu equipo al más alto nivel.
           </p>
         </div>
       </section>
@@ -215,8 +233,8 @@ export default function DeporteIndividualPage() {
           <div className="rounded-3xl overflow-hidden shadow-xl">
             <div className="relative h-[500px] bg-gray-200">
               <Image
-                src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200&q=80"
-                alt="Deporte individual"
+                src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&q=80"
+                alt="Deportes colectivos"
                 fill
                 className="object-cover"
               />
@@ -319,10 +337,10 @@ export default function DeporteIndividualPage() {
         <section className="py-16 px-8 bg-[#003366]">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-light text-white mb-6 tracking-tight">
-              ¿Necesitas más información?
+              ¿Necesitas equipar a tu equipo?
             </h2>
             <p className="text-xl text-white/90 mb-8 font-light">
-              Contacta con nosotros para recibir asesoramiento personalizado sobre nuestro material deportivo.
+              Contacta con nosotros para recibir asesoramiento personalizado y ofertas especiales para equipos.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
