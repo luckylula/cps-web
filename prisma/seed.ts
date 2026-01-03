@@ -191,6 +191,7 @@ async function main() {
       price: 3.35,
       stock: 200,
       categoryId: equipacionTextil.id,
+      subcategory: 'Camisetas',
       published: true,
       featured: true,
       images: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'],
@@ -202,9 +203,10 @@ async function main() {
       price: 4.15,
       stock: 150,
       categoryId: equipacionTextil.id,
+      subcategory: 'Camisetas',
       published: true,
       featured: false,
-      images: ['https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80'],
+      images: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'],
     },
   ];
 
