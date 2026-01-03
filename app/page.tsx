@@ -106,7 +106,7 @@ export default function Home() {
                 </a>
               </li>
               <li>
-                <a href="#equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
+                <a href="/equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
                   Equipación Textil
                 </a>
               </li>
@@ -229,7 +229,7 @@ export default function Home() {
 
             {/* Tarjeta Equipación Textil */}
             <a
-              href="#equipacion-textil"
+              href="/equipacion-textil"
               className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
             >
               <div className="relative h-64 overflow-hidden">
