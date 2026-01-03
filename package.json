@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "node --import tsx prisma/seed.ts"
+    "seed": "node --import tsx prisma/seed.ts",
+    "seed:complete": "node --import tsx prisma/seed-complete.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
