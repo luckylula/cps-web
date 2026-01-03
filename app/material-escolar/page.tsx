@@ -29,6 +29,11 @@ const categories = {
       "Pelotas llenado 75 mm",
       "Pelotas llenado 85 mm",
       "Parque Nylon",
+      "Piscina cuadrada",
+      "Piscina superior",
+      "Aro",
+      "Pack 20 picas",
+      "Base para Pica y aro",
       "Semi-cilindro",
       "Arco",
       "Semicilindro",
@@ -69,7 +74,9 @@ const categories = {
       "Polivalente lisa amarilla",
       "Polivalente lisa media",
       "Polivalente animal",
-      "Pelota Delux"
+      "Pelota Delux",
+      "Pelota polivalente rugosa PVC",
+      "Balón Spider"
     ]
   },
   balonesEscolares: {
@@ -95,7 +102,15 @@ const categories = {
       "Zancos Bajos Deluxe",
       "Zancos antideslizantes de 12cm",
       "Trampolín plus",
-      "Trampolín Reforzado"
+      "Trampolín Reforzado",
+      "Paracaídas 7mts",
+      "Palo Lacrosse",
+      "Pala Mazaball",
+      "Cuadrados",
+      "Manta diana",
+      "Kicking ball x12",
+      "Juego de Red",
+      "Pelota divertida"
     ]
   },
   juegosAlternativos: {
@@ -121,7 +136,10 @@ const categories = {
       "Minimobil JOBS",
       "Mini contenedor",
       "Minimobil Bote",
-      "Mini Display"
+      "Mini Display",
+      "School Mini",
+      "Mini mobil JOBS",
+      "Mini mobil dumpy"
     ]
   },
   educacionInfantil: {
@@ -169,13 +187,32 @@ const categories = {
       "Kit béisbol FOAM",
       "Bate Béisbol FOAM regulable",
       "Bate Béisbol FOAM",
-      "Rugby FOAM"
+      "Rugby FOAM",
+      "Pelota FOAM delux90",
+      "Mini Pelota Tenis FOAM",
+      "Disco Volador Foam",
+      "Dado gigante FOAM",
+      "Cono FOAM 32cm",
+      "Aro FOAM",
+      "Construcción",
+      "Set números y letras FOAM",
+      "Cubos FOAM",
+      "Animales FOAM"
     ]
   },
   colchonetas: {
     title: "Colchonetas",
     image: "/categorias/material-escolar/colchonetas.jpg",
     items: [
+      "Soporte pack",
+      "Soporte",
+      "Colchoneta aerobic",
+      "Adhesivo antideslizante",
+      "Set Velcro",
+      "Carro",
+      "Funda quitamiedos",
+      "Colchoneta plegable",
+      "Quitamiedos",
       "Colchoneta caída max.",
       "Colchoneta caída grande",
       "Colchoneta caída media",
@@ -208,7 +245,15 @@ const categories = {
       "Tambor olas",
       "Palo lluvia",
       "Raspa",
-      "Caja china"
+      "Caja china",
+      "Castañuelas de madera",
+      "Castañuelas plastico",
+      "Maracas arena",
+      "Mini maracas",
+      "Cascabel",
+      "Tobillera de cascabeles",
+      "Pulsera cascabel",
+      "Campanitas musicales"
     ]
   }
 };
