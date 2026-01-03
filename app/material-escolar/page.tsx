@@ -2,270 +2,97 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const categories = {
-  psicomotricidad: {
-    title: "Psicomotricidad",
-    image: "/categorias/material-escolar/psicomotricidad.png",
-    items: [
-      "Ladrillo con soporte para pica y aro",
-      "Cono con soporte",
-      "Trampolín",
-      "Cuerda rítmica",
-      "Cuerda Salto",
-      "Cuerda salto colectivo 5mts",
-      "Cuerda salto colectivo 10mts",
-      "Cinta métrica",
-      "Cono flexible",
-      "Conos economic",
-      "Equipo de audio portátil",
-      "Set islas de equilibrio",
-      "Islas equilibrio",
-      "Circuito de equilibrio",
-      "Túnel basic",
-      "Túnel Psicomotricidad",
-      "Pack pelotas llenado",
-      "Pelotas llenado 75 mm",
-      "Pelotas llenado 85 mm",
-      "Parque Nylon",
-      "Piscina cuadrada",
-      "Piscina superior",
-      "Aro",
-      "Pack 20 picas",
-      "Base para Pica y aro",
-      "Semi-cilindro",
-      "Arco",
-      "Semicilindro",
-      "Triangulo",
-      "Rampa grande",
-      "Rampa pequeña",
-      "Círculo",
-      "Cilindro",
-      "Figura M",
-      "Cuadrado 60cm",
-      "Cuadrado 25cm",
-      "Escalera MD",
-      "Escalera grande",
-      "Mini cilindro",
-      "Figura Asiento"
-    ]
-  },
-  figurasEspuma: {
-    title: "Figuras espuma",
-    image: "/categorias/material-escolar/figuras-espuma.jpg",
-    items: [
-      "Balón Voleibol SILVA",
-      "Minirugbi Caucho (Celular) T3",
-      "Nylon del 3-7",
-      "BALÓN VOLEIBOL SOFTEE SOFT",
-      "BALÓN VOLEIBOL SOFTEE INICIACIÓN PVC",
-      "Polivalente lisa pequeña",
-      "kanguro 55",
-      "kanguro 45",
-      "Tapón P. Gigante",
-      "Extrator tapón",
-      "Pelota gigante",
-      "Pelota gigante flexible",
-      "Pelota canguro",
-      "Pelota Caucho",
-      "Pelota multiuso PVC",
-      "Polivalente lisa grande",
-      "Polivalente lisa amarilla",
-      "Polivalente lisa media",
-      "Polivalente animal",
-      "Pelota Delux",
-      "Pelota polivalente rugosa PVC",
-      "Balón Spider"
-    ]
-  },
-  balonesEscolares: {
-    title: "Balones de uso escolar",
-    image: "/categorias/material-escolar/balones-escolares.jpg",
-    items: [
-      "Cuerda salto colectivo 5mts",
-      "Juego de Bolos",
-      "Conos abecedario",
-      "Indiaka Max",
-      "Indiaka deluxe",
-      "Indiaka",
-      "Comba",
-      "Escalera de agilidad",
-      "Sogatira 10 mts",
-      "Cuerda salto colectivo 10mts",
-      "Cuerda Salto",
-      "Torpedo",
-      "Misíl",
-      "Lanzamiento",
-      "Canasta Juegos",
-      "Set pala de Licra",
-      "Zancos Bajos Deluxe",
-      "Zancos antideslizantes de 12cm",
-      "Trampolín plus",
-      "Trampolín Reforzado",
-      "Paracaídas 7mts",
-      "Palo Lacrosse",
-      "Pala Mazaball",
-      "Cuadrados",
-      "Manta diana",
-      "Kicking ball x12",
-      "Juego de Red",
-      "Pelota divertida"
-    ]
-  },
-  juegosAlternativos: {
-    title: "Juegos alternativos",
-    image: "/categorias/material-escolar/juegos-alternativos.jpg",
-    items: [
-      "Marcador campos",
-      "Set arena Junior",
-      "Cubo especial",
-      "Cubo pequeño",
-      "Set arena bebe",
-      "Harineras bebe",
-      "Rastrillo bebe",
-      "Palas bebe",
-      "Cedazo especial",
-      "Rastrillos",
-      "Palas especiales",
-      "Llanas",
-      "Paletas",
-      "Pala Harinera",
-      "Cubos especiales",
-      "Cubos pequeños",
-      "Minimobil JOBS",
-      "Mini contenedor",
-      "Minimobil Bote",
-      "Mini Display",
-      "School Mini",
-      "Mini mobil JOBS",
-      "Mini mobil dumpy"
-    ]
-  },
-  educacionInfantil: {
-    title: "Juegos en Educación infantil",
-    image: "/categorias/material-escolar/educacion-infantil.jpg",
-    items: [
-      "Plato chino",
-      "Palos del Diablo",
-      "Malabares",
-      "Juego de 3 aros",
-      "Diábolo Escolar",
-      "Diábolo Deluxe"
-    ]
-  },
-  malabares: {
-    title: "Malabares",
-    image: "/categorias/material-escolar/malabares.jpg",
-    items: [
-      "Plato chino",
-      "Palos del Diablo",
-      "Malabares",
-      "Juego de 3 aros",
-      "Diábolo Escolar",
-      "Diábolo Deluxe"
-    ]
-  },
-  materialFoam: {
-    title: "Material foam",
-    image: "/categorias/material-escolar/material-foam.jpg",
-    items: [
-      "Testigo relevo FOAM",
-      "Anti-stress",
-      "Sable FOAM",
-      "Sables esgrima",
-      "Javalina FOAM",
-      "Cuerda salto",
-      "Juego de bolos",
-      "Indiaka Max",
-      "Indiaka deluxe",
-      "FOAM Balonmano",
-      "Foam Volley",
-      "FOAM basket",
-      "Futbol FOAM",
-      "Pelota Béisbol FOAM",
-      "Kit béisbol FOAM",
-      "Bate Béisbol FOAM regulable",
-      "Bate Béisbol FOAM",
-      "Rugby FOAM",
-      "Pelota FOAM delux90",
-      "Mini Pelota Tenis FOAM",
-      "Disco Volador Foam",
-      "Dado gigante FOAM",
-      "Cono FOAM 32cm",
-      "Aro FOAM",
-      "Construcción",
-      "Set números y letras FOAM",
-      "Cubos FOAM",
-      "Animales FOAM"
-    ]
-  },
-  colchonetas: {
-    title: "Colchonetas",
-    image: "/categorias/material-escolar/colchonetas.jpg",
-    items: [
-      "Soporte pack",
-      "Soporte",
-      "Colchoneta aerobic",
-      "Adhesivo antideslizante",
-      "Set Velcro",
-      "Carro",
-      "Funda quitamiedos",
-      "Colchoneta plegable",
-      "Quitamiedos",
-      "Colchoneta caída max.",
-      "Colchoneta caída grande",
-      "Colchoneta caída media",
-      "Colchoneta caída escolar",
-      "Colchoneta infantil",
-      "Colchoneta escolar",
-      "Económica"
-    ]
-  },
-  educacionMusical: {
-    title: "Educación musical",
-    image: "/categorias/material-escolar/educacion-musical.jpg",
-    items: [
-      "Set percussión mediano",
-      "Equipo de audio portátil",
-      "Set iniciación a la música",
-      "Tambor de Mano",
-      "Set percussión grande",
-      "Set 3 tambores",
-      "Carrillón",
-      "Carrillón Curvo",
-      "Carrillón con notas separadas",
-      "Pandereta media",
-      "Pandereta mini",
-      "Platos 20cm.",
-      "Agogo bell",
-      "Crótalos",
-      "Claves de madera",
-      "Triangulo",
-      "Tambor olas",
-      "Palo lluvia",
-      "Raspa",
-      "Caja china",
-      "Castañuelas de madera",
-      "Castañuelas plastico",
-      "Maracas arena",
-      "Mini maracas",
-      "Cascabel",
-      "Tobillera de cascabeles",
-      "Pulsera cascabel",
-      "Campanitas musicales"
-    ]
-  }
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  image: string | null;
+  products?: Product[];
+}
+
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  images: string[];
+  categoryId: string;
+}
+
+// Category slug mapping for Material Escolar
+const categorySlugMap: Record<string, string> = {
+  psicomotricidad: 'psicomotricidad',
+  figurasEspuma: 'figuras-espuma',
+  balonesEscolares: 'balones-escolares',
+  juegosAlternativos: 'juegos-alternativos',
+  educacionInfantil: 'educacion-infantil',
+  malabares: 'malabares',
+  materialFoam: 'material-foam',
+  colchonetas: 'colchonetas',
+  educacionMusical: 'educacion-musical',
 };
 
-type CategoryKey = keyof typeof categories;
+// Fallback images for categories
+const categoryImages: Record<string, string> = {
+  psicomotricidad: "/categorias/material-escolar/psicomotricidad.png",
+  'figuras-espuma': "/categorias/material-escolar/figuras-espuma.jpg",
+  'balones-escolares': "/categorias/material-escolar/balones-escolares.jpg",
+  'juegos-alternativos': "/categorias/material-escolar/juegos-alternativos.jpg",
+  'educacion-infantil': "/categorias/material-escolar/educacion-infantil.jpg",
+  malabares: "/categorias/material-escolar/malabares.jpg",
+  'material-foam': "/categorias/material-escolar/material-foam.jpg",
+  colchonetas: "/categorias/material-escolar/colchonetas.jpg",
+  'educacion-musical': "/categorias/material-escolar/educacion-musical.jpg",
+};
+
+type CategoryKey = keyof typeof categorySlugMap;
 
 export default function MaterialEscolarPage() {
+  const [categories, setCategories] = useState<Record<string, Category>>({});
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        setLoading(true);
+        
+        // Fetch all Material Escolar categories in one request
+        console.log('Fetching Material Escolar categories...');
+        const response = await fetch('/api/material-escolar/categories');
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Failed to fetch categories:', response.status, errorData);
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Categories response:', data);
+        
+        if (data.success && data.categories) {
+          setCategories(data.categories);
+          console.log('Loaded categories:', Object.keys(data.categories).length);
+        } else {
+          console.warn('No categories in response:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCategories();
+  }, []);
 
   const handleCategoryClick = (categoryKey: CategoryKey) => {
     setSelectedCategory(categoryKey);
-    // Scroll to products section
     setTimeout(() => {
       document.getElementById('productos-section')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -275,6 +102,17 @@ export default function MaterialEscolarPage() {
     setSelectedCategory(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando categorías...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -307,7 +145,7 @@ export default function MaterialEscolarPage() {
                 </Link>
               </li>
               <li>
-                <Link href="/#material-complementario" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
+                <Link href="/material-complementario" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
                   Material Complementario
                 </Link>
               </li>
@@ -362,35 +200,47 @@ export default function MaterialEscolarPage() {
             <h2 className="text-4xl font-light text-gray-900 mb-12 text-center">
               Categorías
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Object.entries(categories).map(([key, category]) => (
-                <button
-                  key={key}
-                  onClick={() => handleCategoryClick(key as CategoryKey)}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-left"
-                >
-                  <div className="relative h-64 bg-gray-200 overflow-hidden">
-                    <Image
-                      src={category.image}
-                      alt={category.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-white text-xl font-semibold">
-                        {category.title}
-                      </h3>
+            {Object.keys(categories).length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 mb-4">No hay categorías disponibles</p>
+                <p className="text-sm text-gray-400 mb-4">
+                  Asegúrate de que la base de datos ha sido poblada ejecutando:
+                </p>
+                <code className="bg-gray-100 px-4 py-2 rounded text-sm">
+                  npm run seed:complete
+                </code>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(categories).map(([key, category]) => (
+                  <button
+                    key={key}
+                    onClick={() => handleCategoryClick(key as CategoryKey)}
+                    className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-left"
+                  >
+                    <div className="relative h-64 bg-gray-200 overflow-hidden">
+                      <Image
+                        src={category.image || categoryImages[category.slug] || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80"}
+                        alt={category.name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="text-white text-xl font-semibold">
+                          {category.name}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-6">
-                    <p className="text-gray-600 text-sm">
-                      {category.items.length} productos disponibles
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
+                    <div className="p-6">
+                      <p className="text-gray-600 text-sm">
+                        {category.products?.length || 0} productos disponibles
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       ) : (
@@ -408,73 +258,72 @@ export default function MaterialEscolarPage() {
             </button>
 
             {/* Selected Category */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl">
-              <div className="mb-8">
-                <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden mb-6">
-                  <Image
-                    src={categories[selectedCategory].image}
-                    alt={categories[selectedCategory].title}
-                    fill
-                    className="object-cover"
-                  />
+            {categories[selectedCategory] && (
+              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl">
+                <div className="mb-8">
+                  <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden mb-6">
+                    <Image
+                      src={categories[selectedCategory].image || categoryImages[categories[selectedCategory].slug] || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80"}
+                      alt={categories[selectedCategory].name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <h2 className="text-4xl font-light text-gray-900 mb-4">
+                    {categories[selectedCategory].name}
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    {categories[selectedCategory].products?.length || 0} productos disponibles
+                  </p>
                 </div>
-                <h2 className="text-4xl font-light text-gray-900 mb-4">
-                  {categories[selectedCategory].title}
-                </h2>
-                <p className="text-lg text-gray-600">
-                  {categories[selectedCategory].items.length} productos disponibles
-                </p>
-              </div>
 
-              {/* Products List */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {categories[selectedCategory].items.map((item, index) => {
-                  const slug = item.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/(^-|-$)/g, '');
-                  const hasPage = [
-                    'ladrillo-con-soporte-para-pica-y-aro',
-                    'trampolin',
-                    'balon-voleibol-silva',
-                    'colchoneta-escolar',
-                    'set-percussion-mediano',
-                    'pelota-foam-delux90'
-                  ].includes(slug);
-                  
-                  const articleSlug = slug === 'ladrillo-con-soporte-para-pica-y-aro' 
-                    ? 'ladrillo-con-soporte' 
-                    : slug === 'set-percussion-mediano'
-                    ? 'set-percusion-mediano'
-                    : slug;
+                {/* Products List */}
+                {categories[selectedCategory].products && categories[selectedCategory].products!.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {categories[selectedCategory].products!.map((product) => {
+                      const hasPage = [
+                        'ladrillo-con-soporte',
+                        'trampolin',
+                        'balon-voleibol-silva',
+                        'colchoneta-escolar',
+                        'set-percusion-mediano',
+                        'pelota-foam-delux90'
+                      ].includes(product.slug);
 
-                  return (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-xl border transition-all duration-300 ${
-                        hasPage
-                          ? 'border-gray-200 hover:border-orange-500 hover:shadow-lg cursor-pointer bg-white'
-                          : 'border-gray-100 bg-gray-50'
-                      }`}
-                    >
-                      {hasPage ? (
-                        <Link
-                          href={`/articulos/${articleSlug}`}
-                          className="block"
+                      return (
+                        <div
+                          key={product.id}
+                          className={`p-4 rounded-xl border transition-all duration-300 ${
+                            hasPage
+                              ? 'border-gray-200 hover:border-orange-500 hover:shadow-lg cursor-pointer bg-white'
+                              : 'border-gray-100 bg-gray-50'
+                          }`}
                         >
-                          <h3 className="text-gray-900 font-medium hover:text-orange-500 transition-colors">
-                            {item}
-                          </h3>
-                        </Link>
-                      ) : (
-                        <h3 className="text-gray-700 font-medium">
-                          {item}
-                        </h3>
-                      )}
-                    </div>
-                  );
-                })}
+                          {hasPage ? (
+                            <Link
+                              href={`/articulos/${product.slug}`}
+                              className="block"
+                            >
+                              <h3 className="text-gray-900 font-medium hover:text-orange-500 transition-colors">
+                                {product.name}
+                              </h3>
+                            </Link>
+                          ) : (
+                            <h3 className="text-gray-700 font-medium">
+                              {product.name}
+                            </h3>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">No hay productos disponibles en esta categoría</p>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
         </section>
       )}
