@@ -7,7 +7,7 @@ import { useState } from "react";
 const categories = {
   psicomotricidad: {
     title: "Psicomotricidad",
-    image: "/categorias/psicomotricidad.png",
+    image: "/categorias/material-escolar/psicomotricidad.png",
     items: [
       "Ladrillo con soporte para pica y aro",
       "Cono con soporte",
@@ -48,7 +48,7 @@ const categories = {
   },
   figurasEspuma: {
     title: "Figuras espuma",
-    image: "/categorias/figuras-espuma.jpg",
+    image: "/categorias/material-escolar/figuras-espuma.jpg",
     items: [
       "Balón Voleibol SILVA",
       "Minirugbi Caucho (Celular) T3",
@@ -74,7 +74,7 @@ const categories = {
   },
   balonesEscolares: {
     title: "Balones de uso escolar",
-    image: "/categorias/balones-escolares.jpg",
+    image: "/categorias/material-escolar/balones-escolares.jpg",
     items: [
       "Cuerda salto colectivo 5mts",
       "Juego de Bolos",
@@ -100,7 +100,7 @@ const categories = {
   },
   juegosAlternativos: {
     title: "Juegos alternativos",
-    image: "/categorias/juegos-alternativos.jpg",
+    image: "/categorias/material-escolar/juegos-alternativos.jpg",
     items: [
       "Marcador campos",
       "Set arena Junior",
@@ -126,7 +126,7 @@ const categories = {
   },
   educacionInfantil: {
     title: "Juegos en Educación infantil",
-    image: "/categorias/educacion-infantil.jpg",
+    image: "/categorias/material-escolar/educacion-infantil.jpg",
     items: [
       "Plato chino",
       "Palos del Diablo",
@@ -138,7 +138,7 @@ const categories = {
   },
   malabares: {
     title: "Malabares",
-    image: "/categorias/malabares.jpg",
+    image: "/categorias/material-escolar/malabares.jpg",
     items: [
       "Plato chino",
       "Palos del Diablo",
@@ -150,7 +150,7 @@ const categories = {
   },
   materialFoam: {
     title: "Material foam",
-    image: "/categorias/material-foam.jpg",
+    image: "/categorias/material-escolar/material-foam.jpg",
     items: [
       "Testigo relevo FOAM",
       "Anti-stress",
@@ -174,7 +174,7 @@ const categories = {
   },
   colchonetas: {
     title: "Colchonetas",
-    image: "/categorias/colchonetas.jpg",
+    image: "/categorias/material-escolar/colchonetas.jpg",
     items: [
       "Colchoneta caída max.",
       "Colchoneta caída grande",
@@ -187,7 +187,7 @@ const categories = {
   },
   educacionMusical: {
     title: "Educación musical",
-    image: "/categorias/educacion-musical.jpg",
+    image: "/categorias/material-escolar/educacion-musical.jpg",
     items: [
       "Set percussión mediano",
       "Equipo de audio portátil",
@@ -252,12 +252,12 @@ export default function MaterialEscolarPage() {
                 </Link>
               </li>
               <li>
-                <Link href="/#deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
                   Deporte Individual
                 </Link>
               </li>
               <li>
-                <Link href="/#deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link href="/deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
                   Deportes Colectivos
                 </Link>
               </li>
@@ -267,7 +267,7 @@ export default function MaterialEscolarPage() {
                 </Link>
               </li>
               <li>
-                <Link href="/#equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
+                <Link href="/equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
                   Equipación Textil
                 </Link>
               </li>
