@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import ImageCarousel from "./components/ImageCarousel";
+import CartButton from "@/app/components/CartButton";
 
 export default function Home() {
   const categories = {
@@ -111,9 +114,7 @@ export default function Home() {
                 </a>
               </li>
               <li>
-                <a href="#cesta" className="text-white hover:text-orange-300 transition-colors font-medium bg-orange-500 px-3 md:px-4 py-1.5 md:py-2 rounded-full hover:bg-orange-600 whitespace-nowrap">
-                  Mi Cesta
-                </a>
+                <CartButton />
               </li>
             </ul>
           </div>
