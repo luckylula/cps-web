@@ -79,9 +79,10 @@ async function main() {
       price: 45.90,
       stock: 50,
       categoryId: materialEscolar.id,
+      subcategory: 'Psicomotricidad',
       published: true,
       featured: true,
-      images: ['https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80'],
+      images: ['/categorias/material-escolar/psicomotricidad.png'],
     },
     {
       name: 'Trampolín escolar',
@@ -90,9 +91,10 @@ async function main() {
       price: 189.00,
       stock: 25,
       categoryId: materialEscolar.id,
+      subcategory: 'Psicomotricidad',
       published: true,
       featured: false,
-      images: ['https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80'],
+      images: ['/categorias/material-escolar/psicomotricidad.png'],
     },
   ];
 

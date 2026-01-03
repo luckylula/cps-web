@@ -28,6 +28,7 @@ model Product {
   stock       Int      @default(0)
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
+  subcategory String?
   published   Boolean  @default(false)
   featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
