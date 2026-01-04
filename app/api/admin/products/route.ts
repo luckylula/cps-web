@@ -83,23 +83,45 @@ export async function POST(request: Request) {
     // Parsear el body
     const body = await request.json();
     
-    // Log para debugging
-    console.log('[API Admin] Datos recibidos de n8n:', JSON.stringify(body, null, 2));
+    // Log completo del body recibido
+    console.log('==========================================');
+    console.log('[API Admin] BODY COMPLETO RECIBIDO:');
+    console.log(JSON.stringify(body, null, 2));
+    console.log('==========================================');
+    console.log('[API Admin] Tipo del body:', Array.isArray(body) ? 'Array' : 'Object');
+    console.log('[API Admin] Claves del body:', Object.keys(body));
     
     // Soporte para un solo producto o un array de productos
     const productsData = Array.isArray(body) ? body : [body];
+    
+    console.log('[API Admin] Número de productos a procesar:', productsData.length);
     
     const results = [];
     const errors = [];
 
     for (const productData of productsData) {
       try {
-        // Log del producto individual
-        console.log('[API Admin] Procesando producto:', {
-          name: productData.name,
-          stockRaw: productData.stock,
-          stockType: typeof productData.stock,
-        });
+        // Log completo del producto individual
+        console.log('------------------------------------------');
+        console.log('[API Admin] PRODUCTO INDIVIDUAL:');
+        console.log(JSON.stringify(productData, null, 2));
+        console.log('[API Admin] Claves del producto:', Object.keys(productData));
+        console.log('[API Admin] Valor de stock:', productData.stock);
+        console.log('[API Admin] Tipo de stock:', typeof productData.stock);
+        console.log('[API Admin] stock === undefined?', productData.stock === undefined);
+        console.log('[API Admin] stock === null?', productData.stock === null);
+        console.log('[API Admin] stock === ""?', productData.stock === '');
+        
+        // Verificar si hay variaciones del nombre del campo (con espacios, mayúsculas, etc.)
+        const stockKeys = Object.keys(productData).filter(key => 
+          key.toLowerCase().includes('stock')
+        );
+        console.log('[API Admin] Claves que contienen "stock":', stockKeys);
+        if (stockKeys.length > 0) {
+          stockKeys.forEach(key => {
+            console.log(`[API Admin]   ${key}:`, productData[key], `(tipo: ${typeof productData[key]})`);
+          });
+        }
 
         // Validar datos
         const validation = validateProductData(productData);
@@ -129,26 +151,37 @@ export async function POST(request: Request) {
 
         // Preparar datos del producto
         // Convertir stock a número y manejar valores por defecto
+        // Usar acceso directo y forzar conversión como sugiere el usuario
         let stockValue: number;
         
-        if (productData.stock === undefined || productData.stock === null || productData.stock === '') {
-          // Si no viene informado, asignar 99 por defecto
-          stockValue = 99;
-          console.log('[API Admin] Stock no proporcionado, asignando 99 por defecto');
-        } else {
-          // Convertir a número (puede venir como string desde n8n)
-          const stockNumber = Number(productData.stock);
+        // Intentar leer stock de diferentes formas posibles
+        const stockRaw = productData.stock !== undefined 
+          ? productData.stock 
+          : (productData.Stock !== undefined ? productData.Stock : undefined);
+        
+        console.log('[API Admin] stockRaw extraído:', stockRaw);
+        console.log('[API Admin] stockRaw !== undefined?', stockRaw !== undefined);
+        
+        // Forzar conversión como sugiere el usuario
+        if (stockRaw !== undefined && stockRaw !== null && stockRaw !== '') {
+          stockValue = Number(stockRaw);
+          console.log('[API Admin] Conversión forzada: Number(', stockRaw, ') =', stockValue);
           
           // Verificar que la conversión fue exitosa
-          if (isNaN(stockNumber)) {
-            console.warn('[API Admin] Stock no es un número válido:', productData.stock, 'Asignando 99 por defecto');
+          if (isNaN(stockValue)) {
+            console.warn('[API Admin] ⚠️ Stock no es un número válido después de conversión:', stockRaw);
+            console.warn('[API Admin] Asignando 99 por defecto');
             stockValue = 99;
           } else {
-            // Si es un número válido (incluyendo 0), usarlo
-            stockValue = stockNumber;
-            console.log('[API Admin] Stock convertido:', productData.stock, '->', stockValue);
+            console.log('[API Admin] ✅ Stock válido:', stockValue);
           }
+        } else {
+          // Si no viene informado, asignar 99 por defecto
+          stockValue = 99;
+          console.log('[API Admin] Stock no proporcionado (undefined/null/""), asignando 99 por defecto');
         }
+        
+        console.log('[API Admin] Stock final que se guardará:', stockValue);
 
         const productToCreate = {
           name: productData.name.trim(),
