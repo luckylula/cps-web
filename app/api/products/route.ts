@@ -6,12 +6,15 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const subcategory = searchParams.get('subcategory');
+    const limit = searchParams.get('limit');
+    const excludeId = searchParams.get('excludeId');
 
     const products = await prisma.product.findMany({
       where: {
         published: true,
         ...(category && { category: { slug: category } }),
         ...(subcategory && { subcategory: subcategory }),
+        ...(excludeId && { id: { not: excludeId } }),
       },
       include: {
         category: true,
@@ -19,6 +22,7 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: 'desc',
       },
+      ...(limit && { take: parseInt(limit) }),
     });
 
     return NextResponse.json(products);

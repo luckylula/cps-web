@@ -1,116 +1,40 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCart } from "@/app/context/CartContext";
+import CartButton from "@/app/components/CartButton";
+import ProductCard from "@/app/components/ProductCard";
 import { notFound } from "next/navigation";
 
-// Mock data - En producción esto vendría de una base de datos o API
-type ArticuloSpecifications = Record<string, string>;
-
-type Articulo = {
+interface Product {
   id: string;
-  title: string;
+  name: string;
+  slug: string;
   description: string;
-  technicalDescription: string;
-  price?: number;
-  image: string;
-  category: string;
-  specifications?: ArticuloSpecifications;
-};
+  price: string;
+  images: string[];
+  stock: number;
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  subcategory?: string;
+}
 
-const articulos: Record<string, Articulo> = {
-  "ladrillo-con-soporte": {
-    id: "ladrillo-con-soporte",
-    title: "Ladrillo con soporte para pica y aro",
-    description: "Ladrillo de psicomotricidad con soporte integrado para pica y aro. Ideal para ejercicios de equilibrio y coordinación.",
-    technicalDescription: "Ladrillo de alta calidad fabricado en espuma EVA de alta densidad. Incluye soporte ajustable para pica y aro. Superficie antideslizante para mayor seguridad. Diseñado para uso intensivo en centros educativos.",
-    price: 45.90,
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80",
-    category: "Psicomotricidad",
-    specifications: {
-      material: "Espuma EVA de alta densidad",
-      dimensiones: "30 x 20 x 15 cm",
-      peso: "1.2 kg",
-      color: "Azul, Rojo, Amarillo",
-      edadRecomendada: "3-12 años"
-    }
-  },
-  "trampolin": {
-    id: "trampolin",
-    title: "Trampolín",
-    description: "Trampolín de psicomotricidad seguro y resistente para uso escolar.",
-    technicalDescription: "Trampolín profesional con estructura de acero reforzado y malla de seguridad. Superficie de salto de alta calidad con sistema de muelles de acero. Incluye protección de muelles y patas antideslizantes.",
-    price: 189.00,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",
-    category: "Psicomotricidad",
-    specifications: {
-      material: "Acero y malla de alta resistencia",
-      dimensiones: "Ø 100 cm",
-      peso: "12 kg",
-      capacidadMaxima: "100 kg",
-      edadRecomendada: "5+ años"
-    } as ArticuloSpecifications
-  },
-  "balon-voleibol-silva": {
-    id: "balon-voleibol-silva",
-    title: "Balón Voleibol SILVA",
-    description: "Balón de voleibol profesional SILVA para uso escolar y entrenamiento.",
-    technicalDescription: "Balón de voleibol de alta calidad con superficie de cuero sintético. Cámara de butilo para mejor retención de aire. Diseñado según estándares internacionales. Ideal para competición y entrenamiento.",
-    price: 32.50,
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80",
-    category: "Figuras espuma",
-    specifications: {
-      material: "Cuero sintético",
-      dimensiones: "Ø 65-67 cm",
-      peso: "260-280 g",
-      presion: "0.30-0.325 kg/cm²"
-    } as ArticuloSpecifications
-  },
-  "colchoneta-escolar": {
-    id: "colchoneta-escolar",
-    title: "Colchoneta escolar",
-    description: "Colchoneta de gimnasia escolar resistente y cómoda para múltiples actividades.",
-    technicalDescription: "Colchoneta de alta densidad con revestimiento de vinilo resistente al agua. Fácil limpieza y mantenimiento. Bordes reforzados para mayor durabilidad. Certificada para uso escolar.",
-    price: 85.00,
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80",
-    category: "Colchonetas",
-    specifications: {
-      material: "Espuma de alta densidad + Vinilo",
-      dimensiones: "200 x 100 x 5 cm",
-      peso: "8 kg",
-      color: "Azul, Rojo, Verde",
-      certificacion: "EN 12503"
-    } as ArticuloSpecifications
-  },
-  "set-percusion-mediano": {
-    id: "set-percusion-mediano",
-    title: "Set percussión mediano",
-    description: "Set completo de instrumentos de percusión para educación musical.",
-    technicalDescription: "Set completo de instrumentos de percusión diseñado para educación musical en centros escolares. Incluye tambores, panderetas, triángulos, crótalos y más. Fabricado con materiales de calidad para uso intensivo.",
-    price: 125.00,
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80",
-    category: "Educación musical",
-    specifications: {
-      material: "Madera y metal",
-      piezas: "12 instrumentos",
-      edadRecomendada: "4+ años",
-      incluye: "Maleta de transporte"
-    } as ArticuloSpecifications
-  },
-  "pelota-foam-delux90": {
-    id: "pelota-foam-delux90",
-    title: "Pelota FOAM delux90",
-    description: "Pelota de espuma FOAM de alta calidad para juegos seguros.",
-    technicalDescription: "Pelota de espuma FOAM de alta densidad. Superficie suave y segura para uso en espacios cerrados. Resistente al desgaste y fácil de limpiar. Ideal para educación física y juegos en interior.",
-    price: 18.50,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",
-    category: "Malabares",
-    specifications: {
-      material: "Espuma FOAM de alta densidad",
-      dimensiones: "Ø 90 cm",
-      peso: "0.5 kg",
-      color: "Multicolor"
-    }
-  }
-};
+interface RelatedProduct {
+  id: string;
+  name: string;
+  slug: string;
+  price: string;
+  images: string[];
+  featured: boolean;
+  category: {
+    name: string;
+  };
+}
 
 interface PageProps {
   params: {
@@ -118,54 +42,121 @@ interface PageProps {
   };
 }
 
-export async function generateStaticParams() {
-  // En producción, esto vendría de una base de datos
-  return Object.keys(articulos).map((slug) => ({
-    slug: slug,
-  }));
-}
-
 export default function ArticuloPage({ params }: PageProps) {
-  const articulo = articulos[params.slug];
+  const { addItem } = useCart();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
 
-  if (!articulo) {
-    notFound();
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const response = await fetch(`/api/products/${params.slug}`);
+        if (response.status === 404) {
+          notFound();
+          return;
+        }
+        if (!response.ok) {
+          throw new Error("Error al cargar el producto");
+        }
+        const data = await response.json();
+        setProduct(data);
+
+        // Fetch related products
+        const relatedResponse = await fetch(
+          `/api/products?category=${data.category.slug}&excludeId=${data.id}&limit=8`
+        );
+        if (relatedResponse.ok) {
+          const relatedData = await relatedResponse.json();
+          // Mezclar aleatoriamente y tomar 4
+          const shuffled = relatedData.sort(() => Math.random() - 0.5).slice(0, 4);
+          setRelatedProducts(shuffled);
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProduct();
+  }, [params.slug]);
+
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    setIsAdding(true);
+    for (let i = 0; i < quantity; i++) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        price: Number(product.price),
+        images: product.images,
+      });
+    }
+    setTimeout(() => {
+      setIsAdding(false);
+      setQuantity(1);
+    }, 500);
+  };
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 1;
+    if (value < 1) {
+      setQuantity(1);
+    } else if (value > 99) {
+      setQuantity(99);
+    } else {
+      setQuantity(value);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003366] mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando producto...</p>
+        </div>
+      </div>
+    );
   }
 
+  if (!product) {
+    notFound();
+    return null;
+  }
+
+  const priceWithIVA = Number(product.price);
+  const priceWithoutIVA = priceWithIVA / 1.21;
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation Banner Azul Fijo */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
       <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
-            <Link href="/" className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors"
+            >
               CPS Material Deportivo
             </Link>
             <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
               <li>
-                <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link
+                  href="/"
+                  className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1"
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/material-escolar" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
-                  Material Escolar
-                </Link>
-              </li>
-              <li>
-                <Link href="/#deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
-                  Deporte Individual
-                </Link>
-              </li>
-              <li>
-                <Link href="/#deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
-                  Deportes Colectivos
-                </Link>
-              </li>
-              <li>
-                <Link href="/#cesta" className="text-white hover:text-orange-300 transition-colors font-medium bg-orange-500 px-3 md:px-4 py-1.5 md:py-2 rounded-full hover:bg-orange-600 whitespace-nowrap">
-                  Mi Cesta
-                </Link>
+                <CartButton />
               </li>
             </ul>
           </div>
@@ -173,29 +164,39 @@ export default function ArticuloPage({ params }: PageProps) {
       </nav>
 
       {/* Breadcrumb */}
-      <div className="bg-gray-50 border-b border-gray-200">
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
           <nav className="flex items-center gap-2 text-sm text-gray-600">
-            <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
+            <Link
+              href="/"
+              className="hover:text-[#003366] transition-colors"
+            >
+              Home
+            </Link>
             <span>/</span>
-            <Link href="/material-escolar" className="hover:text-gray-900 transition-colors">Material Escolar</Link>
+            <Link
+              href={`/${product.category.slug}`}
+              className="hover:text-[#003366] transition-colors"
+            >
+              {product.category.name}
+            </Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium">{articulo.title}</span>
+            <span className="text-gray-900 font-medium">{product.name}</span>
           </nav>
         </div>
       </div>
 
       {/* Main Content */}
-      <section className="py-12 md:py-16 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-start">
-            {/* Image Section */}
+      <section className="py-8 md:py-12 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+            {/* Image Section - Left Column */}
             <div className="sticky top-24">
-              <div className="rounded-3xl overflow-hidden shadow-2xl bg-gray-100">
+              <div className="rounded-2xl overflow-hidden shadow-xl bg-white">
                 <div className="relative aspect-square">
                   <Image
-                    src={articulo.image}
-                    alt={articulo.title}
+                    src={product.images[0] || "/placeholder.png"}
+                    alt={product.name}
                     fill
                     className="object-cover"
                     priority
@@ -204,130 +205,211 @@ export default function ArticuloPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Content Section */}
-            <div>
+            {/* Content Section - Right Column */}
+            <div className="space-y-6">
               {/* Category Badge */}
-              <div className="mb-4">
-                <span className="inline-block px-4 py-1.5 bg-[#003366] text-white text-sm font-medium rounded-full">
-                  {articulo.category}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h1 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 tracking-tight">
-                {articulo.title}
-              </h1>
-
-              {/* Description */}
-              <p className="text-xl text-gray-600 mb-8 font-light leading-relaxed">
-                {articulo.description}
-              </p>
-
-              {/* Price */}
-              {articulo.price && (
-                <div className="mb-8">
-                  <span className="text-3xl font-semibold text-gray-900">
-                    {articulo.price.toFixed(2)} €
+              {product.subcategory && (
+                <div>
+                  <span className="inline-block px-4 py-1.5 bg-[#003366] text-white text-sm font-medium rounded-full">
+                    {product.subcategory}
                   </span>
-                  <span className="text-gray-500 ml-2">IVA incluido</span>
                 </div>
               )}
 
-              {/* CTA Button */}
-              <div className="mb-12">
-                <Link
-                  href={`/#contacto?articulo=${articulo.id}`}
-                  className="inline-block w-full md:w-auto px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center"
+              {/* Product Name */}
+              <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-tight">
+                {product.name}
+              </h1>
+
+              {/* Price Block */}
+              <div className="bg-white rounded-lg p-6 border-2 border-orange-500">
+                <div className="mb-2">
+                  <span className="text-4xl md:text-5xl font-bold text-[#003366]">
+                    {priceWithIVA.toFixed(2)} €
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Precio sin IVA:{" "}
+                  <span className="font-medium">
+                    {priceWithoutIVA.toFixed(2)} €
+                  </span>
+                </p>
+                <p className="text-xs text-gray-500 mt-1">IVA incluido (21%)</p>
+              </div>
+
+              {/* Quantity Selector */}
+              <div className="bg-white rounded-lg p-6 border border-gray-200">
+                <label
+                  htmlFor="quantity"
+                  className="block text-sm font-medium text-gray-700 mb-3"
                 >
-                  Solicitar Presupuesto
-                </Link>
+                  Cantidad
+                </label>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors font-semibold"
+                      aria-label="Disminuir cantidad"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 12H4"
+                        />
+                      </svg>
+                    </button>
+                    <input
+                      type="number"
+                      id="quantity"
+                      min="1"
+                      max="99"
+                      value={quantity}
+                      onChange={handleQuantityChange}
+                      className="w-20 px-4 py-2 text-center text-lg font-semibold text-gray-900 border-0 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                    />
+                    <button
+                      onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                      className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors font-semibold"
+                      aria-label="Aumentar cantidad"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isAdding || product.stock === 0}
+                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  >
+                    {isAdding ? (
+                      <>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Añadiendo...
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
+                        </svg>
+                        Agregar al carrito
+                      </>
+                    )}
+                  </button>
+                </div>
+                {product.stock > 0 && (
+                  <p className="text-sm text-gray-600 mt-3">
+                    Stock disponible: <span className="font-medium">{product.stock} unidades</span>
+                  </p>
+                )}
+                {product.stock === 0 && (
+                  <p className="text-sm text-red-600 mt-3 font-medium">
+                    Producto agotado
+                  </p>
+                )}
               </div>
 
               {/* Technical Description */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <div className="bg-white rounded-lg p-6 border border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
                   Descripción Técnica
                 </h2>
-                <p className="text-gray-700 leading-relaxed">
-                  {articulo.technicalDescription}
-                </p>
+                {product.description && product.description.trim() ? (
+                  <div
+                    className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: product.description.replace(/\n/g, "<br />"),
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-600 italic">
+                    Consultar especificaciones técnicas
+                  </p>
+                )}
               </div>
-
-              {/* Specifications */}
-              {articulo.specifications && (
-                <div className="border-t border-gray-200 pt-8">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-                    Especificaciones
-                  </h2>
-                  <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(articulo.specifications).map(([key, value]) => (
-                      <div key={key} className="bg-gray-50 rounded-lg p-4">
-                        <dt className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </dt>
-                        <dd className="text-lg text-gray-900 font-medium">
-                          {value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </section>
 
       {/* Related Products Section */}
-      <section className="py-16 px-4 md:px-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-light text-gray-900 mb-8 text-center">
-            Productos Relacionados
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Object.values(articulos)
-              .filter(item => item.id !== articulo.id && item.category === articulo.category)
-              .slice(0, 3)
-              .map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/articulos/${item.id}`}
-                  className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
-                >
-                  <div className="relative h-48 bg-gray-100">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {item.description}
-                    </p>
-                    {item.price && (
-                      <p className="text-xl font-semibold text-gray-900">
-                        {item.price.toFixed(2)} €
-                      </p>
-                    )}
-                  </div>
-                </Link>
+      {relatedProducts.length > 0 && (
+        <section className="py-12 px-4 md:px-8 bg-white border-t border-gray-200">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl font-light text-gray-900 mb-8 text-center">
+              Productos Relacionados
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relatedProduct) => (
+                <ProductCard
+                  key={relatedProduct.id}
+                  id={relatedProduct.id}
+                  name={relatedProduct.name}
+                  slug={relatedProduct.slug}
+                  price={relatedProduct.price}
+                  images={relatedProduct.images}
+                  featured={relatedProduct.featured}
+                  category={relatedProduct.category}
+                />
               ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
-      <footer className="py-8 px-8 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
+      <footer className="py-8 px-8 border-t border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto text-center text-gray-500 text-sm font-light">
           <p>© 2024 Control Play Sports S.L. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>
   );
 }
-
