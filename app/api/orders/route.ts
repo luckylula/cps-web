@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
       return newOrder;
     });
 
-    // Enviar notificación a n8n webhook (no bloquea la respuesta al cliente - modo fire and forget)
+    // Enviar notificación a n8n webhook (con await para capturar errores en Vercel)
     const webhookUrl = 'https://n8n.lulamartinezperez.com/webhook/ee1cb178-8a08-4aaf-a19f-281fbb640d58';
     
     // Preparar datos para el webhook
@@ -207,61 +207,65 @@ export async function POST(request: NextRequest) {
     };
 
     console.log('==========================================');
-    console.log('[API Orders] 🚀 Petición enviada a n8n');
+    console.log('[API Orders] 🚀 Enviando petición a n8n');
     console.log('[API Orders] URL:', webhookUrl);
+    console.log('[API Orders] Método: POST');
     console.log('[API Orders] Payload completo:');
     console.log(JSON.stringify(webhookPayload, null, 2));
     console.log('==========================================');
 
-    // Llamada al webhook SIN await (fire and forget)
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(webhookPayload),
-    })
-      .then((webhookResponse) => {
-        console.log('[API Orders] ✅ Respuesta recibida de n8n');
-        console.log('[API Orders] Status:', webhookResponse.status, webhookResponse.statusText);
-        
-        if (webhookResponse.ok) {
-          console.log('[API Orders] ✅ Webhook procesado exitosamente por n8n');
-        } else {
-          // Intentar leer el cuerpo de la respuesta para más detalles
-          webhookResponse.text().then((responseText) => {
-            console.error('[API Orders] ⚠️ Webhook respondió con error:');
-            console.error('[API Orders] Status:', webhookResponse.status);
-            console.error('[API Orders] Status Text:', webhookResponse.statusText);
-            console.error('[API Orders] Response Body:', responseText);
-          }).catch((textError) => {
-            console.error('[API Orders] ⚠️ Error al leer respuesta:', textError);
-          });
-        }
-      })
-      .catch((webhookError: any) => {
-        // Debug total del error
-        console.error('==========================================');
-        console.error('[API Orders] ❌ ERROR COMPLETO al enviar webhook a n8n:');
-        console.error('[API Orders] Tipo de error:', webhookError.constructor.name);
-        console.error('[API Orders] Mensaje:', webhookError.message);
-        console.error('[API Orders] Stack:', webhookError.stack);
-        console.error('[API Orders] URL intentada:', webhookUrl);
-        console.error('[API Orders] Payload enviado:', JSON.stringify(webhookPayload, null, 2));
-        
-        // Detalles adicionales si es un error de red
-        if (webhookError.cause) {
-          console.error('[API Orders] Error cause:', webhookError.cause);
-        }
-        if (webhookError.code) {
-          console.error('[API Orders] Error code:', webhookError.code);
-        }
-        if (webhookError.errno) {
-          console.error('[API Orders] Error errno:', webhookError.errno);
-        }
-        console.error('==========================================');
-        console.error('[API Orders] El pedido se ha creado correctamente en la base de datos, pero n8n no fue notificado.');
+    try {
+      // Llamada al webhook CON await para capturar errores
+      const webhookResponse = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookPayload),
       });
+
+      console.log('[API Orders] ✅ Respuesta recibida de n8n');
+      console.log('[API Orders] Status:', webhookResponse.status, webhookResponse.statusText);
+      
+      if (webhookResponse.ok) {
+        console.log('[API Orders] ✅ Webhook procesado exitosamente por n8n');
+      } else {
+        // Leer el cuerpo de la respuesta para más detalles
+        const responseText = await webhookResponse.text();
+        console.error('==========================================');
+        console.error('[API Orders] ❌ Webhook respondió con error:');
+        console.error('[API Orders] Status:', webhookResponse.status);
+        console.error('[API Orders] Status Text:', webhookResponse.statusText);
+        console.error('[API Orders] Response Headers:', Object.fromEntries(webhookResponse.headers.entries()));
+        console.error('[API Orders] Response Body:', responseText);
+        console.error('[API Orders] URL:', webhookUrl);
+        console.error('[API Orders] Payload enviado:', JSON.stringify(webhookPayload, null, 2));
+        console.error('==========================================');
+        console.error('[API Orders] El pedido se ha creado correctamente en la base de datos, pero n8n respondió con error.');
+      }
+    } catch (webhookError: any) {
+      // Debug total del error
+      console.error('==========================================');
+      console.error('[API Orders] ❌ ERROR COMPLETO al enviar webhook a n8n:');
+      console.error('[API Orders] Tipo de error:', webhookError.constructor.name);
+      console.error('[API Orders] Mensaje:', webhookError.message);
+      console.error('[API Orders] Stack:', webhookError.stack);
+      console.error('[API Orders] URL intentada:', webhookUrl);
+      console.error('[API Orders] Payload enviado:', JSON.stringify(webhookPayload, null, 2));
+      
+      // Detalles adicionales si es un error de red
+      if (webhookError.cause) {
+        console.error('[API Orders] Error cause:', webhookError.cause);
+      }
+      if (webhookError.code) {
+        console.error('[API Orders] Error code:', webhookError.code);
+      }
+      if (webhookError.errno) {
+        console.error('[API Orders] Error errno:', webhookError.errno);
+      }
+      console.error('==========================================');
+      console.error('[API Orders] El pedido se ha creado correctamente en la base de datos, pero n8n no fue notificado.');
+    }
 
     return NextResponse.json(
       {
