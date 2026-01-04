@@ -184,6 +184,59 @@ export async function POST(request: NextRequest) {
       return newOrder;
     });
 
+    // Enviar notificación a n8n webhook (no bloquea la respuesta al cliente)
+    try {
+      const webhookUrl = 'https://n8n.luckylula.com/webhook-test/ee1cb178-8a08-4aaf-a19f-281fbb640d58';
+      
+      // Preparar datos para el webhook
+      const webhookPayload = {
+        orderNumber: order.orderNumber,
+        customer: {
+          nombreCompleto: customer.nombreCompleto,
+          nombreCentro: customer.nombreCentro || null,
+          email: customer.email,
+          telefono: customer.telefono,
+          direccion: customer.direccion,
+        },
+        items: order.items.map((item) => ({
+          name: item.productName,
+          quantity: item.quantity,
+          price: Number(item.price),
+          subtotal: Number(item.subtotal),
+        })),
+        total: Number(order.total),
+      };
+
+      console.log('[API Orders] Enviando webhook a n8n:', webhookUrl);
+      console.log('[API Orders] Payload:', JSON.stringify(webhookPayload, null, 2));
+
+      // Llamada al webhook con timeout de 5 segundos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const webhookResponse = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookPayload),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (webhookResponse.ok) {
+        console.log('[API Orders] ✅ Webhook enviado exitosamente a n8n');
+      } else {
+        console.warn('[API Orders] ⚠️ Webhook respondió con error:', webhookResponse.status, webhookResponse.statusText);
+      }
+    } catch (webhookError: any) {
+      // No afectar la respuesta al cliente si el webhook falla
+      console.error('[API Orders] ❌ Error al enviar webhook a n8n:', webhookError.message);
+      console.error('[API Orders] El pedido se ha creado correctamente en la base de datos, pero n8n no fue notificado.');
+      // Continuar sin lanzar error
+    }
+
     return NextResponse.json(
       {
         success: true,
