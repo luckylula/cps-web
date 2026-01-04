@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
 import CartButton from "@/app/components/CartButton";
 import ProductCard from "@/app/components/ProductCard";
-import { notFound } from "next/navigation";
 
 interface Product {
   id: string;
@@ -37,31 +37,54 @@ interface RelatedProduct {
 }
 
 interface PageProps {
-  params: {
-    slug: string;
-  };
+  params: Promise<{ slug: string }> | { slug: string };
 }
 
 export default function ArticuloPage({ params }: PageProps) {
+  const router = useRouter();
   const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
+  const [slug, setSlug] = useState<string>("");
+  const [notFound, setNotFound] = useState(false);
+
+  // Resolver params (puede ser Promise en Next.js 15)
+  useEffect(() => {
+    async function resolveParams() {
+      const resolvedParams = await Promise.resolve(params);
+      setSlug(resolvedParams.slug);
+    }
+    resolveParams();
+  }, [params]);
 
   useEffect(() => {
+    if (!slug) return;
+
     async function fetchProduct() {
       try {
-        const response = await fetch(`/api/products/${params.slug}`);
+        console.log('[Page] Fetching product with slug:', slug);
+        const response = await fetch(`/api/products/${encodeURIComponent(slug)}`);
+        
+        console.log('[Page] Response status:', response.status);
+        
         if (response.status === 404) {
-          notFound();
+          console.log('[Page] Product not found, setting notFound state');
+          setNotFound(true);
+          setLoading(false);
           return;
         }
+        
         if (!response.ok) {
-          throw new Error("Error al cargar el producto");
+          const errorData = await response.json().catch(() => ({}));
+          console.error('[Page] Error response:', errorData);
+          throw new Error(errorData.error || "Error al cargar el producto");
         }
+        
         const data = await response.json();
+        console.log('[Page] Product loaded:', data.name);
         setProduct(data);
 
         // Fetch related products
@@ -74,16 +97,20 @@ export default function ArticuloPage({ params }: PageProps) {
           const shuffled = relatedData.sort(() => Math.random() - 0.5).slice(0, 4);
           setRelatedProducts(shuffled);
         }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-        notFound();
+      } catch (error: any) {
+        console.error("[Page] Error fetching product:", error);
+        console.error("[Page] Error details:", {
+          message: error.message,
+          stack: error.stack,
+        });
+        setNotFound(true);
       } finally {
         setLoading(false);
       }
     }
 
     fetchProduct();
-  }, [params.slug]);
+  }, [slug]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -126,9 +153,79 @@ export default function ArticuloPage({ params }: PageProps) {
     );
   }
 
-  if (!product) {
-    notFound();
-    return null;
+  if (notFound || !product) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Navigation */}
+        <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
+            <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
+              <Link
+                href="/"
+                className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors"
+              >
+                CPS Material Deportivo
+              </Link>
+              <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
+                <li>
+                  <Link
+                    href="/"
+                    className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <CartButton />
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        {/* 404 Content */}
+        <div className="max-w-2xl mx-auto px-4 py-16">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="mb-6">
+              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <svg
+                  className="w-8 h-8 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Producto no encontrado
+              </h2>
+              <p className="text-gray-600">
+                El producto que buscas no existe o no está disponible.
+              </p>
+              {slug && (
+                <p className="text-sm text-gray-500 mt-2">
+                  Slug buscado: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code>
+                </p>
+              )}
+            </div>
+            <div className="flex gap-4 justify-center">
+              <Link
+                href="/"
+                className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors"
+              >
+                Volver a la tienda
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const priceWithIVA = Number(product.price);
