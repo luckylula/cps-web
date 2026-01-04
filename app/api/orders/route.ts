@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Enviar notificación a n8n webhook (no bloquea la respuesta al cliente - modo fire and forget)
-    const webhookUrl = 'https://n8n.lulamartinezperez.com/webhook-test/ee1cb178-8a08-4aaf-a19f-281fbb640d58';
+    const webhookUrl = 'https://n8n.lulamartinezperez.com/webhook/ee1cb178-8a08-4aaf-a19f-281fbb640d58';
     
     // Preparar datos para el webhook
     const webhookPayload = {
