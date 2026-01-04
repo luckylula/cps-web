@@ -83,6 +83,9 @@ export async function POST(request: Request) {
     // Parsear el body
     const body = await request.json();
     
+    // Log para debugging
+    console.log('[API Admin] Datos recibidos de n8n:', JSON.stringify(body, null, 2));
+    
     // Soporte para un solo producto o un array de productos
     const productsData = Array.isArray(body) ? body : [body];
     
@@ -91,6 +94,13 @@ export async function POST(request: Request) {
 
     for (const productData of productsData) {
       try {
+        // Log del producto individual
+        console.log('[API Admin] Procesando producto:', {
+          name: productData.name,
+          stockRaw: productData.stock,
+          stockType: typeof productData.stock,
+        });
+
         // Validar datos
         const validation = validateProductData(productData);
         if (!validation.valid) {
@@ -118,10 +128,27 @@ export async function POST(request: Request) {
         }
 
         // Preparar datos del producto
-        // Si stock no viene informado o es null/undefined, asignar 99 por defecto
-        const stockValue = productData.stock !== undefined && productData.stock !== null 
-          ? productData.stock 
-          : 99;
+        // Convertir stock a número y manejar valores por defecto
+        let stockValue: number;
+        
+        if (productData.stock === undefined || productData.stock === null || productData.stock === '') {
+          // Si no viene informado, asignar 99 por defecto
+          stockValue = 99;
+          console.log('[API Admin] Stock no proporcionado, asignando 99 por defecto');
+        } else {
+          // Convertir a número (puede venir como string desde n8n)
+          const stockNumber = Number(productData.stock);
+          
+          // Verificar que la conversión fue exitosa
+          if (isNaN(stockNumber)) {
+            console.warn('[API Admin] Stock no es un número válido:', productData.stock, 'Asignando 99 por defecto');
+            stockValue = 99;
+          } else {
+            // Si es un número válido (incluyendo 0), usarlo
+            stockValue = stockNumber;
+            console.log('[API Admin] Stock convertido:', productData.stock, '->', stockValue);
+          }
+        }
 
         const productToCreate = {
           name: productData.name.trim(),
@@ -137,13 +164,15 @@ export async function POST(request: Request) {
         };
 
         // Crear o actualizar el producto (upsert)
+        console.log('[API Admin] Creando/actualizando producto con stock:', stockValue);
+
         const product = await prisma.product.upsert({
           where: { slug: productToCreate.slug },
           update: {
             name: productToCreate.name,
             description: productToCreate.description,
             price: productToCreate.price,
-            stock: productToCreate.stock,
+            stock: stockValue,
             categoryId: productToCreate.categoryId,
             subcategory: productToCreate.subcategory,
             published: productToCreate.published,
@@ -153,12 +182,19 @@ export async function POST(request: Request) {
           create: productToCreate,
         });
 
+        console.log('[API Admin] Producto guardado:', {
+          id: product.id,
+          name: product.name,
+          stock: product.stock,
+        });
+
         results.push({
           success: true,
           product: {
             id: product.id,
             name: product.name,
             slug: product.slug,
+            stock: product.stock,
           },
         });
       } catch (error: any) {
