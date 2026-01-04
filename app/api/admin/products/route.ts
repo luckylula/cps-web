@@ -118,12 +118,17 @@ export async function POST(request: Request) {
         }
 
         // Preparar datos del producto
+        // Si stock no viene informado o es null/undefined, asignar 99 por defecto
+        const stockValue = productData.stock !== undefined && productData.stock !== null 
+          ? productData.stock 
+          : 99;
+
         const productToCreate = {
           name: productData.name.trim(),
           slug: slug.trim(),
           description: productData.description?.trim() || `${productData.name}. Producto de calidad para uso deportivo.`,
           price: productData.price || 0,
-          stock: productData.stock || 0,
+          stock: stockValue,
           categoryId: category.id,
           subcategory: productData.subcategory?.trim() || null,
           published: productData.published !== undefined ? productData.published : true,
@@ -212,7 +217,7 @@ export async function GET(request: Request) {
       slug: 'string (opcional, se genera automáticamente si no se proporciona)',
       description: 'string (opcional)',
       price: 'number (opcional, default: 0)',
-      stock: 'number (opcional, default: 0)',
+      stock: 'number (opcional, default: 99)',
       subcategory: 'string (opcional)',
       published: 'boolean (opcional, default: true)',
       featured: 'boolean (opcional, default: false)',

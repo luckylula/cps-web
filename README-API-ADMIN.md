@@ -75,7 +75,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - `slug` (string): Slug único del producto. Si no se proporciona, se genera automáticamente desde el nombre
 - `description` (string): Descripción del producto. Si no se proporciona, se genera una descripción por defecto
 - `price` (number): Precio del producto (default: 0)
-- `stock` (number): Stock disponible (default: 0)
+- `stock` (number): Stock disponible (default: 99 si no se proporciona)
 - `subcategory` (string): Subcategoría del producto (ej: "Psicomotricidad", "Tenis de Mesa")
 - `published` (boolean): Si el producto está publicado (default: true)
 - `featured` (boolean): Si el producto es destacado (default: false)

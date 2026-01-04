@@ -394,7 +394,7 @@ export default function ArticuloPage({ params }: PageProps) {
                   </div>
                   <button
                     onClick={handleAddToCart}
-                    disabled={isAdding || product.stock === 0}
+                    disabled={isAdding}
                     className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                   >
                     {isAdding ? (
@@ -447,8 +447,8 @@ export default function ArticuloPage({ params }: PageProps) {
                   </p>
                 )}
                 {product.stock === 0 && (
-                  <p className="text-sm text-red-600 mt-3 font-medium">
-                    Producto agotado
+                  <p className="text-sm text-gray-500 mt-3 italic">
+                    Stock: Consultar disponibilidad
                   </p>
                 )}
               </div>
