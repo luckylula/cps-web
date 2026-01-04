@@ -33,7 +33,53 @@ model Product {
   featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  orderItems  OrderItem[]
   
   @@index([categoryId])
   @@index([slug])
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  nombreCompleto String
+  nombreCentro  String?
+  email         String
+  telefono      String
+  direccion     String      @db.Text
+  status        OrderStatus @default(PENDING)
+  total         Decimal     @db.Decimal(10, 2)
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  @@index([orderNumber])
+  @@index([email])
+  @@index([status])
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  productName String   // Guardar nombre del producto al momento del pedido
+  productSlug String   // Guardar slug del producto al momento del pedido
+  quantity    Int
+  price       Decimal  @db.Decimal(10, 2) // Precio al momento del pedido
+  subtotal    Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }
