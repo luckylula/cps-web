@@ -13,7 +13,8 @@
     "seed:final": "node --import tsx prisma/seed-final.ts",
     "scrape": "node --import tsx prisma/scrape-products-puppeteer.ts",
     "unpublish:all": "node --import tsx prisma/unpublish-all-products.ts",
-    "check:slug": "node --import tsx prisma/check-product-slug.ts"
+    "check:slug": "node --import tsx prisma/check-product-slug.ts",
+    "verify:db": "node --import tsx prisma/verify-db-connection.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
