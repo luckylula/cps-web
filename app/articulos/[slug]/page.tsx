@@ -40,6 +40,27 @@ interface PageProps {
   params: Promise<{ slug: string }> | { slug: string };
 }
 
+// Función para sanitizar descripción antes de renderizar con dangerouslySetInnerHTML
+function sanitizeDescription(description: string): string {
+  if (!description) return '';
+  
+  let cleaned = description
+    // Eliminar scripts y eventos peligrosos
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/on\w+\s*=\s*[^\s>]*/gi, '')
+    // Eliminar javascript: en enlaces
+    .replace(/javascript:/gi, '')
+    // Eliminar iframes
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    // Convertir saltos de línea a <br>
+    .replace(/\n/g, '<br />')
+    // Limitar longitud para evitar problemas de renderizado
+    .substring(0, 10000);
+  
+  return cleaned;
+}
+
 export default function ArticuloPage({ params }: PageProps) {
   const router = useRouter();
   const { addItem } = useCart();
@@ -462,7 +483,7 @@ export default function ArticuloPage({ params }: PageProps) {
                   <div
                     className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
                     dangerouslySetInnerHTML={{
-                      __html: product.description.replace(/\n/g, "<br />"),
+                      __html: sanitizeDescription(product.description),
                     }}
                   />
                 ) : (

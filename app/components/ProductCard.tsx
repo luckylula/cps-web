@@ -17,6 +17,30 @@ interface ProductCardProps {
   };
 }
 
+// Función para sanitizar texto (eliminar caracteres problemáticos)
+function sanitizeText(text: string | null | undefined): string {
+  if (!text) return '';
+  
+  // Convertir a string y limpiar
+  let cleaned = String(text)
+    // Eliminar caracteres de control
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    // Eliminar tags HTML si los hay
+    .replace(/<[^>]+>/g, '')
+    // Limitar longitud
+    .trim();
+  
+  // Si después de limpiar está vacío, usar valor por defecto
+  if (cleaned.length === 0) return 'Producto';
+  
+  // Limitar a 100 caracteres para nombres
+  if (cleaned.length > 100) {
+    cleaned = cleaned.substring(0, 97) + '...';
+  }
+  
+  return cleaned;
+}
+
 export default function ProductCard({ 
   id,
   name, 
@@ -28,6 +52,10 @@ export default function ProductCard({
 }: ProductCardProps) {
   const { addItem } = useCart();
   const [isAdding, setIsAdding] = useState(false);
+  
+  // Sanitizar nombre y categoría
+  const safeName = sanitizeText(name);
+  const safeCategoryName = sanitizeText(category?.name);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -67,13 +95,13 @@ export default function ProductCard({
         
         <div className="p-4 flex-1 flex flex-col">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-            {category.name}
+            {safeCategoryName}
           </p>
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-            {name}
+          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2" title={safeName}>
+            {safeName}
           </h3>
           <p className="text-xl font-bold text-blue-600 mt-auto">
-            {Number(price).toFixed(2)}€
+            {Number(price || 0).toFixed(2)}€
           </p>
         </div>
       </Link>
