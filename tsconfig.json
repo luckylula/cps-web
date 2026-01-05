@@ -30,5 +30,10 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "prisma/scrape-products-puppeteer.ts",
+    "prisma/seed-final.ts",
+    "prisma/scrape-products.ts"
+  ]
 }
