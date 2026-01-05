@@ -10,6 +10,8 @@
     "lint": "eslint",
     "seed": "node --import tsx prisma/seed.ts",
     "seed:complete": "node --import tsx prisma/seed-complete.ts",
+    "seed:final": "node --import tsx prisma/seed-final.ts",
+    "scrape": "node --import tsx prisma/scrape-products-puppeteer.ts",
     "unpublish:all": "node --import tsx prisma/unpublish-all-products.ts",
     "check:slug": "node --import tsx prisma/check-product-slug.ts"
   },
