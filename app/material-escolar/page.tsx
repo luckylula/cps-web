@@ -30,47 +30,47 @@ interface Subcategory {
 const subcategories: Subcategory[] = [
   {
     name: 'Psicomotricidad',
-    slug: 'Psicomotricidad',
+    slug: 'psicomotricidad',
     image: '/categorias/material-escolar/psicomotricidad.png',
   },
   {
     name: 'Figuras espuma',
-    slug: 'Figuras espuma',
+    slug: 'figuras-espuma',
     image: '/categorias/material-escolar/figuras-espuma.jpg',
   },
   {
     name: 'Balones de uso escolar',
-    slug: 'Balones de uso escolar',
+    slug: 'balones-escolares',
     image: '/categorias/material-escolar/balones-escolares.jpg',
   },
   {
     name: 'Juegos alternativos',
-    slug: 'Juegos alternativos',
+    slug: 'juegos-alternativos',
     image: '/categorias/material-escolar/juegos-alternativos.jpg',
   },
   {
     name: 'Malabares',
-    slug: 'Malabares',
+    slug: 'malabares',
     image: '/categorias/material-escolar/malabares.jpg',
   },
   {
     name: 'Juegos en Educación infantil',
-    slug: 'Juegos en Educación infantil',
+    slug: 'educacion-infantil',
     image: '/categorias/material-escolar/educacion-infantil.jpg',
   },
   {
     name: 'Material foam',
-    slug: 'Material foam',
+    slug: 'material-foam',
     image: '/categorias/material-escolar/material-foam.jpg',
   },
   {
     name: 'Colchonetas',
-    slug: 'Colchonetas',
+    slug: 'colchonetas',
     image: '/categorias/material-escolar/colchonetas.jpg',
   },
   {
     name: 'Educación musical',
-    slug: 'Educación musical',
+    slug: 'educacion-musical',
     image: '/categorias/material-escolar/educacion-musical.jpg',
   },
 ];
@@ -80,14 +80,13 @@ export default function MaterialEscolarPage() {
   const [loading, setLoading] = useState(false);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
 
-  const fetchProducts = async (subcategory: string | null = null) => {
+  const fetchProducts = async (categorySlug: string | null = null) => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        category: 'material-escolar',
-        ...(subcategory && { subcategory }),
+        category: categorySlug || 'material-escolar',
       });
-      
+
       const response = await fetch(`/api/products?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
@@ -104,9 +103,9 @@ export default function MaterialEscolarPage() {
     }
   };
 
-  const handleSubcategoryClick = (subcategoryName: string) => {
+  const handleSubcategoryClick = (subcategoryName: string, subcategorySlug: string) => {
     setSelectedSubcategory(subcategoryName);
-    fetchProducts(subcategoryName);
+    fetchProducts(subcategorySlug);
     // Scroll suave a la sección de productos
     setTimeout(() => {
       document.getElementById('productos-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -207,7 +206,7 @@ export default function MaterialEscolarPage() {
               {subcategories.map((subcategory) => (
                 <button
                   key={subcategory.slug}
-                  onClick={() => handleSubcategoryClick(subcategory.name)}
+                  onClick={() => handleSubcategoryClick(subcategory.name, subcategory.slug)}
                   className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-left"
                 >
                   <div className="relative h-64 bg-gray-200 overflow-hidden">
