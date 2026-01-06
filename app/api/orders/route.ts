@@ -19,6 +19,7 @@ interface CreateOrderRequest {
     direccion: string;
     nifCif?: string;
     metodoEntrega?: string;
+    paymentMethod?: string;
   };
   cart: {
     items: OrderItemInput[];
@@ -146,6 +147,7 @@ export async function POST(request: NextRequest) {
           discountAmount: body.coupon?.discountAmount 
             ? new Prisma.Decimal(body.coupon.discountAmount) 
             : null,
+          paymentMethod: body.customer.paymentMethod || null,
           status: 'PENDING',
           items: {
             create: cart.items.map((item) => {
@@ -206,6 +208,7 @@ export async function POST(request: NextRequest) {
         email: customer.email,
         telefono: customer.telefono,
         direccion: customer.direccion,
+        paymentMethod: customer.paymentMethod || null,
       },
       items: order.items.map((item) => ({
         name: item.productName,

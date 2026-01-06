@@ -3695,6 +3695,7 @@ export namespace Prisma {
     total: Decimal | null
     couponCode: string | null
     discountAmount: Decimal | null
+    paymentMethod: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3711,6 +3712,7 @@ export namespace Prisma {
     total: Decimal | null
     couponCode: string | null
     discountAmount: Decimal | null
+    paymentMethod: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3727,6 +3729,7 @@ export namespace Prisma {
     total: number
     couponCode: number
     discountAmount: number
+    paymentMethod: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3755,6 +3758,7 @@ export namespace Prisma {
     total?: true
     couponCode?: true
     discountAmount?: true
+    paymentMethod?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3771,6 +3775,7 @@ export namespace Prisma {
     total?: true
     couponCode?: true
     discountAmount?: true
+    paymentMethod?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3787,6 +3792,7 @@ export namespace Prisma {
     total?: true
     couponCode?: true
     discountAmount?: true
+    paymentMethod?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3890,6 +3896,7 @@ export namespace Prisma {
     total: Decimal
     couponCode: string | null
     discountAmount: Decimal | null
+    paymentMethod: string | null
     createdAt: Date
     updatedAt: Date
     _count: OrderCountAggregateOutputType | null
@@ -3925,6 +3932,7 @@ export namespace Prisma {
     total?: boolean
     couponCode?: boolean
     discountAmount?: boolean
+    paymentMethod?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
@@ -3943,6 +3951,7 @@ export namespace Prisma {
     total?: boolean
     couponCode?: boolean
     discountAmount?: boolean
+    paymentMethod?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["order"]>
@@ -3959,6 +3968,7 @@ export namespace Prisma {
     total?: boolean
     couponCode?: boolean
     discountAmount?: boolean
+    paymentMethod?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["order"]>
@@ -3975,11 +3985,12 @@ export namespace Prisma {
     total?: boolean
     couponCode?: boolean
     discountAmount?: boolean
+    paymentMethod?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombreCompleto" | "nombreCentro" | "email" | "telefono" | "direccion" | "status" | "total" | "couponCode" | "discountAmount" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombreCompleto" | "nombreCentro" | "email" | "telefono" | "direccion" | "status" | "total" | "couponCode" | "discountAmount" | "paymentMethod" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -4004,6 +4015,7 @@ export namespace Prisma {
       total: Prisma.Decimal
       couponCode: string | null
       discountAmount: Prisma.Decimal | null
+      paymentMethod: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["order"]>
@@ -4441,6 +4453,7 @@ export namespace Prisma {
     readonly total: FieldRef<"Order", 'Decimal'>
     readonly couponCode: FieldRef<"Order", 'String'>
     readonly discountAmount: FieldRef<"Order", 'Decimal'>
+    readonly paymentMethod: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
@@ -7146,6 +7159,7 @@ export namespace Prisma {
     total: 'total',
     couponCode: 'couponCode',
     discountAmount: 'discountAmount',
+    paymentMethod: 'paymentMethod',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7484,6 +7498,7 @@ export namespace Prisma {
     total?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     couponCode?: StringNullableFilter<"Order"> | string | null
     discountAmount?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
@@ -7501,6 +7516,7 @@ export namespace Prisma {
     total?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     discountAmount?: SortOrderInput | SortOrder
+    paymentMethod?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     items?: OrderItemOrderByRelationAggregateInput
@@ -7521,6 +7537,7 @@ export namespace Prisma {
     total?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     couponCode?: StringNullableFilter<"Order"> | string | null
     discountAmount?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
@@ -7538,6 +7555,7 @@ export namespace Prisma {
     total?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     discountAmount?: SortOrderInput | SortOrder
+    paymentMethod?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
@@ -7562,6 +7580,7 @@ export namespace Prisma {
     total?: DecimalWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string
     couponCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
     discountAmount?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
@@ -7911,6 +7930,7 @@ export namespace Prisma {
     total: Decimal | DecimalJsLike | number | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemCreateNestedManyWithoutOrderInput
@@ -7928,6 +7948,7 @@ export namespace Prisma {
     total: Decimal | DecimalJsLike | number | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -7945,6 +7966,7 @@ export namespace Prisma {
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -7962,6 +7984,7 @@ export namespace Prisma {
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -7979,6 +8002,7 @@ export namespace Prisma {
     total: Decimal | DecimalJsLike | number | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7995,6 +8019,7 @@ export namespace Prisma {
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8011,6 +8036,7 @@ export namespace Prisma {
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8479,6 +8505,7 @@ export namespace Prisma {
     total?: SortOrder
     couponCode?: SortOrder
     discountAmount?: SortOrder
+    paymentMethod?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8500,6 +8527,7 @@ export namespace Prisma {
     total?: SortOrder
     couponCode?: SortOrder
     discountAmount?: SortOrder
+    paymentMethod?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8516,6 +8544,7 @@ export namespace Prisma {
     total?: SortOrder
     couponCode?: SortOrder
     discountAmount?: SortOrder
+    paymentMethod?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9398,6 +9427,7 @@ export namespace Prisma {
     total: Decimal | DecimalJsLike | number | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9414,6 +9444,7 @@ export namespace Prisma {
     total: Decimal | DecimalJsLike | number | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9483,6 +9514,7 @@ export namespace Prisma {
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9499,6 +9531,7 @@ export namespace Prisma {
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

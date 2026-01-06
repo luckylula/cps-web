@@ -158,6 +158,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   total: 'total',
   couponCode: 'couponCode',
   discountAmount: 'discountAmount',
+  paymentMethod: 'paymentMethod',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

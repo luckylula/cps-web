@@ -15,6 +15,7 @@ interface FormData {
   direccion: string;
   nifCif: string;
   metodoEntrega: string;
+  paymentMethod: string;
 }
 
 interface FormErrors {
@@ -36,6 +37,7 @@ export default function CheckoutPage() {
     direccion: "",
     nifCif: "",
     metodoEntrega: "estandar",
+    paymentMethod: "stripe",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -168,6 +170,7 @@ export default function CheckoutPage() {
           direccion: formData.direccion.trim(),
           nifCif: formData.nifCif.trim() || undefined,
           metodoEntrega: formData.metodoEntrega,
+          paymentMethod: formData.paymentMethod,
         },
         cart: {
           items: items.map((item) => ({
@@ -584,6 +587,112 @@ export default function CheckoutPage() {
                       </div>
                     </label>
                   </div>
+                </div>
+
+                {/* Método de Pago */}
+                <div className="mb-8">
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                    Método de pago
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-6">
+                    Selecciona cómo quieres pagar tu pedido
+                  </p>
+
+                  <div className="space-y-3">
+                    <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-orange-400 transition-colors group">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="stripe"
+                        checked={formData.paymentMethod === "stripe"}
+                        onChange={handleInputChange}
+                        className="mt-1 mr-3 w-4 h-4 text-orange-500 focus:ring-orange-500"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900 group-hover:text-orange-600">
+                            Tarjeta / Apple Pay / Google Pay
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Pago seguro con Stripe
+                        </p>
+                      </div>
+                    </label>
+
+                    <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-orange-400 transition-colors group">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="transferencia"
+                        checked={formData.paymentMethod === "transferencia"}
+                        onChange={handleInputChange}
+                        className="mt-1 mr-3 w-4 h-4 text-orange-500 focus:ring-orange-500"
+                      />
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-900 group-hover:text-orange-600">
+                          Transferencia Bancaria
+                        </span>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Realiza la transferencia después de confirmar el pedido
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Stripe Elements Container */}
+                  {formData.paymentMethod === "stripe" && (
+                    <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-900 mb-4">
+                        Información de pago
+                      </h3>
+                      <div id="stripe-card-element" className="p-4 bg-white border border-gray-300 rounded-lg min-h-[60px]">
+                        {/* Stripe Elements se inyectará aquí */}
+                        <p className="text-sm text-gray-500 text-center py-4">
+                          Los campos de pago de Stripe se cargarán aquí
+                        </p>
+                        <p className="text-xs text-gray-400 text-center">
+                          Para implementar: instala @stripe/stripe-js y @stripe/react-stripe-js
+                        </p>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-3">
+                        🔒 Tu información de pago está protegida y encriptada
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Datos Bancarios */}
+                  {formData.paymentMethod === "transferencia" && (
+                    <div className="mt-6 p-6 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                        Datos bancarios para la transferencia
+                      </h3>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 font-medium">Titular:</span>
+                          <span className="text-gray-900 font-semibold">Control Play Sports S.L.</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 font-medium">IBAN:</span>
+                          <span className="text-gray-900 font-mono font-semibold">ES12 1234 5678 9012 3456 7890</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 font-medium">SWIFT/BIC:</span>
+                          <span className="text-gray-900 font-mono font-semibold">ABCDESMMXXX</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 font-medium">Banco:</span>
+                          <span className="text-gray-900 font-semibold">Banco Ejemplo</span>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-blue-200">
+                          <p className="text-xs text-gray-600">
+                            <strong className="text-gray-900">Importante:</strong> Al confirmar el pedido, recibirás un email con el número de pedido. 
+                            Incluye este número en el concepto de la transferencia para que podamos identificar tu pago.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Botones */}
