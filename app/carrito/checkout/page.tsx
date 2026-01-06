@@ -168,16 +168,20 @@ export default function CheckoutPage() {
 
   // Crear PaymentIntent cuando se selecciona Stripe y hay productos
   useEffect(() => {
-    if (formData.paymentMethod === "stripe" && items.length > 0) {
-      // Resetear si cambia el método de pago
-      if (formData.paymentMethod !== "stripe") {
-        setClientSecret(null);
-        setStripePaymentConfirmed(false);
-        return;
-      }
+    // Si cambia el método de pago a no-Stripe, limpiar
+    if (formData.paymentMethod !== "stripe") {
+      setClientSecret(null);
+      setStripePaymentConfirmed(false);
+      setStripeError("");
+      return;
+    }
 
+    // Validar que hay productos y el total es mayor a 0
+    if (formData.paymentMethod === "stripe" && items.length > 0 && finalTotal > 0) {
       const createPaymentIntent = async () => {
         try {
+          console.log('[Checkout] Creando PaymentIntent con amount:', finalTotal);
+          
           const response = await fetch('/api/checkout/create-intent', {
             method: 'POST',
             headers: {
@@ -190,28 +194,41 @@ export default function CheckoutPage() {
           });
 
           const data = await response.json();
+          
+          if (!response.ok) {
+            console.error('[Checkout] Error en la respuesta:', data);
+            setStripeError(data.error || 'Error al crear el intent de pago');
+            return;
+          }
+
           if (data.clientSecret) {
+            console.log('[Checkout] PaymentIntent creado exitosamente');
             setClientSecret(data.clientSecret);
             setStripePaymentConfirmed(false); // Resetear confirmación al crear nuevo intent
+            setStripeError("");
           } else if (data.error) {
+            console.error('[Checkout] Error del servidor:', data.error);
             setStripeError(data.error);
           }
-        } catch (error) {
-          console.error('Error creating PaymentIntent:', error);
-          setStripeError('Error al inicializar el sistema de pago');
+        } catch (error: any) {
+          console.error('[Checkout] Error creating PaymentIntent:', error);
+          setStripeError(error.message || 'Error al inicializar el sistema de pago');
         }
       };
 
-      // Solo crear si no hay clientSecret o si cambió el total
-      if (!clientSecret || stripePaymentConfirmed) {
+      // Crear nuevo PaymentIntent si no hay uno
+      if (!clientSecret) {
         createPaymentIntent();
       }
-    } else {
-      // Si no es Stripe, limpiar
+    } else if (formData.paymentMethod === "stripe" && (items.length === 0 || finalTotal <= 0)) {
+      // Si el carrito está vacío o el total es 0, no crear PaymentIntent
       setClientSecret(null);
       setStripePaymentConfirmed(false);
+      if (finalTotal <= 0) {
+        setStripeError("El total debe ser mayor a 0 para procesar el pago");
+      }
     }
-  }, [formData.paymentMethod, finalTotal, items.length]);
+  }, [formData.paymentMethod, finalTotal, items.length, clientSecret]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -800,7 +817,7 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Stripe Elements Container */}
-                  {formData.paymentMethod === "stripe" && clientSecret && (
+                  {formData.paymentMethod === "stripe" && clientSecret && finalTotal > 0 && (
                     <Elements 
                       stripe={stripePromise} 
                       options={{
@@ -819,10 +836,17 @@ export default function CheckoutPage() {
                       )}
                     </Elements>
                   )}
-                  {formData.paymentMethod === "stripe" && !clientSecret && (
+                  {formData.paymentMethod === "stripe" && !clientSecret && finalTotal > 0 && (
                     <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
                       <p className="text-sm text-gray-500 text-center py-4">
                         Cargando formulario de pago...
+                      </p>
+                    </div>
+                  )}
+                  {formData.paymentMethod === "stripe" && finalTotal <= 0 && (
+                    <div className="mt-6 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-sm text-yellow-800 text-center">
+                        ⚠️ El total debe ser mayor a 0 para procesar el pago con tarjeta
                       </p>
                     </div>
                   )}

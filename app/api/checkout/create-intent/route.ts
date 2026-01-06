@@ -19,18 +19,42 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+    console.log('Datos recibidos:', body);
+    
     const { amount, currency = 'eur' } = body;
 
     // Validar que amount existe y es un número válido
-    if (!amount || typeof amount !== 'number' || amount <= 0) {
+    if (amount === undefined || amount === null) {
+      console.error('Amount no proporcionado');
       return NextResponse.json(
-        { error: 'El monto es requerido y debe ser mayor a 0' },
+        { error: 'El monto es requerido' },
+        { status: 400 }
+      );
+    }
+
+    // Convertir amount a número si viene como string
+    const amountNumber = typeof amount === 'string' ? parseFloat(amount) : Number(amount);
+    
+    if (isNaN(amountNumber) || amountNumber <= 0) {
+      console.error('Amount inválido:', amount, 'convertido a:', amountNumber);
+      return NextResponse.json(
+        { error: 'El monto debe ser un número mayor a 0' },
         { status: 400 }
       );
     }
 
     // Convertir amount a centavos (Stripe usa centavos)
-    const amountInCents = Math.round(amount * 100);
+    const amountInCents = Math.round(amountNumber * 100);
+    
+    console.log('Amount original:', amountNumber, 'Amount en centavos:', amountInCents);
+    
+    if (amountInCents <= 0) {
+      console.error('Amount en centavos es 0 o negativo:', amountInCents);
+      return NextResponse.json(
+        { error: 'El monto debe ser mayor a 0' },
+        { status: 400 }
+      );
+    }
 
     // Crear PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
