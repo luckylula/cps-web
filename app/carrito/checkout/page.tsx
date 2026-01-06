@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/app/context/CartContext";
 import CartButton from "@/app/components/CartButton";
 import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+// Inicializar Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface FormData {
   nombreCompleto: string;
@@ -24,6 +29,108 @@ interface FormErrors {
   telefono?: string;
   direccion?: string;
   nifCif?: string;
+}
+
+// Componente interno para manejar el pago con Stripe (debe estar dentro de Elements)
+function StripePaymentSection({ 
+  onPaymentSuccess, 
+  onPaymentError 
+}: { 
+  onPaymentSuccess: () => void;
+  onPaymentError: (error: string) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
+
+  const handlePayment = async () => {
+    if (!stripe || !elements) {
+      onPaymentError("Stripe no está cargado. Por favor, recarga la página.");
+      return;
+    }
+
+    setIsProcessing(true);
+    setPaymentError("");
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/carrito/checkout`,
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        const errorMessage = error.message || 'Error al procesar el pago';
+        setPaymentError(errorMessage);
+        onPaymentError(errorMessage);
+        setIsProcessing(false);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onPaymentSuccess();
+        setIsProcessing(false);
+      } else {
+        setIsProcessing(false);
+      }
+    } catch (err: any) {
+      const errorMessage = err.message || 'Error inesperado al procesar el pago';
+      setPaymentError(errorMessage);
+      onPaymentError(errorMessage);
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+      <h3 className="text-sm font-medium text-gray-900 mb-4">
+        Información de pago
+      </h3>
+      <div className="p-4 bg-white border border-gray-300 rounded-lg">
+        <PaymentElement />
+      </div>
+      {paymentError && (
+        <p className="mt-3 text-sm text-red-500">{paymentError}</p>
+      )}
+      <button
+        type="button"
+        onClick={handlePayment}
+        disabled={!stripe || !elements || isProcessing}
+        className="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        {isProcessing ? (
+          <>
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Procesando pago...
+          </>
+        ) : (
+          "Confirmar pago"
+        )}
+      </button>
+      <p className="text-xs text-gray-500 mt-3">
+        🔒 Tu información de pago está protegida y encriptada
+      </p>
+    </div>
+  );
 }
 
 export default function CheckoutPage() {
@@ -45,6 +152,66 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null);
   const [couponError, setCouponError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [stripePaymentConfirmed, setStripePaymentConfirmed] = useState(false);
+  const [stripeError, setStripeError] = useState("");
+
+  // Calcular totales
+  const subtotal = getTotalPrice();
+  const iva = subtotal * 0.21;
+  const subtotalWithIva = subtotal + iva;
+  const shippingCost = formData.metodoEntrega === "express" ? 15 : 0;
+  const discountAmount = appliedCoupon 
+    ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
+    : 0;
+  const finalTotal = subtotalWithIva + shippingCost - discountAmount;
+
+  // Crear PaymentIntent cuando se selecciona Stripe y hay productos
+  useEffect(() => {
+    if (formData.paymentMethod === "stripe" && items.length > 0) {
+      // Resetear si cambia el método de pago
+      if (formData.paymentMethod !== "stripe") {
+        setClientSecret(null);
+        setStripePaymentConfirmed(false);
+        return;
+      }
+
+      const createPaymentIntent = async () => {
+        try {
+          const response = await fetch('/api/checkout/create-intent', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              amount: finalTotal,
+              currency: 'eur',
+            }),
+          });
+
+          const data = await response.json();
+          if (data.clientSecret) {
+            setClientSecret(data.clientSecret);
+            setStripePaymentConfirmed(false); // Resetear confirmación al crear nuevo intent
+          } else if (data.error) {
+            setStripeError(data.error);
+          }
+        } catch (error) {
+          console.error('Error creating PaymentIntent:', error);
+          setStripeError('Error al inicializar el sistema de pago');
+        }
+      };
+
+      // Solo crear si no hay clientSecret o si cambió el total
+      if (!clientSecret || stripePaymentConfirmed) {
+        createPaymentIntent();
+      }
+    } else {
+      // Si no es Stripe, limpiar
+      setClientSecret(null);
+      setStripePaymentConfirmed(false);
+    }
+  }, [formData.paymentMethod, finalTotal, items.length]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -147,20 +314,18 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Si el método de pago es Stripe, verificar que el pago se haya confirmado
+    if (formData.paymentMethod === "stripe") {
+      if (!stripePaymentConfirmed) {
+        alert("Por favor, completa el pago con tarjeta haciendo clic en 'Confirmar pago' antes de finalizar el pedido.");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Calcular totales con descuento
-      const subtotal = getTotalPrice();
-      const iva = subtotal * 0.21;
-      const subtotalWithIva = subtotal + iva;
-      const shippingCost = formData.metodoEntrega === "express" ? 15 : 0;
-      const discountAmount = appliedCoupon 
-        ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
-        : 0;
-      const finalTotal = subtotalWithIva + shippingCost - discountAmount;
-
-      // Preparar datos del pedido
+      // Preparar datos del pedido (los totales ya están calculados arriba)
       const orderData = {
         customer: {
           nombreCompleto: formData.nombreCompleto.trim(),
@@ -318,14 +483,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const subtotal = getTotalPrice();
-  const iva = subtotal * 0.21;
-  const subtotalWithIva = subtotal + iva;
-  const shippingCost = formData.metodoEntrega === "express" ? 15 : 0;
-  const discountAmount = appliedCoupon 
-    ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
-    : 0;
-  const total = subtotalWithIva + shippingCost - discountAmount;
+  // Los totales ya están calculados arriba, usar finalTotal
+  const total = finalTotal;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -641,22 +800,29 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Stripe Elements Container */}
-                  {formData.paymentMethod === "stripe" && (
+                  {formData.paymentMethod === "stripe" && clientSecret && (
+                    <Elements 
+                      stripe={stripePromise} 
+                      options={{
+                        clientSecret,
+                        appearance: {
+                          theme: 'stripe',
+                        },
+                      }}
+                    >
+                      <StripePaymentSection 
+                        onPaymentSuccess={() => setStripePaymentConfirmed(true)}
+                        onPaymentError={(error) => setStripeError(error)}
+                      />
+                      {stripeError && (
+                        <p className="mt-3 text-sm text-red-500">{stripeError}</p>
+                      )}
+                    </Elements>
+                  )}
+                  {formData.paymentMethod === "stripe" && !clientSecret && (
                     <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                      <h3 className="text-sm font-medium text-gray-900 mb-4">
-                        Información de pago
-                      </h3>
-                      <div id="stripe-card-element" className="p-4 bg-white border border-gray-300 rounded-lg min-h-[60px]">
-                        {/* Stripe Elements se inyectará aquí */}
-                        <p className="text-sm text-gray-500 text-center py-4">
-                          Los campos de pago de Stripe se cargarán aquí
-                        </p>
-                        <p className="text-xs text-gray-400 text-center">
-                          Para implementar: instala @stripe/stripe-js y @stripe/react-stripe-js
-                        </p>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-3">
-                        🔒 Tu información de pago está protegida y encriptada
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        Cargando formulario de pago...
                       </p>
                     </div>
                   )}
@@ -705,8 +871,16 @@ export default function CheckoutPage() {
                   </Link>
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={
+                      isSubmitting || 
+                      (formData.paymentMethod === "stripe" && !stripePaymentConfirmed)
+                    }
                     className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                    title={
+                      formData.paymentMethod === "stripe" && !stripePaymentConfirmed
+                        ? "Por favor, confirma el pago con tarjeta primero"
+                        : undefined
+                    }
                   >
                     {isSubmitting ? (
                       <>
@@ -732,10 +906,17 @@ export default function CheckoutPage() {
                         </svg>
                         Procesando...
                       </>
+                    ) : formData.paymentMethod === "stripe" && !stripePaymentConfirmed ? (
+                      "Confirma el pago primero"
                     ) : (
                       "Confirmar pedido"
                     )}
                   </button>
+                  {formData.paymentMethod === "stripe" && !stripePaymentConfirmed && (
+                    <p className="text-xs text-orange-600 mt-2 text-center">
+                      ⚠️ Debes confirmar el pago con tarjeta antes de finalizar el pedido
+                    </p>
+                  )}
                 </div>
               </form>
             </div>
