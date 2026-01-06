@@ -80,22 +80,40 @@ export default function MaterialEscolarPage() {
   const [loading, setLoading] = useState(false);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
 
-  const fetchProducts = async (subcategoryName?: string) => {
+  const fetchProducts = async (subcategorySlug?: string) => {
     try {
       setLoading(true);
-      // Filtrar productos de material-escolar y opcionalmente por subcategoría
+      
+      // Si hay una subcategoría seleccionada, buscar por su slug como categoría
+      // Las subcategorías de Material Escolar están almacenadas como categorías separadas
+      const categorySlug = subcategorySlug || 'material-escolar';
+      
       const params = new URLSearchParams({
-        category: 'material-escolar',
+        category: categorySlug,
       });
 
-      // Si hay una subcategoría seleccionada, añadir el filtro
-      if (subcategoryName) {
-        params.append('subcategory', subcategoryName);
+      if (subcategorySlug) {
+        console.log('[MaterialEscolar] Fetching products for subcategory slug:', subcategorySlug);
+      } else {
+        console.log('[MaterialEscolar] Fetching all Material Escolar products');
       }
 
-      const response = await fetch(`/api/products?${params.toString()}`);
+      const url = `/api/products?${params.toString()}`;
+      console.log('[MaterialEscolar] Fetch URL:', url);
+
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
+        console.log(`[MaterialEscolar] Received ${data.length} products`);
+        if (data.length > 0) {
+          console.log('[MaterialEscolar] Sample products:', 
+            data.slice(0, 3).map((p: Product) => ({ 
+              name: p.name, 
+              category: p.category.name,
+              subcategory: p.subcategory 
+            }))
+          );
+        }
         setProducts(data);
       } else {
         console.error('Error fetching products:', response.status);
@@ -111,7 +129,14 @@ export default function MaterialEscolarPage() {
 
   const handleSubcategoryClick = (subcategoryName: string) => {
     setSelectedSubcategory(subcategoryName);
-    fetchProducts(subcategoryName);
+    // Encontrar el slug de la subcategoría seleccionada
+    const subcategory = subcategories.find(sub => sub.name === subcategoryName);
+    if (subcategory) {
+      fetchProducts(subcategory.slug);
+    } else {
+      console.error('[MaterialEscolar] Subcategory not found:', subcategoryName);
+      fetchProducts();
+    }
     // Scroll suave a la sección de productos
     setTimeout(() => {
       document.getElementById('productos-section')?.scrollIntoView({ behavior: 'smooth' });

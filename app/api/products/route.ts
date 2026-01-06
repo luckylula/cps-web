@@ -11,6 +11,14 @@ export async function GET(request: Request) {
     const limit = searchParams.get('limit');
     const excludeId = searchParams.get('excludeId');
 
+    // Debug logging
+    console.log('[API /products] Params:', {
+      category,
+      subcategory,
+      limit,
+      excludeId,
+    });
+
     // Build where clause
     const where: any = {
       published: true,
@@ -22,7 +30,9 @@ export async function GET(request: Request) {
 
     // Filter by subcategory - use exact match (trimmed)
     if (subcategory) {
-      where.subcategory = subcategory.trim();
+      const trimmedSubcategory = subcategory.trim();
+      where.subcategory = trimmedSubcategory;
+      console.log('[API /products] Filtering by subcategory:', trimmedSubcategory);
     }
 
     if (excludeId) {
@@ -39,6 +49,13 @@ export async function GET(request: Request) {
       },
       ...(limit && { take: parseInt(limit) }),
     });
+
+    console.log(`[API /products] Found ${products.length} products`);
+    if (subcategory && products.length > 0) {
+      console.log('[API /products] Sample product subcategories:', 
+        products.slice(0, 3).map(p => ({ name: p.name, subcategory: p.subcategory }))
+      );
+    }
 
     return NextResponse.json(products);
   } catch (error) {
