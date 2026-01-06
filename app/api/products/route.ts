@@ -11,13 +11,26 @@ export async function GET(request: Request) {
     const limit = searchParams.get('limit');
     const excludeId = searchParams.get('excludeId');
 
+    // Build where clause
+    const where: any = {
+      published: true,
+    };
+
+    if (category) {
+      where.category = { slug: category };
+    }
+
+    // Filter by subcategory - use exact match (trimmed)
+    if (subcategory) {
+      where.subcategory = subcategory.trim();
+    }
+
+    if (excludeId) {
+      where.id = { not: excludeId };
+    }
+
     const products = await prisma.product.findMany({
-      where: {
-        published: true,
-        ...(category && { category: { slug: category } }),
-        ...(subcategory && { subcategory: subcategory }),
-        ...(excludeId && { id: { not: excludeId } }),
-      },
+      where,
       include: {
         category: true,
       },

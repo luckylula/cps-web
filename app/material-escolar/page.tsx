@@ -80,13 +80,18 @@ export default function MaterialEscolarPage() {
   const [loading, setLoading] = useState(false);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (subcategoryName?: string) => {
     try {
       setLoading(true);
-      // Siempre mostrar productos de material-escolar ya que tienen imágenes y precios
+      // Filtrar productos de material-escolar y opcionalmente por subcategoría
       const params = new URLSearchParams({
         category: 'material-escolar',
       });
+
+      // Si hay una subcategoría seleccionada, añadir el filtro
+      if (subcategoryName) {
+        params.append('subcategory', subcategoryName);
+      }
 
       const response = await fetch(`/api/products?${params.toString()}`);
       if (response.ok) {
@@ -106,7 +111,7 @@ export default function MaterialEscolarPage() {
 
   const handleSubcategoryClick = (subcategoryName: string) => {
     setSelectedSubcategory(subcategoryName);
-    fetchProducts();
+    fetchProducts(subcategoryName);
     // Scroll suave a la sección de productos
     setTimeout(() => {
       document.getElementById('productos-section')?.scrollIntoView({ behavior: 'smooth' });

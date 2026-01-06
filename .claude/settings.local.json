@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node check-products.js:*)",
+      "Bash(node test-api.js:*)",
+      "Bash(node test-vercel-api.js:*)",
+      "WebFetch(domain:cps-web-six.vercel.app)",
+      "Bash(node test-subcategory.js:*)",
+      "Bash(node check-subcategories.js:*)",
+      "Bash(node analyze-categories.js:*)",
+      "Bash(node publish-products.js:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nCorregir carga de productos de Material Escolar\n\n- Cambiar slugs de subcategorías para que coincidan con categorías en la DB\n- Actualizar fetchProducts para buscar por categoría en lugar de subcategoría\n- Los productos ahora se cargan correctamente al hacer clic en las subcategorías\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(node test-product-data.js:*)",
+      "Bash(node check-all-product-data.js:*)",
+      "Bash(node:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nMostrar todos los productos de Material Escolar\n\n- Las subcategorías ahora muestran todos los productos de Material Escolar\n- Los productos de las subcategorías separadas no tienen imágenes ni precios\n- Solución temporal hasta que se asignen subcategorías a los productos\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}
