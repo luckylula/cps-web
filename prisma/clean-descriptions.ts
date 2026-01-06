@@ -8,13 +8,63 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-// Función para limpiar descripciones
+// Función para limpiar descripciones de forma agresiva
 function cleanDescription(description: string): string {
   if (!description || description.trim().length === 0) {
     return 'Consultar especificaciones técnicas.';
   }
 
   let cleaned = description;
+
+  // 0. ELIMINAR TODO DESDE PALABRAS CLAVE PROBLEMÁTICAS (MUY AGRESIVO)
+  const stopWords = [
+    'Material:',
+    'DETALLES TÉCNICOS:',
+    'DETALLES TECNICOS:',
+    'Detalles técnicos:',
+    'Detalles Tecnicos:',
+    'MoreUse tab to navigate',
+    'Use tab to navigate',
+    'Tab to navigate',
+    'Material Escolar',
+    'DEPORTE INDIVIDUAL',
+    'DEPORTES COLECTIVOS',
+    'MATERIAL DEPORTIVO COMPLEMENTARIO',
+    'EQUIPACIÓN TEXTIL',
+    'EQUIPACION TEXTIL',
+  ];
+
+  for (const stopWord of stopWords) {
+    const index = cleaned.indexOf(stopWord);
+    if (index !== -1) {
+      cleaned = cleaned.substring(0, index).trim();
+      break; // Solo cortar en la primera ocurrencia
+    }
+  }
+
+  // 0.1. Eliminar líneas que empiezan con estas palabras
+  const initialLines = cleaned.split('\n');
+  const filteredLines: string[] = [];
+  let foundStopLine = false;
+
+  for (const line of initialLines) {
+    const trimmedLine = line.trim();
+    
+    // Si encontramos una línea con palabra de parada, cortar aquí
+    if (stopWords.some(word => trimmedLine.toUpperCase().includes(word.toUpperCase()))) {
+      foundStopLine = true;
+      break;
+    }
+    
+    // Si ya encontramos una línea de parada, no añadir más
+    if (foundStopLine) {
+      continue;
+    }
+    
+    filteredLines.push(line);
+  }
+
+  cleaned = filteredLines.join('\n');
 
   // 1. Eliminar código JavaScript común
   const jsPatterns = [
@@ -168,16 +218,54 @@ function cleanDescription(description: string): string {
   }
 
   // 11. Limpiar secciones de "DETALLES TÉCNICOS" duplicadas o mal formateadas
-  cleaned = cleaned.replace(/DETALLES\s*T[ÉE]CNICOS:[\s\S]*?DETALLES\s*T[ÉE]CNICOS:/gi, 'DETALLES TÉCNICOS:');
+  cleaned = cleaned.replace(/DETALLES\s*T[ÉE]CNICOS:[\s\S]*?DETALLES\s*T[ÉE]CNICOS:/gi, '');
   
-  // 12. Si después de limpiar queda muy poco texto, usar un mensaje por defecto
+  // 12. EXTRAER SOLO EL PRIMER PÁRRAFO DESCRIPTIVO
+  // Dividir por párrafos (doble salto de línea o etiquetas <p>)
+  const paragraphs = cleaned.split(/\n\s*\n|<p[^>]*>/i);
+  
+  // Buscar el primer párrafo que tenga contenido descriptivo (más de 20 caracteres, no solo código)
+  let firstDescriptiveParagraph = '';
+  for (const para of paragraphs) {
+    const trimmed = para
+      .replace(/<\/p>/gi, '')
+      .replace(/<[^>]+>/g, '')
+      .trim();
+    
+    // Debe tener al menos 20 caracteres y no ser solo código
+    if (trimmed.length >= 20) {
+      // Verificar que no sea principalmente código
+      const codeCharCount = (trimmed.match(/[{}();=<>\[\]\/\\]/g) || []).length;
+      if (codeCharCount < trimmed.length * 0.2) {
+        firstDescriptiveParagraph = trimmed;
+        break;
+      }
+    }
+  }
+
+  // Si encontramos un párrafo descriptivo, usarlo; si no, usar lo que tenemos
+  if (firstDescriptiveParagraph) {
+    cleaned = firstDescriptiveParagraph;
+  }
+
+  // 13. Si después de limpiar queda muy poco texto, usar un mensaje por defecto
   if (cleaned.trim().length < 20) {
     return 'Consultar especificaciones técnicas.';
   }
 
-  // 13. Limitar longitud máxima (evitar descripciones extremadamente largas)
-  if (cleaned.length > 5000) {
-    cleaned = cleaned.substring(0, 5000) + '...';
+  // 14. Limitar longitud máxima (solo el primer párrafo, máximo 500 caracteres)
+  if (cleaned.length > 500) {
+    // Intentar cortar en un punto, coma o espacio
+    const cutIndex = Math.min(
+      cleaned.lastIndexOf('.', 500),
+      cleaned.lastIndexOf(',', 500),
+      cleaned.lastIndexOf(' ', 500)
+    );
+    if (cutIndex > 200) {
+      cleaned = cleaned.substring(0, cutIndex + 1);
+    } else {
+      cleaned = cleaned.substring(0, 500) + '...';
+    }
   }
 
   return cleaned.trim();

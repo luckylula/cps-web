@@ -15,7 +15,9 @@
       "Bash(node test-product-data.js:*)",
       "Bash(node check-all-product-data.js:*)",
       "Bash(node:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nMostrar todos los productos de Material Escolar\n\n- Las subcategorías ahora muestran todos los productos de Material Escolar\n- Los productos de las subcategorías separadas no tienen imágenes ni precios\n- Solución temporal hasta que se asignen subcategorías a los productos\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nMostrar todos los productos de Material Escolar\n\n- Las subcategorías ahora muestran todos los productos de Material Escolar\n- Los productos de las subcategorías separadas no tienen imágenes ni precios\n- Solución temporal hasta que se asignen subcategorías a los productos\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nCorregir visualización de productos en Material Escolar\n\nLas subcategorías ahora muestran todos los productos de Material Escolar que tienen imágenes y precios configurados.\n\nLos productos de las categorías separadas \\(psicomotricidad, figuras-espuma, etc.\\) no están publicados porque no tienen datos completos.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)"
     ]
   }
 }

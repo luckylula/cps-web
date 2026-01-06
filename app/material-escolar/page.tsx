@@ -88,16 +88,25 @@ export default function MaterialEscolarPage() {
         category: categorySlug,
       });
 
-      const response = await fetch(`/api/products?${params.toString()}`);
+      const url = `/api/products?${params.toString()}`;
+      console.log('[MaterialEscolar] Fetching products for category:', categorySlug);
+
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
+        console.log(`[MaterialEscolar] Received ${data.length} products for category: ${categorySlug}`);
+        if (data.length > 0) {
+          console.log('[MaterialEscolar] Sample products:', 
+            data.slice(0, 3).map((p: Product) => p.name)
+          );
+        }
         setProducts(data);
       } else {
-        console.error('Error fetching products:', response.status);
+        console.error('[MaterialEscolar] Error fetching products:', response.status);
         setProducts([]);
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('[MaterialEscolar] Error fetching products:', error);
       setProducts([]);
     } finally {
       setLoading(false);

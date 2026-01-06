@@ -16,7 +16,9 @@
     "check:slug": "node --import tsx prisma/check-product-slug.ts",
     "verify:db": "node --import tsx prisma/verify-db-connection.ts",
     "clean:descriptions": "node --import tsx prisma/clean-descriptions.ts",
-    "debug:subcategories": "node --import tsx prisma/debug-subcategories.ts"
+    "debug:subcategories": "node --import tsx prisma/debug-subcategories.ts",
+    "verify:subcategories": "node --import tsx prisma/verify-subcategories.ts",
+    "fix:hierarchy": "node --import tsx prisma/fix-category-hierarchy.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
