@@ -80,14 +80,12 @@ export default function MaterialEscolarPage() {
   const [loading, setLoading] = useState(false);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (categorySlug: string) => {
     try {
       setLoading(true);
 
-      // SIEMPRE mostrar productos de material-escolar
-      // Las subcategorías separadas no tienen productos publicados (sin imágenes/precios)
       const params = new URLSearchParams({
-        category: 'material-escolar',
+        category: categorySlug,
       });
 
       const response = await fetch(`/api/products?${params.toString()}`);
@@ -106,9 +104,9 @@ export default function MaterialEscolarPage() {
     }
   };
 
-  const handleSubcategoryClick = (subcategoryName: string) => {
+  const handleSubcategoryClick = (subcategoryName: string, subcategorySlug: string) => {
     setSelectedSubcategory(subcategoryName);
-    fetchProducts();
+    fetchProducts(subcategorySlug);
     // Scroll suave a la sección de productos
     setTimeout(() => {
       document.getElementById('productos-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -209,7 +207,7 @@ export default function MaterialEscolarPage() {
               {subcategories.map((subcategory) => (
                 <button
                   key={subcategory.slug}
-                  onClick={() => handleSubcategoryClick(subcategory.name)}
+                  onClick={() => handleSubcategoryClick(subcategory.name, subcategory.slug)}
                   className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-left"
                 >
                   <div className="relative h-64 bg-gray-200 overflow-hidden">
