@@ -80,24 +80,37 @@ export default function MaterialEscolarPage() {
   const [loading, setLoading] = useState(false);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
 
-  const fetchProducts = async (categorySlug: string) => {
+  const fetchProducts = async (subcategoryName?: string) => {
     try {
       setLoading(true);
 
+      // Siempre buscar en la categoría principal 'Material Escolar'
       const params = new URLSearchParams({
-        category: categorySlug,
+        category: 'material-escolar',
       });
 
+      // Si hay una subcategoría seleccionada, añadir el filtro por subcategory
+      if (subcategoryName) {
+        params.append('subcategory', subcategoryName);
+      }
+
       const url = `/api/products?${params.toString()}`;
-      console.log('[MaterialEscolar] Fetching products for category:', categorySlug);
+      if (subcategoryName) {
+        console.log('[MaterialEscolar] Fetching products for subcategory:', subcategoryName);
+      } else {
+        console.log('[MaterialEscolar] Fetching all Material Escolar products');
+      }
 
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        console.log(`[MaterialEscolar] Received ${data.length} products for category: ${categorySlug}`);
-        if (data.length > 0) {
+        console.log(`[MaterialEscolar] Received ${data.length} products`);
+        if (data.length > 0 && subcategoryName) {
           console.log('[MaterialEscolar] Sample products:', 
-            data.slice(0, 3).map((p: Product) => p.name)
+            data.slice(0, 3).map((p: Product) => ({ 
+              name: p.name, 
+              subcategory: p.subcategory 
+            }))
           );
         }
         setProducts(data);
@@ -115,7 +128,8 @@ export default function MaterialEscolarPage() {
 
   const handleSubcategoryClick = (subcategoryName: string, subcategorySlug: string) => {
     setSelectedSubcategory(subcategoryName);
-    fetchProducts(subcategorySlug);
+    // Pasar el nombre de la subcategoría (no el slug) para filtrar por el campo subcategory
+    fetchProducts(subcategoryName);
     // Scroll suave a la sección de productos
     setTimeout(() => {
       document.getElementById('productos-section')?.scrollIntoView({ behavior: 'smooth' });
