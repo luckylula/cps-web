@@ -4,12 +4,19 @@ import Stripe from 'stripe';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-  typescript: true,
-});
-
 export async function POST(request: Request) {
+  // Inicializar Stripe dentro de la función para evitar errores durante el build
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+    apiVersion: '2025-12-18' as any,
+  });
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json(
+      { error: 'Stripe key not configured' },
+      { status: 500 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { amount, currency = 'eur' } = body;
