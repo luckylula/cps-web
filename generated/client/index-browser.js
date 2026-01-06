@@ -156,6 +156,8 @@ exports.Prisma.OrderScalarFieldEnum = {
   direccion: 'direccion',
   status: 'status',
   total: 'total',
+  couponCode: 'couponCode',
+  discountAmount: 'discountAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -170,6 +172,16 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   price: 'price',
   subtotal: 'subtotal',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.CouponScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  discountPercent: 'discountPercent',
+  isActive: 'isActive',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -199,7 +211,8 @@ exports.Prisma.ModelName = {
   Category: 'Category',
   Product: 'Product',
   Order: 'Order',
-  OrderItem: 'OrderItem'
+  OrderItem: 'OrderItem',
+  Coupon: 'Coupon'
 };
 
 /**
