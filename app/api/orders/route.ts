@@ -17,10 +17,16 @@ interface CreateOrderRequest {
     email: string;
     telefono: string;
     direccion: string;
+    nifCif?: string;
+    metodoEntrega?: string;
   };
   cart: {
     items: OrderItemInput[];
     totalPrice: number;
+  };
+  coupon?: {
+    code: string;
+    discountAmount: number;
   };
 }
 
@@ -136,6 +142,10 @@ export async function POST(request: NextRequest) {
           telefono: customer.telefono,
           direccion: customer.direccion,
           total: new Prisma.Decimal(cart.totalPrice),
+          couponCode: body.coupon?.code || null,
+          discountAmount: body.coupon?.discountAmount 
+            ? new Prisma.Decimal(body.coupon.discountAmount) 
+            : null,
           status: 'PENDING',
           items: {
             create: cart.items.map((item) => {
@@ -203,6 +213,10 @@ export async function POST(request: NextRequest) {
         price: Number(item.price),
         subtotal: Number(item.subtotal),
       })),
+      coupon: order.couponCode ? {
+        code: order.couponCode,
+        discountAmount: order.discountAmount ? Number(order.discountAmount) : 0,
+      } : null,
       total: Number(order.total),
     };
 

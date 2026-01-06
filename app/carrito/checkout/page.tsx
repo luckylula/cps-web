@@ -39,6 +39,10 @@ export default function CheckoutPage() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -55,6 +59,52 @@ export default function CheckoutPage() {
         [name]: undefined,
       }));
     }
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Por favor, introduce un código de cupón");
+      return;
+    }
+
+    setIsValidatingCoupon(true);
+    setCouponError("");
+
+    try {
+      const response = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: couponCode.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (data.valid) {
+        setAppliedCoupon({
+          code: data.code,
+          discountPercent: data.discountPercent,
+        });
+        setCouponError("");
+        setCouponCode("");
+      } else {
+        setCouponError(data.error || "Código de cupón no válido");
+        setAppliedCoupon(null);
+      }
+    } catch (error) {
+      console.error('Error validating coupon:', error);
+      setCouponError("Error al validar el cupón. Por favor, intenta de nuevo.");
+      setAppliedCoupon(null);
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
   };
 
   const validateForm = (): boolean => {
@@ -98,6 +148,16 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      // Calcular totales con descuento
+      const subtotal = getTotalPrice();
+      const iva = subtotal * 0.21;
+      const subtotalWithIva = subtotal + iva;
+      const shippingCost = formData.metodoEntrega === "express" ? 15 : 0;
+      const discountAmount = appliedCoupon 
+        ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
+        : 0;
+      const finalTotal = subtotalWithIva + shippingCost - discountAmount;
+
       // Preparar datos del pedido
       const orderData = {
         customer: {
@@ -117,8 +177,12 @@ export default function CheckoutPage() {
             price: item.price,
             quantity: item.quantity,
           })),
-          totalPrice: getTotalPrice(),
+          totalPrice: finalTotal,
         },
+        coupon: appliedCoupon ? {
+          code: appliedCoupon.code,
+          discountAmount: discountAmount,
+        } : undefined,
       };
 
       // Enviar pedido a la API
@@ -253,7 +317,12 @@ export default function CheckoutPage() {
 
   const subtotal = getTotalPrice();
   const iva = subtotal * 0.21;
-  const total = subtotal + iva;
+  const subtotalWithIva = subtotal + iva;
+  const shippingCost = formData.metodoEntrega === "express" ? 15 : 0;
+  const discountAmount = appliedCoupon 
+    ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
+    : 0;
+  const total = subtotalWithIva + shippingCost - discountAmount;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -570,6 +639,95 @@ export default function CheckoutPage() {
                 Resumen del pedido
               </h2>
 
+              {/* Coupon Section */}
+              <div className="mb-6 pb-6 border-b border-gray-300">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Código de cupón
+                </label>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-sm font-medium text-green-800">
+                        {appliedCoupon.code} - {appliedCoupon.discountPercent}% descuento
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-sm text-green-600 hover:text-green-800 font-medium"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponError("");
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleApplyCoupon();
+                        }
+                      }}
+                      placeholder="PROMO10"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={isValidatingCoupon || !couponCode.trim()}
+                      className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isValidatingCoupon ? (
+                        <svg
+                          className="animate-spin h-5 w-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        "Aplicar"
+                      )}
+                    </button>
+                  </div>
+                )}
+                {couponError && (
+                  <p className="mt-2 text-sm text-red-500">{couponError}</p>
+                )}
+              </div>
+
               {/* Product List */}
               <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                 {items.map((item) => (
@@ -634,14 +792,15 @@ export default function CheckoutPage() {
                     <span className="font-medium">+15.00€</span>
                   </div>
                 )}
+                {appliedCoupon && discountAmount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600 font-medium">
+                    <span>Descuento ({appliedCoupon.code})</span>
+                    <span>-{discountAmount.toFixed(2)}€</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-lg font-bold text-gray-900 pt-3 border-t border-gray-300">
                   <span>Total</span>
-                  <span>
-                    {formData.metodoEntrega === "express"
-                      ? (total + 15).toFixed(2)
-                      : total.toFixed(2)}
-                    €
-                  </span>
+                  <span>{total.toFixed(2)}€</span>
                 </div>
               </div>
 
