@@ -7,7 +7,7 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
   // Inicializar Stripe dentro de la función para evitar errores durante el build
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2025-12-18' as any,
+    apiVersion: '2024-12-18.acacia',
   });
 
   if (!process.env.STRIPE_SECRET_KEY) {
