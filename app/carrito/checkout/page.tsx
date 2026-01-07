@@ -101,6 +101,12 @@ function CheckoutForm() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripeError, setStripeError] = useState("");
 
+  // Callback para recibir las instancias de Stripe y Elements
+  const handleStripeReady = useCallback((stripe: any, elements: any) => {
+    setStripeInstance(stripe);
+    setElementsInstance(elements);
+  }, []);
+
   // Calcular totales
   const subtotal = getTotalPrice();
   const iva = subtotal * 0.21;
@@ -817,12 +823,7 @@ function CheckoutForm() {
                         },
                       }}
                     >
-                      <StripePaymentForm
-                        onReady={useCallback((stripe: any, elements: any) => {
-                          setStripeInstance(stripe);
-                          setElementsInstance(elements);
-                        }, [])}
-                      />
+                      <StripePaymentForm onReady={handleStripeReady} />
                     </Elements>
                   )}
                   {formData.paymentMethod === "stripe" && stripeError && (
