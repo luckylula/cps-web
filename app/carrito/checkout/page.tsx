@@ -122,7 +122,6 @@ function CheckoutForm() {
     // Si cambia el método de pago a no-Stripe, limpiar
     if (formData.paymentMethod !== "stripe") {
       setClientSecret(null);
-      setStripePaymentConfirmed(false);
       setStripeError("");
       return;
     }
@@ -156,7 +155,6 @@ function CheckoutForm() {
           if (data.clientSecret) {
             console.log('[Checkout] PaymentIntent creado exitosamente');
             setClientSecret(data.clientSecret);
-            setStripePaymentConfirmed(false); // Resetear confirmación al crear nuevo intent
             setStripeError("");
           } else if (data.error) {
             console.error('[Checkout] Error del servidor:', data.error);
@@ -173,7 +171,6 @@ function CheckoutForm() {
     } else if (formData.paymentMethod === "stripe" && (items.length === 0 || finalTotal <= 0)) {
       // Si el carrito está vacío o el total es 0, no crear PaymentIntent
       setClientSecret(null);
-      setStripePaymentConfirmed(false);
       if (finalTotal <= 0) {
         setStripeError("El total debe ser mayor a 0 para procesar el pago");
       }
