@@ -17,21 +17,35 @@ if (!stripePublicKey) {
 const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
 interface FormData {
-  nombreCompleto: string;
-  nombreCentro: string;
+  // Información Personal
+  nombre: string;
+  apellidos: string;
   email: string;
   telefono: string;
-  direccion: string;
+  nombreCentro: string;
   nifCif: string;
+
+  // Dirección (separada)
+  direccion: string;
+  piso: string;
+  codigoPostal: string;
+  ciudad: string;
+  provincia: string;
+
+  // Opciones
   metodoEntrega: string;
   paymentMethod: string;
 }
 
 interface FormErrors {
-  nombreCompleto?: string;
+  nombre?: string;
+  apellidos?: string;
   email?: string;
   telefono?: string;
   direccion?: string;
+  codigoPostal?: string;
+  ciudad?: string;
+  provincia?: string;
   nifCif?: string;
 }
 
@@ -83,12 +97,20 @@ function CheckoutForm() {
   const [stripeInstance, setStripeInstance] = useState<any>(null);
   const [elementsInstance, setElementsInstance] = useState<any>(null);
   const [formData, setFormData] = useState<FormData>({
-    nombreCompleto: "",
-    nombreCentro: "",
+    // Información Personal
+    nombre: "",
+    apellidos: "",
     email: "",
     telefono: "",
-    direccion: "",
+    nombreCentro: "",
     nifCif: "",
+    // Dirección
+    direccion: "",
+    piso: "",
+    codigoPostal: "",
+    ciudad: "",
+    provincia: "",
+    // Opciones
     metodoEntrega: "estandar",
     paymentMethod: "stripe",
   });
@@ -243,28 +265,73 @@ function CheckoutForm() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.nombreCompleto.trim()) {
-      newErrors.nombreCompleto = "El nombre completo es obligatorio";
-    } else if (formData.nombreCompleto.trim().length < 3) {
-      newErrors.nombreCompleto = "El nombre debe tener al menos 3 caracteres";
+    // Validar nombre
+    if (!formData.nombre.trim()) {
+      newErrors.nombre = "El nombre es obligatorio";
+    } else if (formData.nombre.trim().length < 2) {
+      newErrors.nombre = "El nombre debe tener al menos 2 caracteres";
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(formData.nombre.trim())) {
+      newErrors.nombre = "El nombre solo debe contener letras";
     }
 
+    // Validar apellidos
+    if (!formData.apellidos.trim()) {
+      newErrors.apellidos = "Los apellidos son obligatorios";
+    } else if (formData.apellidos.trim().length < 2) {
+      newErrors.apellidos = "Los apellidos deben tener al menos 2 caracteres";
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(formData.apellidos.trim())) {
+      newErrors.apellidos = "Los apellidos solo deben contener letras";
+    }
+
+    // Validar email
     if (!formData.email.trim()) {
       newErrors.email = "El email es obligatorio";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "El email no es válido";
     }
 
+    // Validar teléfono
     if (!formData.telefono.trim()) {
       newErrors.telefono = "El teléfono es obligatorio";
     } else if (!/^[0-9+\s()-]{9,}$/.test(formData.telefono)) {
       newErrors.telefono = "El teléfono no es válido (mínimo 9 caracteres)";
     }
 
+    // Validar dirección
     if (!formData.direccion.trim()) {
       newErrors.direccion = "La dirección es obligatoria";
-    } else if (formData.direccion.trim().length < 10) {
-      newErrors.direccion = "La dirección debe ser más detallada (mínimo 10 caracteres)";
+    } else if (formData.direccion.trim().length < 5) {
+      newErrors.direccion = "La dirección debe tener al menos 5 caracteres";
+    }
+
+    // Validar código postal
+    if (!formData.codigoPostal.trim()) {
+      newErrors.codigoPostal = "El código postal es obligatorio";
+    } else if (!/^[0-9]{5}$/.test(formData.codigoPostal)) {
+      newErrors.codigoPostal = "El código postal debe tener exactamente 5 dígitos";
+    }
+
+    // Validar ciudad
+    if (!formData.ciudad.trim()) {
+      newErrors.ciudad = "La ciudad es obligatoria";
+    } else if (formData.ciudad.trim().length < 2) {
+      newErrors.ciudad = "La ciudad debe tener al menos 2 caracteres";
+    }
+
+    // Validar provincia
+    if (!formData.provincia.trim()) {
+      newErrors.provincia = "La provincia es obligatoria";
+    } else if (formData.provincia.trim().length < 2) {
+      newErrors.provincia = "La provincia debe tener al menos 2 caracteres";
+    }
+
+    // Validar NIF/CIF si se proporciona
+    if (formData.nifCif.trim()) {
+      const nifPattern = /^[0-9XYZ][0-9]{7}[A-Z]$/i;
+      const cifPattern = /^[ABCDEFGHJNPQRSUVW][0-9]{7}[0-9A-J]$/i;
+      if (!nifPattern.test(formData.nifCif) && !cifPattern.test(formData.nifCif)) {
+        newErrors.nifCif = "Formato de NIF/CIF inválido";
+      }
     }
 
     setErrors(newErrors);
@@ -330,12 +397,21 @@ function CheckoutForm() {
       // Preparar datos del pedido (los totales ya están calculados arriba)
       const orderData = {
         customer: {
-          nombreCompleto: formData.nombreCompleto.trim(),
+          // Nombre separado
+          nombre: formData.nombre.trim(),
+          apellidos: formData.apellidos.trim(),
+          nifCif: formData.nifCif.trim() || undefined,
+          // Dirección detallada
+          direccion: formData.direccion.trim(),
+          piso: formData.piso.trim() || undefined,
+          codigoPostal: formData.codigoPostal.trim(),
+          ciudad: formData.ciudad.trim(),
+          provincia: formData.provincia.trim(),
+          // Información de contacto
           nombreCentro: formData.nombreCentro.trim() || undefined,
           email: formData.email.trim(),
           telefono: formData.telefono.trim(),
-          direccion: formData.direccion.trim(),
-          nifCif: formData.nifCif.trim() || undefined,
+          // Opciones
           metodoEntrega: formData.metodoEntrega,
           paymentMethod: formData.paymentMethod,
         },
@@ -538,10 +614,10 @@ function CheckoutForm() {
           <div className="lg:col-span-7">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <form onSubmit={handleSubmit} className="p-6 lg:p-8">
-                {/* Información de Contacto */}
+                {/* 1. Información Personal */}
                 <div className="mb-10">
                   <h2 className="text-2xl font-semibold text-gray-900 mb-1">
-                    Información de contacto
+                    Información Personal
                   </h2>
                   <p className="text-sm text-gray-500 mb-6">
                     Usaremos esta información para contactarte sobre tu pedido
@@ -593,43 +669,6 @@ function CheckoutForm() {
                         <p className="mt-1.5 text-sm text-red-500">{errors.telefono}</p>
                       )}
                     </div>
-                  </div>
-                </div>
-
-                {/* Dirección de Envío */}
-                <div className="mb-10">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">
-                    Dirección de envío
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-6">
-                    ¿A dónde quieres que enviemos tu pedido?
-                  </p>
-
-                  <div className="space-y-5">
-                    <div>
-                      <label
-                        htmlFor="nombreCompleto"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Nombre completo <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="nombreCompleto"
-                        name="nombreCompleto"
-                        value={formData.nombreCompleto}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
-                          errors.nombreCompleto ? "border-red-500" : "border-gray-300"
-                        }`}
-                        placeholder="Juan Pérez García"
-                      />
-                      {errors.nombreCompleto && (
-                        <p className="mt-1.5 text-sm text-red-500">
-                          {errors.nombreCompleto}
-                        </p>
-                      )}
-                    </div>
 
                     <div>
                       <label
@@ -651,31 +690,6 @@ function CheckoutForm() {
 
                     <div>
                       <label
-                        htmlFor="direccion"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Dirección completa <span className="text-red-500">*</span>
-                      </label>
-                      <textarea
-                        id="direccion"
-                        name="direccion"
-                        value={formData.direccion}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all resize-none ${
-                          errors.direccion ? "border-red-500" : "border-gray-300"
-                        }`}
-                        placeholder="Calle, número, piso, ciudad, código postal, provincia"
-                      />
-                      {errors.direccion && (
-                        <p className="mt-1.5 text-sm text-red-500">
-                          {errors.direccion}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label
                         htmlFor="nifCif"
                         className="block text-sm font-medium text-gray-700 mb-2"
                       >
@@ -687,9 +701,197 @@ function CheckoutForm() {
                         name="nifCif"
                         value={formData.nifCif}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                        placeholder="12345678A"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
+                          errors.nifCif ? "border-red-500" : "border-gray-300"
+                        }`}
+                        placeholder="12345678A o B12345678"
                       />
+                      {errors.nifCif && (
+                        <p className="mt-1.5 text-sm text-red-500">{errors.nifCif}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Datos de Envío */}
+                <div className="mb-10">
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                    Datos de Envío
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-6">
+                    ¿Quién recibirá el pedido?
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label
+                        htmlFor="nombre"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Nombre <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        value={formData.nombre}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
+                          errors.nombre ? "border-red-500" : "border-gray-300"
+                        }`}
+                        placeholder="Juan"
+                      />
+                      {errors.nombre && (
+                        <p className="mt-1.5 text-sm text-red-500">{errors.nombre}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="apellidos"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Apellidos <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="apellidos"
+                        name="apellidos"
+                        value={formData.apellidos}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
+                          errors.apellidos ? "border-red-500" : "border-gray-300"
+                        }`}
+                        placeholder="Pérez García"
+                      />
+                      {errors.apellidos && (
+                        <p className="mt-1.5 text-sm text-red-500">{errors.apellidos}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Dirección de Envío */}
+                <div className="mb-10">
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                    Dirección de Envío
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-6">
+                    ¿A dónde quieres que enviemos tu pedido?
+                  </p>
+
+                  <div className="space-y-5">
+                    <div>
+                      <label
+                        htmlFor="direccion"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Dirección (calle y número) <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="direccion"
+                        name="direccion"
+                        value={formData.direccion}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
+                          errors.direccion ? "border-red-500" : "border-gray-300"
+                        }`}
+                        placeholder="Calle Mayor, 123"
+                      />
+                      {errors.direccion && (
+                        <p className="mt-1.5 text-sm text-red-500">{errors.direccion}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="piso"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Piso / Puerta <span className="text-gray-400 text-xs font-normal">(Opcional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="piso"
+                        name="piso"
+                        value={formData.piso}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                        placeholder="3º A"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      <div>
+                        <label
+                          htmlFor="codigoPostal"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
+                          Código Postal <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="codigoPostal"
+                          name="codigoPostal"
+                          value={formData.codigoPostal}
+                          onChange={handleInputChange}
+                          maxLength={5}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
+                            errors.codigoPostal ? "border-red-500" : "border-gray-300"
+                          }`}
+                          placeholder="28001"
+                        />
+                        {errors.codigoPostal && (
+                          <p className="mt-1.5 text-sm text-red-500">{errors.codigoPostal}</p>
+                        )}
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label
+                          htmlFor="ciudad"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
+                          Ciudad <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="ciudad"
+                          name="ciudad"
+                          value={formData.ciudad}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
+                            errors.ciudad ? "border-red-500" : "border-gray-300"
+                          }`}
+                          placeholder="Madrid"
+                        />
+                        {errors.ciudad && (
+                          <p className="mt-1.5 text-sm text-red-500">{errors.ciudad}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="provincia"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Provincia <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="provincia"
+                        name="provincia"
+                        value={formData.provincia}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all ${
+                          errors.provincia ? "border-red-500" : "border-gray-300"
+                        }`}
+                        placeholder="Madrid"
+                      />
+                      {errors.provincia && (
+                        <p className="mt-1.5 text-sm text-red-500">{errors.provincia}</p>
+                      )}
                     </div>
                   </div>
                 </div>

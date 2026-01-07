@@ -139,28 +139,36 @@ exports.Prisma.ProductScalarFieldEnum = {
   images: 'images',
   stock: 'stock',
   categoryId: 'categoryId',
-  subcategory: 'subcategory',
   published: 'published',
   featured: 'featured',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  subcategory: 'subcategory'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   orderNumber: 'orderNumber',
+  nombre: 'nombre',
+  apellidos: 'apellidos',
+  nifCif: 'nifCif',
+  direccion: 'direccion',
+  piso: 'piso',
+  codigoPostal: 'codigoPostal',
+  ciudad: 'ciudad',
+  provincia: 'provincia',
   nombreCompleto: 'nombreCompleto',
+  direccionCompleta: 'direccionCompleta',
   nombreCentro: 'nombreCentro',
   email: 'email',
   telefono: 'telefono',
-  direccion: 'direccion',
   status: 'status',
   total: 'total',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   couponCode: 'couponCode',
   discountAmount: 'discountAmount',
-  paymentMethod: 'paymentMethod',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  paymentMethod: 'paymentMethod'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {

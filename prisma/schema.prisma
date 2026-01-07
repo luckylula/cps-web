@@ -13,82 +13,99 @@ model Category {
   slug        String    @unique
   description String?
   image       String?
-  products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  products    Product[]
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
-  slug        String   @unique
-  description String   @db.Text
-  price       Decimal  @db.Decimal(10, 2)
+  slug        String      @unique
+  description String
+  price       Decimal     @db.Decimal(10, 2)
   images      String[]
-  stock       Int      @default(0)
+  stock       Int         @default(0)
   categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
+  published   Boolean     @default(false)
+  featured    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   subcategory String?
-  published   Boolean  @default(false)
-  featured    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   orderItems  OrderItem[]
-  
+  category    Category    @relation(fields: [categoryId], references: [id])
+
   @@index([categoryId])
   @@index([slug])
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  orderNumber   String      @unique
-  nombreCompleto String
-  nombreCentro  String?
-  email         String
-  telefono      String
-  direccion     String      @db.Text
-  status        OrderStatus @default(PENDING)
-  total         Decimal     @db.Decimal(10, 2)
-  couponCode    String?
-  discountAmount Decimal?   @db.Decimal(10, 2)
-  paymentMethod String?     // 'stripe' o 'transferencia'
-  items         OrderItem[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique
+
+  // Campos nuevos (separados) - Opcionales para compatibilidad con pedidos legacy
+  nombre         String?
+  apellidos      String?
+  nifCif         String?
+  direccion      String?     // Calle y número
+  piso           String?
+  codigoPostal   String?
+  ciudad         String?
+  provincia      String?
+
+  // Campos legacy (mantener para compatibilidad)
+  nombreCompleto String?
+  direccionCompleta String?  @db.Text
+
+  // Información de contacto
+  nombreCentro   String?
+  email          String
+  telefono       String
+
+  // Información del pedido
+  status         OrderStatus @default(PENDING)
+  total          Decimal     @db.Decimal(10, 2)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  couponCode     String?
+  discountAmount Decimal?    @db.Decimal(10, 2)
+  paymentMethod  String?
+  items          OrderItem[]
+
   @@index([orderNumber])
   @@index([email])
   @@index([status])
   @@index([couponCode])
   @@index([paymentMethod])
+  @@index([codigoPostal])
 }
 
 model OrderItem {
   id          String   @id @default(cuid())
   orderId     String
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId   String
-  product     Product  @relation(fields: [productId], references: [id])
-  productName String   // Guardar nombre del producto al momento del pedido
-  productSlug String   // Guardar slug del producto al momento del pedido
+  productName String
+  productSlug String
   quantity    Int
-  price       Decimal  @db.Decimal(10, 2) // Precio al momento del pedido
+  price       Decimal  @db.Decimal(10, 2)
   subtotal    Decimal  @db.Decimal(10, 2)
   createdAt   DateTime @default(now())
-  
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+
   @@index([orderId])
   @@index([productId])
 }
 
 model Coupon {
-  id             String    @id @default(cuid())
-  code           String    @unique
-  discountPercent Decimal  @db.Decimal(5, 2) // Porcentaje de descuento (ej: 10.00 = 10%)
-  isActive       Boolean   @default(true)
-  expiresAt      DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountPercent Decimal   @db.Decimal(5, 2)
+  isActive        Boolean   @default(true)
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
   @@index([code])
   @@index([isActive])
 }

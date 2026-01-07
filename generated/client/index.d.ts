@@ -2465,11 +2465,11 @@ export namespace Prisma {
     price: Decimal | null
     stock: number | null
     categoryId: string | null
-    subcategory: string | null
     published: boolean | null
     featured: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    subcategory: string | null
   }
 
   export type ProductMaxAggregateOutputType = {
@@ -2480,11 +2480,11 @@ export namespace Prisma {
     price: Decimal | null
     stock: number | null
     categoryId: string | null
-    subcategory: string | null
     published: boolean | null
     featured: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    subcategory: string | null
   }
 
   export type ProductCountAggregateOutputType = {
@@ -2496,11 +2496,11 @@ export namespace Prisma {
     images: number
     stock: number
     categoryId: number
-    subcategory: number
     published: number
     featured: number
     createdAt: number
     updatedAt: number
+    subcategory: number
     _all: number
   }
 
@@ -2523,11 +2523,11 @@ export namespace Prisma {
     price?: true
     stock?: true
     categoryId?: true
-    subcategory?: true
     published?: true
     featured?: true
     createdAt?: true
     updatedAt?: true
+    subcategory?: true
   }
 
   export type ProductMaxAggregateInputType = {
@@ -2538,11 +2538,11 @@ export namespace Prisma {
     price?: true
     stock?: true
     categoryId?: true
-    subcategory?: true
     published?: true
     featured?: true
     createdAt?: true
     updatedAt?: true
+    subcategory?: true
   }
 
   export type ProductCountAggregateInputType = {
@@ -2554,11 +2554,11 @@ export namespace Prisma {
     images?: true
     stock?: true
     categoryId?: true
-    subcategory?: true
     published?: true
     featured?: true
     createdAt?: true
     updatedAt?: true
+    subcategory?: true
     _all?: true
   }
 
@@ -2657,11 +2657,11 @@ export namespace Prisma {
     images: string[]
     stock: number
     categoryId: string
-    subcategory: string | null
     published: boolean
     featured: boolean
     createdAt: Date
     updatedAt: Date
+    subcategory: string | null
     _count: ProductCountAggregateOutputType | null
     _avg: ProductAvgAggregateOutputType | null
     _sum: ProductSumAggregateOutputType | null
@@ -2692,13 +2692,13 @@ export namespace Prisma {
     images?: boolean
     stock?: boolean
     categoryId?: boolean
-    subcategory?: boolean
     published?: boolean
     featured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
+    subcategory?: boolean
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -2711,11 +2711,11 @@ export namespace Prisma {
     images?: boolean
     stock?: boolean
     categoryId?: boolean
-    subcategory?: boolean
     published?: boolean
     featured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    subcategory?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -2728,11 +2728,11 @@ export namespace Prisma {
     images?: boolean
     stock?: boolean
     categoryId?: boolean
-    subcategory?: boolean
     published?: boolean
     featured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    subcategory?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -2745,17 +2745,17 @@ export namespace Prisma {
     images?: boolean
     stock?: boolean
     categoryId?: boolean
-    subcategory?: boolean
     published?: boolean
     featured?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    subcategory?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "images" | "stock" | "categoryId" | "subcategory" | "published" | "featured" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "images" | "stock" | "categoryId" | "published" | "featured" | "createdAt" | "updatedAt" | "subcategory", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2768,8 +2768,8 @@ export namespace Prisma {
   export type $ProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Product"
     objects: {
-      category: Prisma.$CategoryPayload<ExtArgs>
       orderItems: Prisma.$OrderItemPayload<ExtArgs>[]
+      category: Prisma.$CategoryPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2780,11 +2780,11 @@ export namespace Prisma {
       images: string[]
       stock: number
       categoryId: string
-      subcategory: string | null
       published: boolean
       featured: boolean
       createdAt: Date
       updatedAt: Date
+      subcategory: string | null
     }, ExtArgs["result"]["product"]>
     composites: {}
   }
@@ -3179,8 +3179,8 @@ export namespace Prisma {
    */
   export interface Prisma__ProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     orderItems<T extends Product$orderItemsArgs<ExtArgs> = {}>(args?: Subset<T, Product$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3218,11 +3218,11 @@ export namespace Prisma {
     readonly images: FieldRef<"Product", 'String[]'>
     readonly stock: FieldRef<"Product", 'Int'>
     readonly categoryId: FieldRef<"Product", 'String'>
-    readonly subcategory: FieldRef<"Product", 'String'>
     readonly published: FieldRef<"Product", 'Boolean'>
     readonly featured: FieldRef<"Product", 'Boolean'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly updatedAt: FieldRef<"Product", 'DateTime'>
+    readonly subcategory: FieldRef<"Product", 'String'>
   }
     
 
@@ -3686,52 +3686,76 @@ export namespace Prisma {
   export type OrderMinAggregateOutputType = {
     id: string | null
     orderNumber: string | null
+    nombre: string | null
+    apellidos: string | null
+    nifCif: string | null
+    direccion: string | null
+    piso: string | null
+    codigoPostal: string | null
+    ciudad: string | null
+    provincia: string | null
     nombreCompleto: string | null
+    direccionCompleta: string | null
     nombreCentro: string | null
     email: string | null
     telefono: string | null
-    direccion: string | null
     status: $Enums.OrderStatus | null
     total: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
     couponCode: string | null
     discountAmount: Decimal | null
     paymentMethod: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type OrderMaxAggregateOutputType = {
     id: string | null
     orderNumber: string | null
+    nombre: string | null
+    apellidos: string | null
+    nifCif: string | null
+    direccion: string | null
+    piso: string | null
+    codigoPostal: string | null
+    ciudad: string | null
+    provincia: string | null
     nombreCompleto: string | null
+    direccionCompleta: string | null
     nombreCentro: string | null
     email: string | null
     telefono: string | null
-    direccion: string | null
     status: $Enums.OrderStatus | null
     total: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
     couponCode: string | null
     discountAmount: Decimal | null
     paymentMethod: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type OrderCountAggregateOutputType = {
     id: number
     orderNumber: number
+    nombre: number
+    apellidos: number
+    nifCif: number
+    direccion: number
+    piso: number
+    codigoPostal: number
+    ciudad: number
+    provincia: number
     nombreCompleto: number
+    direccionCompleta: number
     nombreCentro: number
     email: number
     telefono: number
-    direccion: number
     status: number
     total: number
+    createdAt: number
+    updatedAt: number
     couponCode: number
     discountAmount: number
     paymentMethod: number
-    createdAt: number
-    updatedAt: number
     _all: number
   }
 
@@ -3749,52 +3773,76 @@ export namespace Prisma {
   export type OrderMinAggregateInputType = {
     id?: true
     orderNumber?: true
+    nombre?: true
+    apellidos?: true
+    nifCif?: true
+    direccion?: true
+    piso?: true
+    codigoPostal?: true
+    ciudad?: true
+    provincia?: true
     nombreCompleto?: true
+    direccionCompleta?: true
     nombreCentro?: true
     email?: true
     telefono?: true
-    direccion?: true
     status?: true
     total?: true
+    createdAt?: true
+    updatedAt?: true
     couponCode?: true
     discountAmount?: true
     paymentMethod?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type OrderMaxAggregateInputType = {
     id?: true
     orderNumber?: true
+    nombre?: true
+    apellidos?: true
+    nifCif?: true
+    direccion?: true
+    piso?: true
+    codigoPostal?: true
+    ciudad?: true
+    provincia?: true
     nombreCompleto?: true
+    direccionCompleta?: true
     nombreCentro?: true
     email?: true
     telefono?: true
-    direccion?: true
     status?: true
     total?: true
+    createdAt?: true
+    updatedAt?: true
     couponCode?: true
     discountAmount?: true
     paymentMethod?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type OrderCountAggregateInputType = {
     id?: true
     orderNumber?: true
+    nombre?: true
+    apellidos?: true
+    nifCif?: true
+    direccion?: true
+    piso?: true
+    codigoPostal?: true
+    ciudad?: true
+    provincia?: true
     nombreCompleto?: true
+    direccionCompleta?: true
     nombreCentro?: true
     email?: true
     telefono?: true
-    direccion?: true
     status?: true
     total?: true
+    createdAt?: true
+    updatedAt?: true
     couponCode?: true
     discountAmount?: true
     paymentMethod?: true
-    createdAt?: true
-    updatedAt?: true
     _all?: true
   }
 
@@ -3887,18 +3935,26 @@ export namespace Prisma {
   export type OrderGroupByOutputType = {
     id: string
     orderNumber: string
-    nombreCompleto: string
+    nombre: string | null
+    apellidos: string | null
+    nifCif: string | null
+    direccion: string | null
+    piso: string | null
+    codigoPostal: string | null
+    ciudad: string | null
+    provincia: string | null
+    nombreCompleto: string | null
+    direccionCompleta: string | null
     nombreCentro: string | null
     email: string
     telefono: string
-    direccion: string
     status: $Enums.OrderStatus
     total: Decimal
+    createdAt: Date
+    updatedAt: Date
     couponCode: string | null
     discountAmount: Decimal | null
     paymentMethod: string | null
-    createdAt: Date
-    updatedAt: Date
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -3923,18 +3979,26 @@ export namespace Prisma {
   export type OrderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderNumber?: boolean
+    nombre?: boolean
+    apellidos?: boolean
+    nifCif?: boolean
+    direccion?: boolean
+    piso?: boolean
+    codigoPostal?: boolean
+    ciudad?: boolean
+    provincia?: boolean
     nombreCompleto?: boolean
+    direccionCompleta?: boolean
     nombreCentro?: boolean
     email?: boolean
     telefono?: boolean
-    direccion?: boolean
     status?: boolean
     total?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     couponCode?: boolean
     discountAmount?: boolean
     paymentMethod?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -3942,55 +4006,79 @@ export namespace Prisma {
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderNumber?: boolean
+    nombre?: boolean
+    apellidos?: boolean
+    nifCif?: boolean
+    direccion?: boolean
+    piso?: boolean
+    codigoPostal?: boolean
+    ciudad?: boolean
+    provincia?: boolean
     nombreCompleto?: boolean
+    direccionCompleta?: boolean
     nombreCentro?: boolean
     email?: boolean
     telefono?: boolean
-    direccion?: boolean
     status?: boolean
     total?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     couponCode?: boolean
     discountAmount?: boolean
     paymentMethod?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderNumber?: boolean
+    nombre?: boolean
+    apellidos?: boolean
+    nifCif?: boolean
+    direccion?: boolean
+    piso?: boolean
+    codigoPostal?: boolean
+    ciudad?: boolean
+    provincia?: boolean
     nombreCompleto?: boolean
+    direccionCompleta?: boolean
     nombreCentro?: boolean
     email?: boolean
     telefono?: boolean
-    direccion?: boolean
     status?: boolean
     total?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     couponCode?: boolean
     discountAmount?: boolean
     paymentMethod?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
     id?: boolean
     orderNumber?: boolean
+    nombre?: boolean
+    apellidos?: boolean
+    nifCif?: boolean
+    direccion?: boolean
+    piso?: boolean
+    codigoPostal?: boolean
+    ciudad?: boolean
+    provincia?: boolean
     nombreCompleto?: boolean
+    direccionCompleta?: boolean
     nombreCentro?: boolean
     email?: boolean
     telefono?: boolean
-    direccion?: boolean
     status?: boolean
     total?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     couponCode?: boolean
     discountAmount?: boolean
     paymentMethod?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombreCompleto" | "nombreCentro" | "email" | "telefono" | "direccion" | "status" | "total" | "couponCode" | "discountAmount" | "paymentMethod" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombre" | "apellidos" | "nifCif" | "direccion" | "piso" | "codigoPostal" | "ciudad" | "provincia" | "nombreCompleto" | "direccionCompleta" | "nombreCentro" | "email" | "telefono" | "status" | "total" | "createdAt" | "updatedAt" | "couponCode" | "discountAmount" | "paymentMethod", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -4006,18 +4094,26 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       orderNumber: string
-      nombreCompleto: string
+      nombre: string | null
+      apellidos: string | null
+      nifCif: string | null
+      direccion: string | null
+      piso: string | null
+      codigoPostal: string | null
+      ciudad: string | null
+      provincia: string | null
+      nombreCompleto: string | null
+      direccionCompleta: string | null
       nombreCentro: string | null
       email: string
       telefono: string
-      direccion: string
       status: $Enums.OrderStatus
       total: Prisma.Decimal
+      createdAt: Date
+      updatedAt: Date
       couponCode: string | null
       discountAmount: Prisma.Decimal | null
       paymentMethod: string | null
-      createdAt: Date
-      updatedAt: Date
     }, ExtArgs["result"]["order"]>
     composites: {}
   }
@@ -4444,18 +4540,26 @@ export namespace Prisma {
   interface OrderFieldRefs {
     readonly id: FieldRef<"Order", 'String'>
     readonly orderNumber: FieldRef<"Order", 'String'>
+    readonly nombre: FieldRef<"Order", 'String'>
+    readonly apellidos: FieldRef<"Order", 'String'>
+    readonly nifCif: FieldRef<"Order", 'String'>
+    readonly direccion: FieldRef<"Order", 'String'>
+    readonly piso: FieldRef<"Order", 'String'>
+    readonly codigoPostal: FieldRef<"Order", 'String'>
+    readonly ciudad: FieldRef<"Order", 'String'>
+    readonly provincia: FieldRef<"Order", 'String'>
     readonly nombreCompleto: FieldRef<"Order", 'String'>
+    readonly direccionCompleta: FieldRef<"Order", 'String'>
     readonly nombreCentro: FieldRef<"Order", 'String'>
     readonly email: FieldRef<"Order", 'String'>
     readonly telefono: FieldRef<"Order", 'String'>
-    readonly direccion: FieldRef<"Order", 'String'>
     readonly status: FieldRef<"Order", 'OrderStatus'>
     readonly total: FieldRef<"Order", 'Decimal'>
+    readonly createdAt: FieldRef<"Order", 'DateTime'>
+    readonly updatedAt: FieldRef<"Order", 'DateTime'>
     readonly couponCode: FieldRef<"Order", 'String'>
     readonly discountAmount: FieldRef<"Order", 'Decimal'>
     readonly paymentMethod: FieldRef<"Order", 'String'>
-    readonly createdAt: FieldRef<"Order", 'DateTime'>
-    readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
     
 
@@ -7137,11 +7241,11 @@ export namespace Prisma {
     images: 'images',
     stock: 'stock',
     categoryId: 'categoryId',
-    subcategory: 'subcategory',
     published: 'published',
     featured: 'featured',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    subcategory: 'subcategory'
   };
 
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -7150,18 +7254,26 @@ export namespace Prisma {
   export const OrderScalarFieldEnum: {
     id: 'id',
     orderNumber: 'orderNumber',
+    nombre: 'nombre',
+    apellidos: 'apellidos',
+    nifCif: 'nifCif',
+    direccion: 'direccion',
+    piso: 'piso',
+    codigoPostal: 'codigoPostal',
+    ciudad: 'ciudad',
+    provincia: 'provincia',
     nombreCompleto: 'nombreCompleto',
+    direccionCompleta: 'direccionCompleta',
     nombreCentro: 'nombreCentro',
     email: 'email',
     telefono: 'telefono',
-    direccion: 'direccion',
     status: 'status',
     total: 'total',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
     couponCode: 'couponCode',
     discountAmount: 'discountAmount',
-    paymentMethod: 'paymentMethod',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    paymentMethod: 'paymentMethod'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -7395,13 +7507,13 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     stock?: IntFilter<"Product"> | number
     categoryId?: StringFilter<"Product"> | string
-    subcategory?: StringNullableFilter<"Product"> | string | null
     published?: BoolFilter<"Product"> | boolean
     featured?: BoolFilter<"Product"> | boolean
     createdAt?: DateTimeFilter<"Product"> | Date | string
     updatedAt?: DateTimeFilter<"Product"> | Date | string
-    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+    subcategory?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
   }
 
   export type ProductOrderByWithRelationInput = {
@@ -7413,13 +7525,13 @@ export namespace Prisma {
     images?: SortOrder
     stock?: SortOrder
     categoryId?: SortOrder
-    subcategory?: SortOrderInput | SortOrder
     published?: SortOrder
     featured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    category?: CategoryOrderByWithRelationInput
+    subcategory?: SortOrderInput | SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
+    category?: CategoryOrderByWithRelationInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -7434,13 +7546,13 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     stock?: IntFilter<"Product"> | number
     categoryId?: StringFilter<"Product"> | string
-    subcategory?: StringNullableFilter<"Product"> | string | null
     published?: BoolFilter<"Product"> | boolean
     featured?: BoolFilter<"Product"> | boolean
     createdAt?: DateTimeFilter<"Product"> | Date | string
     updatedAt?: DateTimeFilter<"Product"> | Date | string
-    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+    subcategory?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
   }, "id" | "slug">
 
   export type ProductOrderByWithAggregationInput = {
@@ -7452,11 +7564,11 @@ export namespace Prisma {
     images?: SortOrder
     stock?: SortOrder
     categoryId?: SortOrder
-    subcategory?: SortOrderInput | SortOrder
     published?: SortOrder
     featured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    subcategory?: SortOrderInput | SortOrder
     _count?: ProductCountOrderByAggregateInput
     _avg?: ProductAvgOrderByAggregateInput
     _max?: ProductMaxOrderByAggregateInput
@@ -7476,11 +7588,11 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     stock?: IntWithAggregatesFilter<"Product"> | number
     categoryId?: StringWithAggregatesFilter<"Product"> | string
-    subcategory?: StringNullableWithAggregatesFilter<"Product"> | string | null
     published?: BoolWithAggregatesFilter<"Product"> | boolean
     featured?: BoolWithAggregatesFilter<"Product"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
+    subcategory?: StringNullableWithAggregatesFilter<"Product"> | string | null
   }
 
   export type OrderWhereInput = {
@@ -7489,36 +7601,52 @@ export namespace Prisma {
     NOT?: OrderWhereInput | OrderWhereInput[]
     id?: StringFilter<"Order"> | string
     orderNumber?: StringFilter<"Order"> | string
-    nombreCompleto?: StringFilter<"Order"> | string
+    nombre?: StringNullableFilter<"Order"> | string | null
+    apellidos?: StringNullableFilter<"Order"> | string | null
+    nifCif?: StringNullableFilter<"Order"> | string | null
+    direccion?: StringNullableFilter<"Order"> | string | null
+    piso?: StringNullableFilter<"Order"> | string | null
+    codigoPostal?: StringNullableFilter<"Order"> | string | null
+    ciudad?: StringNullableFilter<"Order"> | string | null
+    provincia?: StringNullableFilter<"Order"> | string | null
+    nombreCompleto?: StringNullableFilter<"Order"> | string | null
+    direccionCompleta?: StringNullableFilter<"Order"> | string | null
     nombreCentro?: StringNullableFilter<"Order"> | string | null
     email?: StringFilter<"Order"> | string
     telefono?: StringFilter<"Order"> | string
-    direccion?: StringFilter<"Order"> | string
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     total?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
     couponCode?: StringNullableFilter<"Order"> | string | null
     discountAmount?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: StringNullableFilter<"Order"> | string | null
-    createdAt?: DateTimeFilter<"Order"> | Date | string
-    updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
     id?: SortOrder
     orderNumber?: SortOrder
-    nombreCompleto?: SortOrder
+    nombre?: SortOrderInput | SortOrder
+    apellidos?: SortOrderInput | SortOrder
+    nifCif?: SortOrderInput | SortOrder
+    direccion?: SortOrderInput | SortOrder
+    piso?: SortOrderInput | SortOrder
+    codigoPostal?: SortOrderInput | SortOrder
+    ciudad?: SortOrderInput | SortOrder
+    provincia?: SortOrderInput | SortOrder
+    nombreCompleto?: SortOrderInput | SortOrder
+    direccionCompleta?: SortOrderInput | SortOrder
     nombreCentro?: SortOrderInput | SortOrder
     email?: SortOrder
     telefono?: SortOrder
-    direccion?: SortOrder
     status?: SortOrder
     total?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     discountAmount?: SortOrderInput | SortOrder
     paymentMethod?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     items?: OrderItemOrderByRelationAggregateInput
   }
 
@@ -7528,36 +7656,52 @@ export namespace Prisma {
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
-    nombreCompleto?: StringFilter<"Order"> | string
+    nombre?: StringNullableFilter<"Order"> | string | null
+    apellidos?: StringNullableFilter<"Order"> | string | null
+    nifCif?: StringNullableFilter<"Order"> | string | null
+    direccion?: StringNullableFilter<"Order"> | string | null
+    piso?: StringNullableFilter<"Order"> | string | null
+    codigoPostal?: StringNullableFilter<"Order"> | string | null
+    ciudad?: StringNullableFilter<"Order"> | string | null
+    provincia?: StringNullableFilter<"Order"> | string | null
+    nombreCompleto?: StringNullableFilter<"Order"> | string | null
+    direccionCompleta?: StringNullableFilter<"Order"> | string | null
     nombreCentro?: StringNullableFilter<"Order"> | string | null
     email?: StringFilter<"Order"> | string
     telefono?: StringFilter<"Order"> | string
-    direccion?: StringFilter<"Order"> | string
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     total?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
     couponCode?: StringNullableFilter<"Order"> | string | null
     discountAmount?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: StringNullableFilter<"Order"> | string | null
-    createdAt?: DateTimeFilter<"Order"> | Date | string
-    updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
   }, "id" | "orderNumber">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
     orderNumber?: SortOrder
-    nombreCompleto?: SortOrder
+    nombre?: SortOrderInput | SortOrder
+    apellidos?: SortOrderInput | SortOrder
+    nifCif?: SortOrderInput | SortOrder
+    direccion?: SortOrderInput | SortOrder
+    piso?: SortOrderInput | SortOrder
+    codigoPostal?: SortOrderInput | SortOrder
+    ciudad?: SortOrderInput | SortOrder
+    provincia?: SortOrderInput | SortOrder
+    nombreCompleto?: SortOrderInput | SortOrder
+    direccionCompleta?: SortOrderInput | SortOrder
     nombreCentro?: SortOrderInput | SortOrder
     email?: SortOrder
     telefono?: SortOrder
-    direccion?: SortOrder
     status?: SortOrder
     total?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     discountAmount?: SortOrderInput | SortOrder
     paymentMethod?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -7571,18 +7715,26 @@ export namespace Prisma {
     NOT?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Order"> | string
     orderNumber?: StringWithAggregatesFilter<"Order"> | string
-    nombreCompleto?: StringWithAggregatesFilter<"Order"> | string
+    nombre?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    apellidos?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    nifCif?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    direccion?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    piso?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    codigoPostal?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    ciudad?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    provincia?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    nombreCompleto?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    direccionCompleta?: StringNullableWithAggregatesFilter<"Order"> | string | null
     nombreCentro?: StringNullableWithAggregatesFilter<"Order"> | string | null
     email?: StringWithAggregatesFilter<"Order"> | string
     telefono?: StringWithAggregatesFilter<"Order"> | string
-    direccion?: StringWithAggregatesFilter<"Order"> | string
     status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
     total?: DecimalWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     couponCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
     discountAmount?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
 
   export type OrderItemWhereInput = {
@@ -7811,13 +7963,13 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     stock?: number
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    category: CategoryCreateNestedOneWithoutProductsInput
+    subcategory?: string | null
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
+    category: CategoryCreateNestedOneWithoutProductsInput
   }
 
   export type ProductUncheckedCreateInput = {
@@ -7829,11 +7981,11 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     stock?: number
     categoryId: string
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    subcategory?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -7845,13 +7997,13 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
+    category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
   }
 
   export type ProductUncheckedUpdateInput = {
@@ -7863,11 +8015,11 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
     categoryId?: StringFieldUpdateOperationsInput | string
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -7880,11 +8032,11 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     stock?: number
     categoryId: string
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    subcategory?: string | null
   }
 
   export type ProductUpdateManyMutationInput = {
@@ -7895,11 +8047,11 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductUncheckedUpdateManyInput = {
@@ -7911,134 +8063,190 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
     categoryId?: StringFieldUpdateOperationsInput | string
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderCreateInput = {
     id?: string
     orderNumber: string
-    nombreCompleto: string
+    nombre?: string | null
+    apellidos?: string | null
+    nifCif?: string | null
+    direccion?: string | null
+    piso?: string | null
+    codigoPostal?: string | null
+    ciudad?: string | null
+    provincia?: string | null
+    nombreCompleto?: string | null
+    direccionCompleta?: string | null
     nombreCentro?: string | null
     email: string
     telefono: string
-    direccion: string
     status?: $Enums.OrderStatus
     total: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
     paymentMethod?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
     id?: string
     orderNumber: string
-    nombreCompleto: string
+    nombre?: string | null
+    apellidos?: string | null
+    nifCif?: string | null
+    direccion?: string | null
+    piso?: string | null
+    codigoPostal?: string | null
+    ciudad?: string | null
+    provincia?: string | null
+    nombreCompleto?: string | null
+    direccionCompleta?: string | null
     nombreCentro?: string | null
     email: string
     telefono: string
-    direccion: string
     status?: $Enums.OrderStatus
     total: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
     paymentMethod?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
-    nombreCompleto?: StringFieldUpdateOperationsInput | string
+    nombre?: NullableStringFieldUpdateOperationsInput | string | null
+    apellidos?: NullableStringFieldUpdateOperationsInput | string | null
+    nifCif?: NullableStringFieldUpdateOperationsInput | string | null
+    direccion?: NullableStringFieldUpdateOperationsInput | string | null
+    piso?: NullableStringFieldUpdateOperationsInput | string | null
+    codigoPostal?: NullableStringFieldUpdateOperationsInput | string | null
+    ciudad?: NullableStringFieldUpdateOperationsInput | string | null
+    provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    nombreCompleto?: NullableStringFieldUpdateOperationsInput | string | null
+    direccionCompleta?: NullableStringFieldUpdateOperationsInput | string | null
     nombreCentro?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
-    direccion?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
-    nombreCompleto?: StringFieldUpdateOperationsInput | string
+    nombre?: NullableStringFieldUpdateOperationsInput | string | null
+    apellidos?: NullableStringFieldUpdateOperationsInput | string | null
+    nifCif?: NullableStringFieldUpdateOperationsInput | string | null
+    direccion?: NullableStringFieldUpdateOperationsInput | string | null
+    piso?: NullableStringFieldUpdateOperationsInput | string | null
+    codigoPostal?: NullableStringFieldUpdateOperationsInput | string | null
+    ciudad?: NullableStringFieldUpdateOperationsInput | string | null
+    provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    nombreCompleto?: NullableStringFieldUpdateOperationsInput | string | null
+    direccionCompleta?: NullableStringFieldUpdateOperationsInput | string | null
     nombreCentro?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
-    direccion?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
     id?: string
     orderNumber: string
-    nombreCompleto: string
+    nombre?: string | null
+    apellidos?: string | null
+    nifCif?: string | null
+    direccion?: string | null
+    piso?: string | null
+    codigoPostal?: string | null
+    ciudad?: string | null
+    provincia?: string | null
+    nombreCompleto?: string | null
+    direccionCompleta?: string | null
     nombreCentro?: string | null
     email: string
     telefono: string
-    direccion: string
     status?: $Enums.OrderStatus
     total: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
     paymentMethod?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
-    nombreCompleto?: StringFieldUpdateOperationsInput | string
+    nombre?: NullableStringFieldUpdateOperationsInput | string | null
+    apellidos?: NullableStringFieldUpdateOperationsInput | string | null
+    nifCif?: NullableStringFieldUpdateOperationsInput | string | null
+    direccion?: NullableStringFieldUpdateOperationsInput | string | null
+    piso?: NullableStringFieldUpdateOperationsInput | string | null
+    codigoPostal?: NullableStringFieldUpdateOperationsInput | string | null
+    ciudad?: NullableStringFieldUpdateOperationsInput | string | null
+    provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    nombreCompleto?: NullableStringFieldUpdateOperationsInput | string | null
+    direccionCompleta?: NullableStringFieldUpdateOperationsInput | string | null
     nombreCentro?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
-    direccion?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
-    nombreCompleto?: StringFieldUpdateOperationsInput | string
+    nombre?: NullableStringFieldUpdateOperationsInput | string | null
+    apellidos?: NullableStringFieldUpdateOperationsInput | string | null
+    nifCif?: NullableStringFieldUpdateOperationsInput | string | null
+    direccion?: NullableStringFieldUpdateOperationsInput | string | null
+    piso?: NullableStringFieldUpdateOperationsInput | string | null
+    codigoPostal?: NullableStringFieldUpdateOperationsInput | string | null
+    ciudad?: NullableStringFieldUpdateOperationsInput | string | null
+    provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    nombreCompleto?: NullableStringFieldUpdateOperationsInput | string | null
+    direccionCompleta?: NullableStringFieldUpdateOperationsInput | string | null
     nombreCentro?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
-    direccion?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateInput = {
@@ -8364,15 +8572,15 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
-  export type CategoryScalarRelationFilter = {
-    is?: CategoryWhereInput
-    isNot?: CategoryWhereInput
-  }
-
   export type OrderItemListRelationFilter = {
     every?: OrderItemWhereInput
     some?: OrderItemWhereInput
     none?: OrderItemWhereInput
+  }
+
+  export type CategoryScalarRelationFilter = {
+    is?: CategoryWhereInput
+    isNot?: CategoryWhereInput
   }
 
   export type OrderItemOrderByRelationAggregateInput = {
@@ -8388,11 +8596,11 @@ export namespace Prisma {
     images?: SortOrder
     stock?: SortOrder
     categoryId?: SortOrder
-    subcategory?: SortOrder
     published?: SortOrder
     featured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    subcategory?: SortOrder
   }
 
   export type ProductAvgOrderByAggregateInput = {
@@ -8408,11 +8616,11 @@ export namespace Prisma {
     price?: SortOrder
     stock?: SortOrder
     categoryId?: SortOrder
-    subcategory?: SortOrder
     published?: SortOrder
     featured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    subcategory?: SortOrder
   }
 
   export type ProductMinOrderByAggregateInput = {
@@ -8423,11 +8631,11 @@ export namespace Prisma {
     price?: SortOrder
     stock?: SortOrder
     categoryId?: SortOrder
-    subcategory?: SortOrder
     published?: SortOrder
     featured?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    subcategory?: SortOrder
   }
 
   export type ProductSumOrderByAggregateInput = {
@@ -8496,18 +8704,26 @@ export namespace Prisma {
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    nombre?: SortOrder
+    apellidos?: SortOrder
+    nifCif?: SortOrder
+    direccion?: SortOrder
+    piso?: SortOrder
+    codigoPostal?: SortOrder
+    ciudad?: SortOrder
+    provincia?: SortOrder
     nombreCompleto?: SortOrder
+    direccionCompleta?: SortOrder
     nombreCentro?: SortOrder
     email?: SortOrder
     telefono?: SortOrder
-    direccion?: SortOrder
     status?: SortOrder
     total?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     couponCode?: SortOrder
     discountAmount?: SortOrder
     paymentMethod?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
@@ -8518,35 +8734,51 @@ export namespace Prisma {
   export type OrderMaxOrderByAggregateInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    nombre?: SortOrder
+    apellidos?: SortOrder
+    nifCif?: SortOrder
+    direccion?: SortOrder
+    piso?: SortOrder
+    codigoPostal?: SortOrder
+    ciudad?: SortOrder
+    provincia?: SortOrder
     nombreCompleto?: SortOrder
+    direccionCompleta?: SortOrder
     nombreCentro?: SortOrder
     email?: SortOrder
     telefono?: SortOrder
-    direccion?: SortOrder
     status?: SortOrder
     total?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     couponCode?: SortOrder
     discountAmount?: SortOrder
     paymentMethod?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    nombre?: SortOrder
+    apellidos?: SortOrder
+    nifCif?: SortOrder
+    direccion?: SortOrder
+    piso?: SortOrder
+    codigoPostal?: SortOrder
+    ciudad?: SortOrder
+    provincia?: SortOrder
     nombreCompleto?: SortOrder
+    direccionCompleta?: SortOrder
     nombreCentro?: SortOrder
     email?: SortOrder
     telefono?: SortOrder
-    direccion?: SortOrder
     status?: SortOrder
     total?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     couponCode?: SortOrder
     discountAmount?: SortOrder
     paymentMethod?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
@@ -8759,17 +8991,17 @@ export namespace Prisma {
     set: string[]
   }
 
-  export type CategoryCreateNestedOneWithoutProductsInput = {
-    create?: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutProductsInput
-    connect?: CategoryWhereUniqueInput
-  }
-
   export type OrderItemCreateNestedManyWithoutProductInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
     createMany?: OrderItemCreateManyProductInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type CategoryCreateNestedOneWithoutProductsInput = {
+    create?: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutProductsInput
+    connect?: CategoryWhereUniqueInput
   }
 
   export type OrderItemUncheckedCreateNestedManyWithoutProductInput = {
@@ -8804,14 +9036,6 @@ export namespace Prisma {
     set?: boolean
   }
 
-  export type CategoryUpdateOneRequiredWithoutProductsNestedInput = {
-    create?: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutProductsInput
-    upsert?: CategoryUpsertWithoutProductsInput
-    connect?: CategoryWhereUniqueInput
-    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutProductsInput, CategoryUpdateWithoutProductsInput>, CategoryUncheckedUpdateWithoutProductsInput>
-  }
-
   export type OrderItemUpdateManyWithoutProductNestedInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
@@ -8824,6 +9048,14 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutProductInput | OrderItemUpdateWithWhereUniqueWithoutProductInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutProductInput | OrderItemUpdateManyWithWhereWithoutProductInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type CategoryUpdateOneRequiredWithoutProductsNestedInput = {
+    create?: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutProductsInput
+    upsert?: CategoryUpsertWithoutProductsInput
+    connect?: CategoryWhereUniqueInput
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutProductsInput, CategoryUpdateWithoutProductsInput>, CategoryUncheckedUpdateWithoutProductsInput>
   }
 
   export type OrderItemUncheckedUpdateManyWithoutProductNestedInput = {
@@ -9179,11 +9411,11 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     stock?: number
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    subcategory?: string | null
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
   }
 
@@ -9195,11 +9427,11 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     stock?: number
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    subcategory?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -9241,36 +9473,11 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     stock?: IntFilter<"Product"> | number
     categoryId?: StringFilter<"Product"> | string
-    subcategory?: StringNullableFilter<"Product"> | string | null
     published?: BoolFilter<"Product"> | boolean
     featured?: BoolFilter<"Product"> | boolean
     createdAt?: DateTimeFilter<"Product"> | Date | string
     updatedAt?: DateTimeFilter<"Product"> | Date | string
-  }
-
-  export type CategoryCreateWithoutProductsInput = {
-    id?: string
-    name: string
-    slug: string
-    description?: string | null
-    image?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CategoryUncheckedCreateWithoutProductsInput = {
-    id?: string
-    name: string
-    slug: string
-    description?: string | null
-    image?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CategoryCreateOrConnectWithoutProductsInput = {
-    where: CategoryWhereUniqueInput
-    create: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
+    subcategory?: StringNullableFilter<"Product"> | string | null
   }
 
   export type OrderItemCreateWithoutProductInput = {
@@ -9305,35 +9512,29 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type CategoryUpsertWithoutProductsInput = {
-    update: XOR<CategoryUpdateWithoutProductsInput, CategoryUncheckedUpdateWithoutProductsInput>
+  export type CategoryCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CategoryUncheckedCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CategoryCreateOrConnectWithoutProductsInput = {
+    where: CategoryWhereUniqueInput
     create: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
-    where?: CategoryWhereInput
-  }
-
-  export type CategoryUpdateToOneWithWhereWithoutProductsInput = {
-    where?: CategoryWhereInput
-    data: XOR<CategoryUpdateWithoutProductsInput, CategoryUncheckedUpdateWithoutProductsInput>
-  }
-
-  export type CategoryUpdateWithoutProductsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CategoryUncheckedUpdateWithoutProductsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemUpsertWithWhereUniqueWithoutProductInput = {
@@ -9365,6 +9566,37 @@ export namespace Prisma {
     price?: DecimalFilter<"OrderItem"> | Decimal | DecimalJsLike | number | string
     subtotal?: DecimalFilter<"OrderItem"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
+  }
+
+  export type CategoryUpsertWithoutProductsInput = {
+    update: XOR<CategoryUpdateWithoutProductsInput, CategoryUncheckedUpdateWithoutProductsInput>
+    create: XOR<CategoryCreateWithoutProductsInput, CategoryUncheckedCreateWithoutProductsInput>
+    where?: CategoryWhereInput
+  }
+
+  export type CategoryUpdateToOneWithWhereWithoutProductsInput = {
+    where?: CategoryWhereInput
+    data: XOR<CategoryUpdateWithoutProductsInput, CategoryUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type CategoryUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryUncheckedUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateWithoutOrderInput = {
@@ -9418,35 +9650,51 @@ export namespace Prisma {
   export type OrderCreateWithoutItemsInput = {
     id?: string
     orderNumber: string
-    nombreCompleto: string
+    nombre?: string | null
+    apellidos?: string | null
+    nifCif?: string | null
+    direccion?: string | null
+    piso?: string | null
+    codigoPostal?: string | null
+    ciudad?: string | null
+    provincia?: string | null
+    nombreCompleto?: string | null
+    direccionCompleta?: string | null
     nombreCentro?: string | null
     email: string
     telefono: string
-    direccion: string
     status?: $Enums.OrderStatus
     total: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
     paymentMethod?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderUncheckedCreateWithoutItemsInput = {
     id?: string
     orderNumber: string
-    nombreCompleto: string
+    nombre?: string | null
+    apellidos?: string | null
+    nifCif?: string | null
+    direccion?: string | null
+    piso?: string | null
+    codigoPostal?: string | null
+    ciudad?: string | null
+    provincia?: string | null
+    nombreCompleto?: string | null
+    direccionCompleta?: string | null
     nombreCentro?: string | null
     email: string
     telefono: string
-    direccion: string
     status?: $Enums.OrderStatus
     total: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     couponCode?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string | null
     paymentMethod?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderCreateOrConnectWithoutItemsInput = {
@@ -9462,11 +9710,11 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     stock?: number
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    subcategory?: string | null
     category: CategoryCreateNestedOneWithoutProductsInput
   }
 
@@ -9479,11 +9727,11 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     stock?: number
     categoryId: string
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    subcategory?: string | null
   }
 
   export type ProductCreateOrConnectWithoutOrderItemsInput = {
@@ -9505,35 +9753,51 @@ export namespace Prisma {
   export type OrderUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
-    nombreCompleto?: StringFieldUpdateOperationsInput | string
+    nombre?: NullableStringFieldUpdateOperationsInput | string | null
+    apellidos?: NullableStringFieldUpdateOperationsInput | string | null
+    nifCif?: NullableStringFieldUpdateOperationsInput | string | null
+    direccion?: NullableStringFieldUpdateOperationsInput | string | null
+    piso?: NullableStringFieldUpdateOperationsInput | string | null
+    codigoPostal?: NullableStringFieldUpdateOperationsInput | string | null
+    ciudad?: NullableStringFieldUpdateOperationsInput | string | null
+    provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    nombreCompleto?: NullableStringFieldUpdateOperationsInput | string | null
+    direccionCompleta?: NullableStringFieldUpdateOperationsInput | string | null
     nombreCentro?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
-    direccion?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderUncheckedUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
-    nombreCompleto?: StringFieldUpdateOperationsInput | string
+    nombre?: NullableStringFieldUpdateOperationsInput | string | null
+    apellidos?: NullableStringFieldUpdateOperationsInput | string | null
+    nifCif?: NullableStringFieldUpdateOperationsInput | string | null
+    direccion?: NullableStringFieldUpdateOperationsInput | string | null
+    piso?: NullableStringFieldUpdateOperationsInput | string | null
+    codigoPostal?: NullableStringFieldUpdateOperationsInput | string | null
+    ciudad?: NullableStringFieldUpdateOperationsInput | string | null
+    provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    nombreCompleto?: NullableStringFieldUpdateOperationsInput | string | null
+    direccionCompleta?: NullableStringFieldUpdateOperationsInput | string | null
     nombreCentro?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
-    direccion?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductUpsertWithoutOrderItemsInput = {
@@ -9555,11 +9819,11 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
   }
 
@@ -9572,11 +9836,11 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
     categoryId?: StringFieldUpdateOperationsInput | string
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductCreateManyCategoryInput = {
@@ -9587,11 +9851,11 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     stock?: number
-    subcategory?: string | null
     published?: boolean
     featured?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    subcategory?: string | null
   }
 
   export type ProductUpdateWithoutCategoryInput = {
@@ -9602,11 +9866,11 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
   }
 
@@ -9618,11 +9882,11 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -9634,11 +9898,11 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     stock?: IntFieldUpdateOperationsInput | number
-    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
     published?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemCreateManyProductInput = {

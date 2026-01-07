@@ -19,7 +19,8 @@
     "debug:subcategories": "node --import tsx prisma/debug-subcategories.ts",
     "verify:subcategories": "node --import tsx prisma/verify-subcategories.ts",
     "fix:hierarchy": "node --import tsx prisma/fix-category-hierarchy.ts",
-    "seed:coupons": "node --import tsx prisma/seed-coupons.ts"
+    "seed:coupons": "node --import tsx prisma/seed-coupons.ts",
+    "migrate:addresses": "node --import tsx prisma/migrate-order-addresses.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
