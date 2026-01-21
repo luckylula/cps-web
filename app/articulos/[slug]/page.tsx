@@ -436,6 +436,7 @@ export default function ArticuloPage({ params }: PageProps) {
                       </svg>
                     </button>
                   </div>
+                </div>
                 {product.stock > 0 && (
                   <p className="text-xs text-gray-600 mt-2">
                     Stock disponible: <span className="font-medium">{product.stock} unidades</span>
