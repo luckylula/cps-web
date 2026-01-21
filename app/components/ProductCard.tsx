@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/app/context/CartContext';
+import { useFavorites } from '@/app/context/FavoritesContext';
 import { useState } from 'react';
 
 interface ProductCardProps {
@@ -51,7 +52,10 @@ export default function ProductCard({
   category 
 }: ProductCardProps) {
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [isAdding, setIsAdding] = useState(false);
+  
+  const favorite = isFavorite(id);
   
   // Sanitizar nombre y categoría
   const safeName = sanitizeText(name);
@@ -91,6 +95,35 @@ export default function ProductCard({
               DESTACADO
             </span>
           )}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite({
+                id,
+                name,
+                slug,
+                price: Number(price),
+                images,
+              });
+            }}
+            className="absolute top-2 left-2 bg-white/90 hover:bg-white p-2 rounded-full transition-colors shadow-md"
+            aria-label={favorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+          >
+            <svg
+              className={`w-5 h-5 transition-colors ${favorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`}
+              fill={favorite ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
         </div>
         
         <div className="p-4 flex-1 flex flex-col">

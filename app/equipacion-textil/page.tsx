@@ -6,6 +6,7 @@ import { useState } from "react";
 import ProductCard from "@/app/components/ProductCard";
 import CartButton from "@/app/components/CartButton";
 import SearchBar from "@/app/components/SearchBar";
+import FavoritesButton from "@/app/components/FavoritesButton";
 
 interface Product {
   id: string;
@@ -167,11 +168,12 @@ export default function EquipacionTextilPage() {
               </li>
             </ul>
             
-            {/* Búsqueda y Carrito - Derecha */}
+            {/* Búsqueda, Favoritos y Carrito - Derecha */}
             <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
               <div className="hidden md:block">
                 <SearchBar />
               </div>
+              <FavoritesButton />
               <CartButton />
             </div>
           </div>

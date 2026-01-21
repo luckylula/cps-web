@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./context/CartContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,7 +32,9 @@ export default function RootLayout({
         className={`${inter.variable} ${montserrat.variable} antialiased`}
       >
         <CartProvider>
-          {children}
+          <FavoritesProvider>
+            {children}
+          </FavoritesProvider>
         </CartProvider>
       </body>
     </html>

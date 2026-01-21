@@ -5,8 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
+import { useFavorites } from "@/app/context/FavoritesContext";
 import CartButton from "@/app/components/CartButton";
 import ProductCard from "@/app/components/ProductCard";
+import FavoritesButton from "@/app/components/FavoritesButton";
+import SearchBar from "@/app/components/SearchBar";
 
 interface Product {
   id: string;
@@ -64,6 +67,7 @@ function sanitizeDescription(description: string): string {
 export default function ArticuloPage({ params }: PageProps) {
   const router = useRouter();
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -264,19 +268,13 @@ export default function ArticuloPage({ params }: PageProps) {
             >
               CPS Material Deportivo
             </Link>
-            <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
-              <li>
-                <Link
-                  href="/"
-                  className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <CartButton />
-              </li>
-            </ul>
+            <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
+              <div className="hidden md:block">
+                <SearchBar />
+              </div>
+              <FavoritesButton />
+              <CartButton />
+            </div>
           </div>
         </div>
       </nav>
@@ -413,11 +411,45 @@ export default function ArticuloPage({ params }: PageProps) {
                       </svg>
                     </button>
                   </div>
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={isAdding}
-                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-                  >
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        if (product) {
+                          toggleFavorite({
+                            id: product.id,
+                            name: product.name,
+                            slug: product.slug,
+                            price: Number(product.price),
+                            images: product.images,
+                          });
+                        }
+                      }}
+                      className={`px-4 py-3 rounded-lg transition-colors flex items-center justify-center shadow-lg hover:shadow-xl ${
+                        product && isFavorite(product.id)
+                          ? 'bg-red-500 hover:bg-red-600 text-white'
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                      }`}
+                      aria-label={product && isFavorite(product.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
+                    >
+                      <svg
+                        className={`w-5 h-5 ${product && isFavorite(product.id) ? 'fill-current' : ''}`}
+                        fill={product && isFavorite(product.id) ? 'currentColor' : 'none'}
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={isAdding}
+                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                    >
                     {isAdding ? (
                       <>
                         <svg
@@ -460,7 +492,8 @@ export default function ArticuloPage({ params }: PageProps) {
                         Agregar al carrito
                       </>
                     )}
-                  </button>
+                    </button>
+                  </div>
                 </div>
                 {product.stock > 0 && (
                   <p className="text-sm text-gray-600 mt-3">
