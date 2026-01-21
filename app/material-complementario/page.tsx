@@ -103,53 +103,53 @@ export default function MaterialComplementarioPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation Banner Azul Fijo */}
-      <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
+      {/* Navigation - Estilo Minimalista */}
+      <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="w-full px-4 md:px-6 py-4 md:py-5">
           <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
             {/* Logo y Nombre - Izquierda */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity flex-shrink-0">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="CPS Material Deportivo Logo"
-                width={60}
-                height={60}
+                width={50}
+                height={50}
                 className="object-contain"
               />
-              <div className="text-white text-xl md:text-2xl lg:text-3xl font-bold tracking-tight whitespace-nowrap">
+              <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-semibold tracking-tight whitespace-nowrap">
                 CPS Material Deportivo
               </div>
             </Link>
             
-            {/* Menú de Navegación - Centro (ocupa todo el espacio disponible) */}
-            <ul className="flex items-center gap-2 md:gap-4 lg:gap-6 flex-1 justify-center text-sm md:text-base lg:text-lg">
+            {/* Menú de Navegación - Centro */}
+            <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-sm md:text-base font-medium">
               <li>
-                <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <Link href="/" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/material-escolar" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <Link href="/material-escolar" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Material Escolar
                 </Link>
               </li>
               <li>
-                <Link href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <Link href="/deporte-individual" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Deporte Individual
                 </Link>
               </li>
               <li>
-                <Link href="/deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <Link href="/deportes-colectivos" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Deportes Colectivos
                 </Link>
               </li>
               <li>
-                <Link href="/material-complementario" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 border-b-2 border-orange-300 whitespace-nowrap">
+                <Link href="/material-complementario" className="text-gray-900 hover:text-gray-600 transition-colors py-2 border-b-2 border-gray-900 whitespace-nowrap">
                   Material Complementario
                 </Link>
               </li>
               <li>
-                <Link href="/equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <Link href="/equipacion-textil" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap hidden lg:inline">
                   Equipación Textil
                 </Link>
               </li>
@@ -167,23 +167,23 @@ export default function MaterialComplementarioPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 px-8 bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section - Estilo Minimalista */}
+      <section className="pt-16 pb-12 px-8 bg-white">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-light text-gray-900 mb-6 tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-4 tracking-tight">
             Material Deportivo Complementario
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
             Imprescindibles para tus instalaciones deportivas y ejercitar tu cuerpo.
           </p>
         </div>
       </section>
 
-      {/* Subcategories or Products Section */}
+      {/* Subcategories or Products Section - Estilo Minimalista */}
       {!selectedSubcategory ? (
-        <section className="py-16 px-4 md:px-8 bg-gray-50">
+        <section className="py-16 px-4 md:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl font-light text-gray-900 mb-12 text-center">
+            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-12 text-center">
               Subcategorías
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -191,21 +191,20 @@ export default function MaterialComplementarioPage() {
                 <button
                   key={subcategory.slug}
                   onClick={() => handleSubcategoryClick(subcategory.name)}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-left"
+                  className="group bg-white overflow-hidden cursor-pointer text-left"
                 >
-                  <div className="relative h-64 bg-gray-200 overflow-hidden">
+                  <div className="relative h-80 bg-gray-100 overflow-hidden">
                     <Image
                       src={subcategory.image}
                       alt={subcategory.name}
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-white text-xl font-semibold">
-                        {subcategory.name}
-                      </h3>
-                    </div>
+                  </div>
+                  <div className="pt-4">
+                    <h3 className="text-gray-900 font-medium text-lg mb-1">
+                      {subcategory.name}
+                    </h3>
                   </div>
                 </button>
               ))}
@@ -213,7 +212,7 @@ export default function MaterialComplementarioPage() {
           </div>
         </section>
       ) : (
-        <section id="productos-section" className="py-16 px-4 md:px-8 bg-gray-50">
+        <section id="productos-section" className="py-16 px-4 md:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
             {/* Botón Volver */}
             <button
@@ -228,7 +227,7 @@ export default function MaterialComplementarioPage() {
 
             {/* Título de la Subcategoría */}
             <div className="mb-8">
-              <h2 className="text-4xl font-light text-gray-900 mb-2">
+              <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-2">
                 {selectedSubcategory}
               </h2>
               <p className="text-gray-600">
@@ -266,20 +265,20 @@ export default function MaterialComplementarioPage() {
         </section>
       )}
 
-      {/* CTA Section - Solo mostrar si no hay subcategoría seleccionada */}
+      {/* CTA Section - Estilo Minimalista */}
       {!selectedSubcategory && (
-        <section className="py-16 px-8 bg-[#003366]">
+        <section className="py-16 px-8 bg-black">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-light text-white mb-6 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-light text-white mb-6 tracking-tight">
               ¿Necesitas más información?
             </h2>
-            <p className="text-xl text-white/90 mb-8 font-light">
+            <p className="text-lg text-gray-400 mb-8 font-light">
               Contacta con nosotros para recibir asesoramiento personalizado.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
                 href="/#contacto"
-                className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full transition-colors"
+                className="px-8 py-3 bg-white text-black font-semibold transition-colors hover:bg-gray-100 uppercase tracking-wide text-sm"
               >
                 Contactar
               </Link>
@@ -287,7 +286,7 @@ export default function MaterialComplementarioPage() {
                 href="/catalogo.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-3 bg-white text-[#003366] font-semibold rounded-full hover:bg-gray-100 transition-colors"
+                className="px-8 py-3 bg-black text-white border border-white font-semibold hover:bg-gray-900 transition-colors uppercase tracking-wide text-sm"
               >
                 Ver Catálogo
               </Link>
