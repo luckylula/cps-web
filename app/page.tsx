@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import Image from "next/image";
+import Link from "next/link";
 import ImageCarousel from "./components/ImageCarousel";
 import CartButton from "@/app/components/CartButton";
 import SearchBar from "@/app/components/SearchBar";
@@ -82,13 +83,22 @@ export default function Home() {
       <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
-            <div className="text-white text-lg md:text-xl font-semibold tracking-tight">
-              CPS Material Deportivo
-            </div>
+            <Link href="/" className="flex items-center gap-3 hover:text-orange-300 transition-colors">
+              <Image
+                src="/logo.png"
+                alt="CPS Material Deportivo Logo"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+              <div className="text-white text-lg md:text-xl font-semibold tracking-tight">
+                CPS Material Deportivo
+              </div>
+            </Link>
             <div className="flex items-center gap-3 md:gap-4 flex-1 justify-center max-w-md mx-4">
               <SearchBar />
             </div>
-            <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
+            <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-lg md:text-xl">
               <li>
                 <a href="#" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
                   Home
