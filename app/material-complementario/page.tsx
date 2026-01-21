@@ -112,8 +112,8 @@ export default function MaterialComplementarioPage() {
               <Image
                 src="/logo.png"
                 alt="CPS Material Deportivo Logo"
-                width={50}
-                height={50}
+                width={100}
+                height={100}
                 className="object-contain"
               />
               <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-semibold tracking-tight whitespace-nowrap">
@@ -122,7 +122,7 @@ export default function MaterialComplementarioPage() {
             </Link>
             
             {/* Menú de Navegación - Centro */}
-            <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-sm md:text-base font-medium">
+            <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-base md:text-lg lg:text-xl font-medium">
               <li>
                 <Link href="/" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Home
