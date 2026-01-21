@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 import ProductCard from "@/app/components/ProductCard";
 import CartButton from "@/app/components/CartButton";
+import SearchBar from "@/app/components/SearchBar";
 
 interface Product {
   id: string;
@@ -123,6 +124,9 @@ export default function DeportesColectivosPage() {
             <Link href="/" className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors">
               CPS Material Deportivo
             </Link>
+            <div className="flex items-center gap-3 md:gap-4 flex-1 justify-center max-w-md mx-4">
+              <SearchBar />
+            </div>
             <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
               <li>
                 <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">

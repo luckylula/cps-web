@@ -10,11 +10,20 @@ export async function GET(request: Request) {
     const subcategory = searchParams.get('subcategory');
     const limit = searchParams.get('limit');
     const excludeId = searchParams.get('excludeId');
+    const search = searchParams.get('search');
 
     // Build where clause
     const where: any = {
       published: true,
     };
+
+    // Search functionality - search in product name
+    if (search && search.trim().length >= 2) {
+      where.name = {
+        contains: search.trim(),
+        mode: 'insensitive', // Case-insensitive search
+      };
+    }
 
     if (category) {
       where.category = { slug: category };

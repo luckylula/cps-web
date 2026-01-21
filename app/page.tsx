@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 import Image from "next/image";
 import ImageCarousel from "./components/ImageCarousel";
 import CartButton from "@/app/components/CartButton";
+import SearchBar from "@/app/components/SearchBar";
 
 export default function Home() {
   const categories = {
@@ -83,6 +84,9 @@ export default function Home() {
           <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
             <div className="text-white text-lg md:text-xl font-semibold tracking-tight">
               CPS Material Deportivo
+            </div>
+            <div className="flex items-center gap-3 md:gap-4 flex-1 justify-center max-w-md mx-4">
+              <SearchBar />
             </div>
             <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
               <li>
