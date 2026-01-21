@@ -236,9 +236,9 @@ export default function DeporteIndividualPage() {
             {/* Botón Volver */}
             <button
               onClick={handleBackToSubcategories}
-              className="mb-8 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className="mb-8 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors text-lg md:text-xl font-medium"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Volver
@@ -246,10 +246,10 @@ export default function DeporteIndividualPage() {
 
             {/* Título de la Subcategoría */}
             <div className="mb-8">
-              <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-2">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-4 tracking-tight">
                 {selectedSubcategory}
               </h2>
-              <p className="text-gray-600">
+              <p className="text-lg md:text-xl text-gray-600">
                 {products.length} {products.length === 1 ? 'producto disponible' : 'productos disponibles'}
               </p>
             </div>
@@ -258,11 +258,11 @@ export default function DeporteIndividualPage() {
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-                <p className="mt-4 text-gray-600">Cargando productos...</p>
+                <p className="mt-4 text-lg md:text-xl text-gray-600">Cargando productos...</p>
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg shadow-md">
-                <p className="text-gray-500">No hay productos disponibles en esta subcategoría</p>
+                <p className="text-lg md:text-xl text-gray-500">No hay productos disponibles en esta subcategoría</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
