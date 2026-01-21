@@ -117,58 +117,63 @@ export default function EquipacionTextilPage() {
     <div className="min-h-screen bg-white">
       {/* Navigation Banner Azul Fijo */}
       <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
-          <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
-            <Link href="/" className="flex items-center gap-3 hover:text-orange-300 transition-colors">
+        <div className="w-full px-4 md:px-6 py-4 md:py-5">
+          <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
+            {/* Logo y Nombre - Izquierda */}
+            <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="CPS Material Deportivo Logo"
-                width={40}
-                height={40}
+                width={60}
+                height={60}
                 className="object-contain"
               />
-              <div className="text-white text-lg md:text-xl font-semibold tracking-tight">
+              <div className="text-white text-xl md:text-2xl lg:text-3xl font-bold tracking-tight whitespace-nowrap">
                 CPS Material Deportivo
               </div>
             </Link>
-            <div className="flex items-center gap-3 md:gap-4 flex-1 justify-center max-w-md mx-4">
-              <SearchBar />
-            </div>
-            <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-lg md:text-xl">
+            
+            {/* Menú de Navegación - Centro (ocupa todo el espacio disponible) */}
+            <ul className="flex items-center gap-2 md:gap-4 lg:gap-6 flex-1 justify-center text-sm md:text-base lg:text-lg">
               <li>
-                <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/material-escolar" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link href="/material-escolar" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
                   Material Escolar
                 </Link>
               </li>
               <li>
-                <Link href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
                   Deporte Individual
                 </Link>
               </li>
               <li>
-                <Link href="/deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
+                <Link href="/deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
                   Deportes Colectivos
                 </Link>
               </li>
               <li>
-                <Link href="/material-complementario" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 hidden md:inline">
+                <Link href="/material-complementario" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
                   Material Complementario
                 </Link>
               </li>
               <li>
-                <Link href="/equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1 border-b-2 border-orange-300 hidden md:inline">
+                <Link href="/equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 border-b-2 border-orange-300 whitespace-nowrap">
                   Equipación Textil
                 </Link>
               </li>
-              <li>
-                <CartButton />
-              </li>
             </ul>
+            
+            {/* Búsqueda y Carrito - Derecha */}
+            <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
+              <div className="hidden md:block">
+                <SearchBar />
+              </div>
+              <CartButton />
+            </div>
           </div>
         </div>
       </nav>
