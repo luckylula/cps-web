@@ -223,28 +223,11 @@ export default function MaterialEscolarPage() {
         </div>
       </section>
 
-      {/* Image Section - Estilo Minimalista */}
-      <section className="px-8 pb-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="overflow-hidden">
-            <div className="relative h-[500px] bg-gray-100">
-              <Image
-                src="/material_escolar_cps.png"
-                alt="Material escolar"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Subcategories or Products Section - Estilo Minimalista */}
       {!selectedSubcategory ? (
         <section className="py-16 px-4 md:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-12 text-center">
-              Subcategorías
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {subcategories.map((subcategory) => (
@@ -282,7 +265,7 @@ export default function MaterialEscolarPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Volver a Subcategorías
+              Volver
             </button>
 
             {/* Título de la Subcategoría */}

@@ -204,7 +204,6 @@ export default function DeporteIndividualPage() {
         <section className="py-16 px-4 md:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-12 text-center">
-              Subcategorías
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {subcategories.map((subcategory) => (
@@ -242,7 +241,7 @@ export default function DeporteIndividualPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Volver a Subcategorías
+              Volver
             </button>
 
             {/* Título de la Subcategoría */}
