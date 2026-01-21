@@ -10,14 +10,14 @@ export default function FavoritesButton() {
   return (
     <Link 
       href="/favoritos" 
-      className="text-white hover:text-orange-300 transition-colors font-medium bg-blue-600 px-3 md:px-4 py-1.5 md:py-2 rounded-full hover:bg-blue-700 whitespace-nowrap relative"
+      className="text-gray-900 hover:text-gray-600 transition-colors font-medium px-3 md:px-4 py-1.5 md:py-2 whitespace-nowrap relative flex items-center gap-2"
     >
-      <svg className="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+      <svg className="w-5 h-5" fill={totalFavorites > 0 ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
       </svg>
-      Favoritos
+      <span className="hidden md:inline">Favoritos</span>
       {totalFavorites > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+        <span className="absolute -top-1 -right-1 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
           {totalFavorites > 99 ? '99+' : totalFavorites}
         </span>
       )}

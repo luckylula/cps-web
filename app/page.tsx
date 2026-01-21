@@ -80,53 +80,53 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation Banner Azul Fijo */}
-      <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
+      {/* Navigation - Estilo Minimalista */}
+      <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="w-full px-4 md:px-6 py-4 md:py-5">
           <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
             {/* Logo y Nombre - Izquierda */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity flex-shrink-0">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="CPS Material Deportivo Logo"
-                width={60}
-                height={60}
+                width={50}
+                height={50}
                 className="object-contain"
               />
-              <div className="text-white text-xl md:text-2xl lg:text-3xl font-bold tracking-tight whitespace-nowrap">
+              <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-semibold tracking-tight whitespace-nowrap">
                 CPS Material Deportivo
               </div>
             </Link>
             
-            {/* Menú de Navegación - Centro (ocupa todo el espacio disponible) */}
-            <ul className="flex items-center gap-2 md:gap-4 lg:gap-6 flex-1 justify-center text-sm md:text-base lg:text-lg">
+            {/* Menú de Navegación - Centro */}
+            <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-sm md:text-base font-medium">
               <li>
-                <a href="#" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <a href="#" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Home
                 </a>
               </li>
               <li>
-                <a href="/material-escolar" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <a href="/material-escolar" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Material Escolar
                 </a>
               </li>
               <li>
-                <a href="/deporte-individual" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <a href="/deporte-individual" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Deporte Individual
                 </a>
               </li>
               <li>
-                <a href="/deportes-colectivos" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <a href="/deportes-colectivos" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Deportes Colectivos
                 </a>
               </li>
               <li>
-                <a href="/material-complementario" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <a href="/material-complementario" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap hidden lg:inline">
                   Material Complementario
                 </a>
               </li>
               <li>
-                <a href="/equipacion-textil" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-2 whitespace-nowrap">
+                <a href="/equipacion-textil" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap hidden lg:inline">
                   Equipación Textil
                 </a>
               </li>
@@ -147,31 +147,35 @@ export default function Home() {
       {/* Hero Carousel */}
       <ImageCarousel />
 
-      {/* Sección de Tarjetas de Categorías */}
-      <section className="py-16 md:py-24 px-4 md:px-8 bg-orange-50">
+      {/* Sección de Tarjetas de Categorías - Estilo Minimalista */}
+      <section className="py-16 md:py-24 px-4 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
+              Nuestras Categorías
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Material deportivo de alta calidad para cada necesidad
+            </p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {/* Tarjeta Material Escolar */}
             <a
               href="/material-escolar"
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+              className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden bg-gray-200">
+              <div className="relative h-80 overflow-hidden bg-gray-100">
                 <Image
                   src="/material_escolar_cps.png"
                   alt="Material escolar"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="bg-[#003366] px-4 py-3">
-                <h3 className="text-white font-semibold text-lg">Material escolar</h3>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  <span className="font-medium">Para aprender</span>
-                  <br />
-                  Artículos que te permiten enseñar y crear un entorno de aprendizaje. Entre ellos, deportivo.
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Material Escolar</h3>
+                <p className="text-gray-600 text-sm">
+                  Para aprender
                 </p>
               </div>
             </a>
@@ -179,24 +183,20 @@ export default function Home() {
             {/* Tarjeta Material Deportivo Individual */}
             <a
               href="/deporte-individual"
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+              className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden bg-gray-200">
+              <div className="relative h-80 overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
                   alt="Jugador de pádel"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="bg-[#003366] px-4 py-3">
-                <h3 className="text-white font-semibold text-lg">Material deportivo individual</h3>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  <span className="font-medium">Logra tus propios méritos</span>
-                  <br />
-                  Accede a una variedad de material para tu deporte y supérate a ti mismo.
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Deporte Individual</h3>
+                <p className="text-gray-600 text-sm">
+                  Logra tus propios méritos
                 </p>
               </div>
             </a>
@@ -204,24 +204,20 @@ export default function Home() {
             {/* Tarjeta Material Deportivo Colectivo */}
             <a
               href="/deportes-colectivos"
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+              className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-80 overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80"
                   alt="Material deportivo colectivo"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="bg-[#003366] px-4 py-3">
-                <h3 className="text-white font-semibold text-lg">Material deportivo colectivo</h3>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  <span className="font-medium">Rinde en equipo</span>
-                  <br />
-                  Cada deporte cuenta con su equipación. Encuentra material para entrenar y practicar deportes en equipo.
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Deportes Colectivos</h3>
+                <p className="text-gray-600 text-sm">
+                  Rinde en equipo
                 </p>
               </div>
             </a>
@@ -229,24 +225,20 @@ export default function Home() {
             {/* Tarjeta Material Deportivo Complementario */}
             <a
               href="/material-complementario"
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+              className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-80 overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
                   alt="Material deportivo complementario"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="bg-[#003366] px-4 py-3">
-                <h3 className="text-white font-semibold text-lg">Material deportivo complementario</h3>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  <span className="font-medium">Entrénate</span>
-                  <br />
-                  Imprescindibles para tus instalaciones deportivas y ejercitar tu cuerpo.
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Material Complementario</h3>
+                <p className="text-gray-600 text-sm">
+                  Entrénate
                 </p>
               </div>
             </a>
@@ -254,24 +246,20 @@ export default function Home() {
             {/* Tarjeta Equipación Textil */}
             <a
               href="/equipacion-textil"
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+              className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-80 overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80"
                   alt="Equipación textil"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="bg-[#003366] px-4 py-3">
-                <h3 className="text-white font-semibold text-lg">Equipación textil</h3>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  <span className="font-medium">Viste tu equipo</span>
-                  <br />
-                  Equipación completa para todas tus necesidades deportivas.
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Equipación Textil</h3>
+                <p className="text-gray-600 text-sm">
+                  Viste tu equipo
                 </p>
               </div>
             </a>
@@ -279,16 +267,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-32 px-8 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+      {/* Hero Section - Estilo Minimalista */}
+      <section className="pt-16 pb-20 px-8 relative overflow-hidden bg-white">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center">
-            <h1 className="text-6xl md:text-7xl font-light text-gray-900 mb-6 tracking-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 tracking-tight">
               Material Deportivo
               <br />
               <span className="font-normal">de Alta Calidad</span>
             </h1>
-            <p className="text-xl text-gray-500 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-600 mb-10 font-light max-w-2xl mx-auto leading-relaxed">
               Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
               instalaciones deportivas, piscinas y gimnasios en toda España.
             </p>
@@ -297,13 +285,13 @@ export default function Home() {
                 href="/catalogo.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+                className="px-8 py-3 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors uppercase tracking-wide"
               >
                 Descargar Catálogo
               </a>
               <a
                 href="#contacto"
-                className="px-8 py-3 bg-white text-gray-900 border border-gray-300 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors"
+                className="px-8 py-3 bg-white text-gray-900 border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors uppercase tracking-wide"
               >
                 Contactar
               </a>
@@ -312,22 +300,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Material Escolar Section */}
-      <section id="material-escolar" className="py-24 px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
-              {categories.escolar.subtitle}
-            </p>
-            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+      {/* Material Escolar Section - Estilo Minimalista */}
+      <section id="material-escolar" className="py-20 px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.escolar.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.escolar.description}
             </p>
           </div>
-          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px] bg-gray-200">
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="/material_escolar_cps.png"
                 alt="Material escolar"
@@ -336,35 +321,32 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {categories.escolar.items.map((item, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+                className="text-center"
               >
-                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Deporte Individual Section */}
-      <section id="deporte-individual" className="py-24 px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
-              {categories.individual.subtitle}
-            </p>
-            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+      {/* Deporte Individual Section - Estilo Minimalista */}
+      <section id="deporte-individual" className="py-20 px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.individual.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.individual.description}
             </p>
           </div>
-          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px] bg-gray-200">
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600&q=80"
                 alt="Jugador de pádel"
@@ -373,35 +355,32 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {categories.individual.items.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+                className="text-center"
               >
-                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Deportes Colectivos Section */}
-      <section id="deportes-colectivos" className="py-24 px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
-              {categories.colectivo.subtitle}
-            </p>
-            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+      {/* Deportes Colectivos Section - Estilo Minimalista */}
+      <section id="deportes-colectivos" className="py-20 px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.colectivo.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.colectivo.description}
             </p>
           </div>
-          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px]">
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=80"
                 alt="Niños durante una práctica deportiva en equipo"
@@ -410,35 +389,32 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.colectivo.items.map((item, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+                className="text-center"
               >
-                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Material Complementario Section */}
-      <section id="material-complementario" className="py-24 px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
-              {categories.complementario.subtitle}
-            </p>
-            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+      {/* Material Complementario Section - Estilo Minimalista */}
+      <section id="material-complementario" className="py-20 px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.complementario.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.complementario.description}
             </p>
           </div>
-          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px]">
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80"
                 alt="Gimnasio moderno con equipamiento deportivo"
@@ -447,35 +423,32 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {categories.complementario.items.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
+                className="text-center"
               >
-                <h3 className="text-lg font-medium text-gray-900">{item}</h3>
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Equipación Textil Section */}
-      <section id="equipacion-textil" className="py-24 px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
-              {categories.textil.subtitle}
-            </p>
-            <h2 className="text-5xl font-light text-gray-900 mb-4 tracking-tight">
+      {/* Equipación Textil Section - Estilo Minimalista */}
+      <section id="equipacion-textil" className="py-20 px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.textil.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.textil.description}
             </p>
           </div>
-          <div className="rounded-3xl overflow-hidden shadow-xl">
-            <div className="relative h-[400px]">
+          <div className="overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&q=80"
                 alt="Equipación textil deportiva"
@@ -487,12 +460,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="py-24 px-8">
+      {/* About Section - Estilo Minimalista */}
+      <section className="py-20 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="rounded-3xl overflow-hidden shadow-xl">
-              <div className="relative h-[500px]">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="overflow-hidden">
+              <div className="relative h-[600px] bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800&q=80"
                   alt="Equipamiento deportivo profesional"
@@ -502,20 +475,20 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h2 className="text-5xl font-light text-gray-900 mb-8 tracking-tight">
+              <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-8 tracking-tight">
                 ¿Quiénes somos?
               </h2>
-              <div className="prose prose-lg text-gray-600 font-light leading-relaxed">
-                <p className="text-xl mb-6">
+              <div className="text-gray-600 font-light leading-relaxed space-y-6">
+                <p className="text-lg">
                   Control Play Sports tiene la finalidad de distribuir en toda España material deportivo 
                   para colectivos (Colegios, clubs deportivos, ayuntamientos, instalaciones deportivas, 
                   piscinas, gimnasios...).
                 </p>
-                <p className="text-xl mb-6">
+                <p className="text-lg">
                   Podemos comercializar cualquier material deportivo relacionado con el deporte, 
                   disponemos de los mejores proveedores.
                 </p>
-                <p className="text-xl font-medium text-gray-900">
+                <p className="text-lg font-medium text-gray-900">
                   Todo lo que necesitas, aquí lo encontrarás!
                 </p>
               </div>
@@ -524,11 +497,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contacto" className="py-24 px-8 bg-gray-900 text-white">
+      {/* Contact Section - Estilo Minimalista */}
+      <section id="contacto" className="py-20 px-8 bg-black text-white">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-light mb-4 tracking-tight">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light mb-4 tracking-tight">
               Contacto
             </h2>
             <p className="text-lg text-gray-400 font-light">

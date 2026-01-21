@@ -110,7 +110,7 @@ export default function ImageCarousel() {
                   href={slide.ctaLink}
                   target={slide.ctaLink.startsWith("#") ? undefined : "_blank"}
                   rel={slide.ctaLink.startsWith("#") ? undefined : "noopener noreferrer"}
-                  className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-full text-lg md:text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-inter"
+                  className="inline-block bg-black hover:bg-gray-800 text-white font-semibold px-8 py-4 text-base md:text-lg transition-all duration-300 uppercase tracking-wide font-inter"
                   style={{ fontFamily: "var(--font-inter)" }}
                 >
                   {slide.ctaText}

@@ -102,11 +102,11 @@ export default function SearchBar() {
             if (results.length > 0) setShowResults(true);
           }}
           placeholder="Buscar artículos..."
-          className="w-full px-4 py-2 pl-10 pr-4 bg-white/10 border border-white/20 rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all"
+          className="w-full px-4 py-2 pl-10 pr-4 bg-gray-50 border border-gray-300 rounded-full text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
         />
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
           <svg
-            className="w-5 h-5 text-white/70"
+            className="w-5 h-5 text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -121,7 +121,7 @@ export default function SearchBar() {
         </div>
         {isLoading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
           </div>
         )}
       </div>
