@@ -91,7 +91,7 @@ export default function ProductCard({
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
           {featured && (
-            <span className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1.5 text-sm font-bold rounded">
+            <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
               DESTACADO
             </span>
           )}
@@ -107,11 +107,11 @@ export default function ProductCard({
                 images,
               });
             }}
-            className="absolute top-3 left-3 bg-white/90 hover:bg-white p-2.5 rounded-full transition-colors shadow-md"
+            className="absolute top-2 left-2 bg-white/90 hover:bg-white p-2 rounded-full transition-colors shadow-sm"
             aria-label={favorite ? "Quitar de favoritos" : "Añadir a favoritos"}
           >
             <svg
-              className={`w-6 h-6 transition-colors ${favorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`}
+              className={`w-4 h-4 transition-colors ${favorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`}
               fill={favorite ? 'currentColor' : 'none'}
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -126,28 +126,28 @@ export default function ProductCard({
           </button>
         </div>
         
-        <div className="p-5 flex-1 flex flex-col">
-          <p className="text-sm md:text-base text-gray-500 uppercase tracking-wide mb-2 font-medium">
+        <div className="p-4 flex-1 flex flex-col">
+          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
             {safeCategoryName}
           </p>
-          <h3 className="text-lg md:text-xl font-semibold text-gray-600 mb-3 line-clamp-2 leading-tight" title={safeName}>
+          <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 leading-tight" title={safeName}>
             {safeName}
           </h3>
-          <p className="text-xl md:text-2xl font-bold text-gray-600 mt-auto">
+          <p className="text-lg font-bold text-gray-900 mt-auto">
             {Number(price || 0).toFixed(2)}€
           </p>
         </div>
       </Link>
       
-      <div className="p-5 pt-0">
+      <div className="p-4 pt-0">
         <button
           onClick={handleAddToCart}
           disabled={isAdding}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base md:text-lg"
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
         >
           {isAdding ? (
             <>
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -155,7 +155,7 @@ export default function ProductCard({
             </>
           ) : (
             <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               Añadir a la cesta
