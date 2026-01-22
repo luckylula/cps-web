@@ -550,7 +550,7 @@ function CheckoutForm() {
               </Link>
               <Link
                 href="/"
-                className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors"
+                className="inline-block px-6 py-3 bg-[#003366] hover:bg-[#004080] text-white font-semibold rounded-lg transition-colors"
               >
                 Volver a la tienda
               </Link>
@@ -1121,7 +1121,7 @@ function CheckoutForm() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                    className="flex-1 bg-[#003366] hover:bg-[#004080] text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                   >
                     {isSubmitting ? (
                       <>
@@ -1218,7 +1218,7 @@ function CheckoutForm() {
                       type="button"
                       onClick={handleApplyCoupon}
                       disabled={isValidatingCoupon || !couponCode.trim()}
-                      className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-[#003366] hover:bg-[#004080] text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isValidatingCoupon ? (
                         <svg

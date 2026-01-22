@@ -487,7 +487,7 @@ export default function ArticuloPage({ params }: PageProps) {
                 <button
                   onClick={handleAddToCart}
                   disabled={isAdding}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                  className="bg-[#003366] hover:bg-[#004080] text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                 >
                   {isAdding ? (
                     <>
