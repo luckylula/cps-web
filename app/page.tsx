@@ -148,8 +148,8 @@ export default function Home() {
       <ImageCarousel />
 
       {/* Sección de Tarjetas de Categorías - Estilo Minimalista */}
-      <section className="py-16 md:py-24 px-4 md:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-16 md:py-24 px-4 md:px-6 bg-white">
+        <div className="max-w-[83%] mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
               Nuestras Categorías
@@ -158,13 +158,13 @@ export default function Home() {
               Material deportivo de alta calidad para cada necesidad
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-1.5">
             {/* Tarjeta Material Escolar */}
             <a
               href="/material-escolar"
               className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-80 overflow-hidden bg-gray-100">
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
                   src="/material_escolar_cps.png"
                   alt="Material escolar"
@@ -185,7 +185,7 @@ export default function Home() {
               href="/deporte-individual"
               className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-80 overflow-hidden bg-gray-100">
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
                   alt="Jugador de pádel"
@@ -206,7 +206,7 @@ export default function Home() {
               href="/deportes-colectivos"
               className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-80 overflow-hidden bg-gray-100">
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80"
                   alt="Material deportivo colectivo"
@@ -227,7 +227,7 @@ export default function Home() {
               href="/material-complementario"
               className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-80 overflow-hidden bg-gray-100">
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
                   alt="Material deportivo complementario"
@@ -248,7 +248,7 @@ export default function Home() {
               href="/equipacion-textil"
               className="group bg-white overflow-hidden cursor-pointer"
             >
-              <div className="relative h-80 overflow-hidden bg-gray-100">
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
                   src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80"
                   alt="Equipación textil"

@@ -345,39 +345,39 @@ export default function ArticuloPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Main Content - Minimalist Design with Large Image */}
-      <section className="py-4 md:py-6 px-4 md:px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
-          {/* Image Section - EXTRA LARGE and Prominent */}
-          <div className="mb-8 md:mb-10">
-            <div className="relative w-full h-[75vh] md:h-[85vh] lg:h-[90vh] bg-white overflow-hidden">
-              <Image
-                src={product.images[0] || "/placeholder.png"}
-                alt={product.name}
-                fill
-                className="object-contain"
-                priority
-                sizes="(max-width: 768px) 100vw, 95vw"
-              />
+      {/* Main Content - Two Column Layout */}
+      <section className="py-8 md:py-12 px-4 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+            {/* Image Section - Left Column */}
+            <div className="sticky top-24">
+              <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
+                <Image
+                  src={product.images[0] || "/placeholder.png"}
+                  alt={product.name}
+                  fill
+                  className="object-contain"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Product Name and Price - Below Image, Left Aligned */}
-          <div className="mb-8 md:mb-10">
-            {/* Product Name */}
-            <h1 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight mb-2">
-              {product.name}
-            </h1>
-            
-            {/* Price */}
-            <p className="text-2xl md:text-3xl font-bold text-gray-900">
-              {priceWithIVA.toFixed(2)} €
-            </p>
-          </div>
+            {/* Product Info Section - Right Column */}
+            <div className="space-y-6">
+              {/* Product Name */}
+              <h1 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">
+                {product.name}
+              </h1>
+              
+              {/* Price */}
+              <p className="text-3xl md:text-4xl font-bold text-gray-900">
+                {priceWithIVA.toFixed(2)} €
+              </p>
+              <p className="text-sm text-gray-500">
+                Precio sin IVA: {priceWithoutIVA.toFixed(2)} € (IVA 21% incluido)
+              </p>
 
-          {/* Purchase Section */}
-          <div className="max-w-md mb-8">
-            <div className="space-y-4">
               {/* Quantity Selector */}
               <div>
                 <label
@@ -436,17 +436,17 @@ export default function ArticuloPage({ params }: PageProps) {
                       </svg>
                     </button>
                   </div>
+                  {product.stock > 0 && (
+                    <p className="text-xs text-gray-600">
+                      Stock: <span className="font-medium">{product.stock} unidades</span>
+                    </p>
+                  )}
+                  {product.stock === 0 && (
+                    <p className="text-xs text-gray-500 italic">
+                      Stock: Consultar disponibilidad
+                    </p>
+                  )}
                 </div>
-                {product.stock > 0 && (
-                  <p className="text-xs text-gray-600 mt-2">
-                    Stock disponible: <span className="font-medium">{product.stock} unidades</span>
-                  </p>
-                )}
-                {product.stock === 0 && (
-                  <p className="text-xs text-gray-500 mt-2 italic">
-                    Stock: Consultar disponibilidad
-                  </p>
-                )}
               </div>
 
               {/* Action Buttons */}
@@ -463,7 +463,7 @@ export default function ArticuloPage({ params }: PageProps) {
                       });
                     }
                   }}
-                  className={`px-3 py-2 rounded transition-colors flex items-center justify-center ${
+                  className={`px-2 py-1.5 rounded transition-colors flex items-center justify-center ${
                     product && isFavorite(product.id)
                       ? 'bg-red-500 hover:bg-red-600 text-white'
                       : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -471,7 +471,7 @@ export default function ArticuloPage({ params }: PageProps) {
                   aria-label={product && isFavorite(product.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
                 >
                   <svg
-                    className={`w-4 h-4 ${product && isFavorite(product.id) ? 'fill-current' : ''}`}
+                    className={`w-3 h-3 ${product && isFavorite(product.id) ? 'fill-current' : ''}`}
                     fill={product && isFavorite(product.id) ? 'currentColor' : 'none'}
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -487,12 +487,12 @@ export default function ArticuloPage({ params }: PageProps) {
                 <button
                   onClick={handleAddToCart}
                   disabled={isAdding}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                 >
                   {isAdding ? (
                     <>
                       <svg
-                        className="animate-spin h-4 w-4 text-white"
+                        className="animate-spin h-3 w-3 text-white"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -516,7 +516,7 @@ export default function ArticuloPage({ params }: PageProps) {
                   ) : (
                     <>
                       <svg
-                        className="w-4 h-4"
+                        className="w-3 h-3"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -533,26 +533,26 @@ export default function ArticuloPage({ params }: PageProps) {
                   )}
                 </button>
               </div>
-            </div>
-          </div>
 
-          {/* Technical Description */}
-          <div className="max-w-3xl mx-auto mb-12">
-            <h2 className="text-2xl md:text-3xl font-light text-gray-900 mb-6 text-center">
-              Descripción
-            </h2>
-            {product.description && product.description.trim() ? (
-              <div
-                className="text-gray-700 leading-relaxed prose prose-sm max-w-none text-center"
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeDescription(product.description),
-                }}
-              />
-            ) : (
-              <p className="text-gray-600 italic text-center">
-                Consultar especificaciones técnicas
-              </p>
-            )}
+              {/* Technical Description */}
+              <div>
+                <h2 className="text-xl md:text-2xl font-light text-gray-900 mb-4">
+                  Descripción
+                </h2>
+                {product.description && product.description.trim() ? (
+                  <div
+                    className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeDescription(product.description),
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-600 italic">
+                    Consultar especificaciones técnicas
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
