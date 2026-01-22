@@ -95,14 +95,14 @@ export default function ImageCarousel() {
                 }`}
               >
                 <h1
-                  className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 font-montserrat tracking-tight"
-                  style={{ fontFamily: "var(--font-montserrat)" }}
+                  className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight"
+                  style={{ fontFamily: "var(--font-poppins)" }}
                 >
                   {slide.title}
                 </h1>
                 <p
-                  className="text-lg md:text-xl lg:text-2xl text-white/90 mb-10 font-light font-inter max-w-3xl mx-auto leading-relaxed"
-                  style={{ fontFamily: "var(--font-inter)" }}
+                  className="text-lg md:text-xl lg:text-2xl text-white/90 mb-10 font-light max-w-3xl mx-auto leading-relaxed"
+                  style={{ fontFamily: "var(--font-poppins)" }}
                 >
                   {slide.subtitle}
                 </p>
@@ -110,8 +110,8 @@ export default function ImageCarousel() {
                   href={slide.ctaLink}
                   target={slide.ctaLink.startsWith("#") ? undefined : "_blank"}
                   rel={slide.ctaLink.startsWith("#") ? undefined : "noopener noreferrer"}
-                  className="inline-block bg-black hover:bg-gray-800 text-white font-semibold px-8 py-4 text-base md:text-lg transition-all duration-300 uppercase tracking-wide font-inter"
-                  style={{ fontFamily: "var(--font-inter)" }}
+                  className="inline-block bg-black hover:bg-gray-800 text-white font-semibold px-8 py-4 text-base md:text-lg transition-all duration-300 uppercase tracking-wide"
+                  style={{ fontFamily: "var(--font-poppins)" }}
                 >
                   {slide.ctaText}
                 </a>
