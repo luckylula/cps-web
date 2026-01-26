@@ -72,9 +72,14 @@ model ProductVariant {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
   product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orderItems    OrderItem[]
 
   @@index([productId])
   @@index([proveedor, ref_proveedor, ref_variante], map: "ProductVariant_ref_idx")
+  @@index([sku_interno])
+  @@index([visible_web, activo])
+  @@index([color])
+  @@index([talla])
 }
 
 model Order {
@@ -113,18 +118,21 @@ model Order {
 model OrderItem {
   id          String   @id @default(cuid())
   orderId     String
+  productId   Int
+  variantId   Int?     // Nullable para productos sin variantes
   productName String
   productSlug String
   quantity    Int
   price       Decimal  @db.Decimal(10, 2)
   subtotal    Decimal  @db.Decimal(10, 2)
   createdAt   DateTime @default(now())
-  productId   Int
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product     Product  @relation(fields: [productId], references: [id])
+  variant     ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@index([orderId])
   @@index([productId])
+  @@index([variantId])
 }
 
 model Coupon {

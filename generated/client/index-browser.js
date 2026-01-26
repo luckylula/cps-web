@@ -205,13 +205,14 @@ exports.Prisma.OrderScalarFieldEnum = {
 exports.Prisma.OrderItemScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
+  productId: 'productId',
+  variantId: 'variantId',
   productName: 'productName',
   productSlug: 'productSlug',
   quantity: 'quantity',
   price: 'price',
   subtotal: 'subtotal',
-  createdAt: 'createdAt',
-  productId: 'productId'
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.CouponScalarFieldEnum = {
