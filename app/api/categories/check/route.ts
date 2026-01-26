@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Check if Material Escolar categories exist
@@ -23,24 +25,35 @@ export async function GET() {
         },
       },
       select: {
+        id: true,
         slug: true,
         name: true,
-        _count: {
-          select: {
-            products: true,
-          },
-        },
       },
     });
+
+    // Contar productos para cada categoría por separado
+    const categoriesWithCounts = await Promise.all(
+      categories.map(async (category) => {
+        const productCount = await prisma.product.count({
+          where: {
+            categoryId: category.id,
+            visible_web: true,
+            activo: true,
+          },
+        });
+
+        return {
+          slug: category.slug,
+          name: category.name,
+          productCount,
+        };
+      })
+    );
 
     return NextResponse.json({
       found: categories.length,
       total: materialEscolarSlugs.length,
-      categories: categories.map(c => ({
-        slug: c.slug,
-        name: c.name,
-        productCount: c._count.products,
-      })),
+      categories: categoriesWithCounts,
       missing: materialEscolarSlugs.filter(
         slug => !categories.find(c => c.slug === slug)
       ),
