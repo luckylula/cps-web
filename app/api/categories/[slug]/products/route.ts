@@ -14,13 +14,9 @@ export async function GET(
     
     const products = await prisma.product.findMany({
       where: {
-        published: true,
-        category: {
-          slug: slug,
-        },
-      },
-      include: {
-        category: true,
+        categoryId: slug, // categoryId es un String directo, no una relación
+        visible_web: true,
+        activo: true,
       },
       orderBy: {
         name: 'asc',
