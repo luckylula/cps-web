@@ -271,7 +271,15 @@ export async function POST(request: NextRequest) {
         },
         include: {
           items: {
-            include: {
+            select: {
+              id: true,
+              productId: true,
+              variantId: true,
+              productName: true,
+              productSlug: true,
+              quantity: true,
+              price: true,
+              subtotal: true,
               product: {
                 select: {
                   id: true,
