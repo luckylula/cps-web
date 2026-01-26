@@ -208,12 +208,12 @@ function cleanDescription(description: string): string {
         .join(' | ');
       
       if (variantsText) {
-        cleaned = cleaned.replace(/<!--\s*VARIANTES:.*?-->/s, '');
+        cleaned = cleaned.replace(/<!--\s*VARIANTES:[\s\S]*?-->/g, '');
         cleaned += `\n\nVariantes disponibles: ${variantsText}`;
       }
     } catch (e) {
       // Ignorar errores de parsing
-      cleaned = cleaned.replace(/<!--\s*VARIANTES:.*?-->/s, '');
+      cleaned = cleaned.replace(/<!--\s*VARIANTES:[\s\S]*?-->/g, '');
     }
   }
 
