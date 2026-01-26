@@ -146,9 +146,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
               return (
                 <div
                   key={grupo.nombre}
-                  className="px-4 py-2 relative"
-                  onMouseEnter={() => hasSubcategories && handleGroupHover(grupo.nombre)}
-                  onMouseLeave={() => handleGroupHover(null)}
+                  className="px-4 py-2"
                 >
                   {/* Item del grupo principal */}
                   <div className="flex items-center gap-3 py-2">
@@ -180,20 +178,22 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                       {grupo.nombre}
                     </Link>
                     
-                    {/* Símbolo + si tiene subcategorías */}
+                    {/* Símbolo + si tiene subcategorías - Hover activo aquí */}
                     {hasSubcategories && (
                       <div
-                        className="text-gray-400 text-lg font-light w-6 h-6 flex items-center justify-center transition-colors pointer-events-none"
+                        className="text-gray-700 hover:text-gray-900 text-xl font-normal w-6 h-6 flex items-center justify-center transition-colors cursor-pointer"
+                        onMouseEnter={() => handleGroupHover(grupo.nombre)}
+                        onMouseLeave={() => handleGroupHover(null)}
                       >
                         +
                       </div>
                     )}
                   </div>
 
-                  {/* Lista de deportes (subcategorías) - Solo mostrar si se hace hover sobre el grupo */}
+                  {/* Lista de deportes (subcategorías) - Se expande dentro del mismo menú */}
                   {isHovered && hasSubcategories && (
                     <div 
-                      className="absolute left-full top-0 ml-2 bg-white z-10 shadow-lg border border-gray-200 rounded-lg p-3 min-w-[200px]"
+                      className="ml-16 mt-2"
                       onMouseEnter={() => handleGroupHover(grupo.nombre)}
                       onMouseLeave={() => handleGroupHover(null)}
                     >
