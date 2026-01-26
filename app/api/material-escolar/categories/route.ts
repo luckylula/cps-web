@@ -26,22 +26,33 @@ export async function GET() {
           in: MATERIAL_ESCOLAR_SLUGS,
         },
       },
-      include: {
-        products: {
-          where: {
-            published: true,
-          },
-          orderBy: {
-            name: 'asc',
-          },
-        },
-      },
       orderBy: {
         name: 'asc',
       },
     });
 
     console.log(`[API] Found ${categories.length} categories`);
+
+    // Obtener productos para cada categoría por separado
+    const categoriesWithProducts = await Promise.all(
+      categories.map(async (category) => {
+        const products = await prisma.product.findMany({
+          where: {
+            categoryId: category.id,
+            visible_web: true,
+            activo: true,
+          },
+          orderBy: {
+            name: 'asc',
+          },
+        });
+
+        return {
+          ...category,
+          products,
+        };
+      })
+    );
 
     // Map to the expected format
     const categoriesMap: Record<string, any> = {};
@@ -57,7 +68,7 @@ export async function GET() {
       'educacion-musical': 'educacionMusical',
     };
 
-    categories.forEach((category) => {
+    categoriesWithProducts.forEach((category) => {
       const key = slugToKey[category.slug];
       if (key) {
         categoriesMap[key] = category;
