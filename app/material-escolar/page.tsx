@@ -11,16 +11,17 @@ import SearchBar from "@/app/components/SearchBar";
 import FavoritesButton from "@/app/components/FavoritesButton";
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  price: number | string;
+  price: number | null;
   images: string[];
   featured: boolean;
-  category: {
-    name: string;
-  };
+  categoryId: string;
   subcategory?: string | null;
+  marca?: string | null;
+  sku_interno?: string | null;
+  stock: number;
 }
 
 interface Subcategory {
@@ -299,7 +300,10 @@ export default function MaterialEscolarPage() {
                     price={product.price}
                     images={product.images}
                     featured={product.featured}
-                    category={product.category}
+                    categoryId={product.categoryId}
+                    marca={product.marca}
+                    sku_interno={product.sku_interno}
+                    stock={product.stock}
                   />
                 ))}
               </div>
