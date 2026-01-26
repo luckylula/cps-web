@@ -12,13 +12,24 @@ async function main() {
   console.log('🔍 Analizando subcategorías en Material Escolar...\n');
 
   try {
+    // Primero obtener la categoría para obtener su ID
+    const category = await prisma.category.findUnique({
+      where: {
+        slug: 'material-escolar',
+      },
+    });
+
+    if (!category) {
+      console.error('❌ Categoría "material-escolar" no encontrada');
+      process.exit(1);
+    }
+
     // Obtener todos los productos de Material Escolar
     const products = await prisma.product.findMany({
       where: {
-        category: {
-          slug: 'material-escolar',
-        },
-        published: true,
+        categoryId: category.id, // Usar categoryId directamente
+        visible_web: true,
+        activo: true,
       },
       select: {
         id: true,
