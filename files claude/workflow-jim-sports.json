@@ -1,0 +1,273 @@
+{
+  "name": "Sync Jim Sports CSV",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300],
+      "id": "node-schedule-jim"
+    },
+    {
+      "parameters": {
+        "url": "https://jimsports.shop/fichero-b2b/integracion_producto.csv",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "name": "Download CSV Jim Sports",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 300],
+      "id": "node-http-jim"
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": ";",
+          "headerRow": false,
+          "enableBOM": false,
+          "ignoreWhitespace": false,
+          "quoteStrings": false
+        }
+      },
+      "name": "Parse CSV",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [650, 300],
+      "id": "node-csv-jim"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "name": "Loop Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [850, 300],
+      "id": "node-split-jim"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "field1",
+              "name": "proveedor",
+              "value": "jim_sports",
+              "type": "string"
+            },
+            {
+              "id": "field2",
+              "name": "ref_proveedor",
+              "value": "={{ $json.column_0 }}",
+              "type": "string"
+            },
+            {
+              "id": "field3",
+              "name": "ref_variante",
+              "value": "={{ $json.column_1 || null }}",
+              "type": "string"
+            },
+            {
+              "id": "field4",
+              "name": "ean",
+              "value": "={{ $json.column_2 || null }}",
+              "type": "string"
+            },
+            {
+              "id": "field5",
+              "name": "name",
+              "value": "={{ $json.column_4 }}",
+              "type": "string"
+            },
+            {
+              "id": "field6",
+              "name": "marca",
+              "value": "={{ $json.column_5 || null }}",
+              "type": "string"
+            },
+            {
+              "id": "field7",
+              "name": "images",
+              "value": "={{ $json.column_6 ? [$json.column_6] : [] }}",
+              "type": "array"
+            },
+            {
+              "id": "field8",
+              "name": "categoria_texto",
+              "value": "={{ $json.column_7 || null }}",
+              "type": "string"
+            },
+            {
+              "id": "field9",
+              "name": "categoria_padre",
+              "value": "={{ $json.column_8 || null }}",
+              "type": "string"
+            },
+            {
+              "id": "field10",
+              "name": "color",
+              "value": "={{ $json.column_9 || null }}",
+              "type": "string"
+            },
+            {
+              "id": "field11",
+              "name": "talla",
+              "value": "={{ $json.column_10 || null }}",
+              "type": "string"
+            },
+            {
+              "id": "field12",
+              "name": "stock",
+              "value": "={{ parseInt($json.column_3) || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "field13",
+              "name": "published",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "field14",
+              "name": "activo",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "field15",
+              "name": "visible_web",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "field16",
+              "name": "slug",
+              "value": "={{ $json.column_4.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }}-{{ $json.column_0 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Map Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1050, 300],
+      "id": "node-map-jim"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO \"Product\" (\n  proveedor,\n  ref_proveedor,\n  ref_variante,\n  ean,\n  name,\n  slug,\n  marca,\n  images,\n  categoria_texto,\n  categoria_padre,\n  color,\n  talla,\n  stock,\n  published,\n  activo,\n  visible_web,\n  \"createdAt\",\n  \"updatedAt\"\n) VALUES (\n  '{{ $json.proveedor }}',\n  '{{ $json.ref_proveedor }}',\n  {{ $json.ref_variante ? \"'\" + $json.ref_variante + \"'\" : \"NULL\" }},\n  {{ $json.ean ? \"'\" + $json.ean + \"'\" : \"NULL\" }},\n  '{{ $json.name.replace(/'/g, \"''\") }}',\n  '{{ $json.slug }}',\n  {{ $json.marca ? \"'\" + $json.marca.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  ARRAY[{{ $json.images.map(img => \"'\" + img + \"'\").join(',') }}]::text[],\n  {{ $json.categoria_texto ? \"'\" + $json.categoria_texto.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  {{ $json.categoria_padre ? \"'\" + $json.categoria_padre.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  {{ $json.color ? \"'\" + $json.color + \"'\" : \"NULL\" }},\n  {{ $json.talla ? \"'\" + $json.talla + \"'\" : \"NULL\" }},\n  {{ $json.stock }},\n  {{ $json.published }},\n  {{ $json.activo }},\n  {{ $json.visible_web }},\n  NOW(),\n  NOW()\n)\nON CONFLICT (proveedor, ref_proveedor, ref_variante)\nDO UPDATE SET\n  ean = EXCLUDED.ean,\n  name = EXCLUDED.name,\n  slug = EXCLUDED.slug,\n  marca = EXCLUDED.marca,\n  images = EXCLUDED.images,\n  categoria_texto = EXCLUDED.categoria_texto,\n  categoria_padre = EXCLUDED.categoria_padre,\n  color = EXCLUDED.color,\n  talla = EXCLUDED.talla,\n  stock = EXCLUDED.stock,\n  activo = EXCLUDED.activo,\n  visible_web = EXCLUDED.visible_web,\n  \"updatedAt\" = NOW();",
+        "options": {}
+      },
+      "name": "Insert to Neon",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1250, 300],
+      "id": "node-postgres-jim",
+      "credentials": {
+        "postgres": {
+          "id": "CREDENCIAL_NEON",
+          "name": "Neon PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [
+        [
+          {
+            "node": "Download CSV Jim Sports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CSV Jim Sports": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV": {
+      "main": [
+        [
+          {
+            "node": "Loop Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Items": {
+      "main": [
+        [
+          {
+            "node": "Map Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Fields": {
+      "main": [
+        [
+          {
+            "node": "Insert to Neon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert to Neon": {
+      "main": [
+        [
+          {
+            "node": "Loop Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-26T00:00:00.000Z",
+  "versionId": "1"
+}

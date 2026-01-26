@@ -36,10 +36,10 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "20.19.30",
     "@types/pg": "^8.16.0",
     "@types/puppeteer": "^5.4.7",
-    "@types/react": "^19",
+    "@types/react": "19.2.9",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",

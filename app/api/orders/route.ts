@@ -146,7 +146,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar que todos los productos existan y tengan stock suficiente
-    const productIds = cart.items.map((item) => item.id);
+    // Convertir IDs de string a número (Product.id ahora es Int)
+    const productIds = cart.items.map((item) => parseInt(item.id));
     const products = await prisma.product.findMany({
       where: {
         id: { in: productIds },
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
     // Verificar stock (opcional - solo si quieres restar stock)
     const stockIssues: string[] = [];
     for (const item of cart.items) {
-      const product = products.find((p) => p.id === item.id);
+      const product = products.find((p) => p.id === parseInt(item.id));
       if (product && product.stock < item.quantity) {
         stockIssues.push(
           `${product.name}: Stock disponible ${product.stock}, solicitado ${item.quantity}`
@@ -222,12 +223,12 @@ export async function POST(request: NextRequest) {
           status: 'PENDING',
           items: {
             create: cart.items.map((item) => {
-              const product = products.find((p) => p.id === item.id)!;
+              const product = products.find((p) => p.id === parseInt(item.id))!;
               const price = new Prisma.Decimal(item.price);
               const subtotal = price.mul(item.quantity);
 
               return {
-                productId: item.id,
+                productId: parseInt(item.id), // Convertir a Int
                 productName: item.name,
                 productSlug: item.slug,
                 quantity: item.quantity,
@@ -255,7 +256,7 @@ export async function POST(request: NextRequest) {
       // Restar stock de los productos (opcional)
       for (const item of cart.items) {
         await tx.product.update({
-          where: { id: item.id },
+          where: { id: parseInt(item.id) }, // Convertir a Int
           data: {
             stock: {
               decrement: item.quantity,

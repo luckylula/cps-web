@@ -138,12 +138,24 @@ exports.Prisma.ProductScalarFieldEnum = {
   price: 'price',
   images: 'images',
   stock: 'stock',
-  categoryId: 'categoryId',
   published: 'published',
   featured: 'featured',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  subcategory: 'subcategory'
+  categoryId: 'categoryId',
+  subcategory: 'subcategory',
+  proveedor: 'proveedor',
+  ref_proveedor: 'ref_proveedor',
+  ref_variante: 'ref_variante',
+  sku_interno: 'sku_interno',
+  ean: 'ean',
+  marca: 'marca',
+  categoria_texto: 'categoria_texto',
+  categoria_padre: 'categoria_padre',
+  color: 'color',
+  talla: 'talla',
+  activo: 'activo',
+  visible_web: 'visible_web'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {

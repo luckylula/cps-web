@@ -1,0 +1,143 @@
+{
+  "name": "Sync Made for Sport CSV",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        },
+        "cronExpression": "0 2 * * *"
+      },
+      "name": "Daily at 2 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "id": "node-schedule-made"
+    },
+    {
+      "parameters": {
+        "url": "https://madeforsport.eu/csv/productoses.csv",
+        "options": {}
+      },
+      "name": "Download CSV Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [208, 0],
+      "id": "node-http-made",
+      "notes": "CSV actualizado diariamente por Made for Sport"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar CSV manualmente (Made for Sport)\nconst csvText = items[0].json.data ?? items[0].json.body ?? items[0].json;\nconst lines = String(csvText).split(/\\r?\\n/);\nconst products = [];\n\nfunction slugify(str) {\n  return String(str || \"\")\n    .toLowerCase()\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/[^a-z0-9]+/g, \"-\")\n    .replace(/^-|-$/g, \"\");\n}\n\n// Made for Sport no trae categorías, usamos \"deportes\" por defecto\n// El usuario puede cambiarlas manualmente después\nconst defaultCategoryId = \"deportes\";\n\nfor (let i = 1; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n\n  const fields = line.split(\";\");\n  const cleanFields = fields.map((field) => field.replace(/\"/g, \"\").trim());\n\n  // Mapeo CSV Made for Sport:\n  // column_0: Nombre\n  // column_1: Precio\n  // column_2: SKU (referencia)\n  // column_3: EAN\n  // column_4: Stock\n  // column_5: Descripción (HTML)\n  // column_6: URLs imágenes (separadas por coma)\n\n  const name = cleanFields[0] || \"\";\n  const price = parseFloat(cleanFields[1]) || 0;\n  const refProveedor = cleanFields[2] || null;\n  const ean = cleanFields[3] || null;\n  const stock = parseInt(cleanFields[4], 10) || 0;\n  const description = cleanFields[5] || \"\";\n  const imagenesStr = cleanFields[6] || \"\";\n\n  // Procesar múltiples imágenes\n  const imagenes = imagenesStr\n    .split(\",\")\n    .map((url) => url.trim())\n    .filter((url) => url.length > 0);\n\n  // SKU interno: MF + referencia (sin variantes en Made for Sport)\n  const skuInterno = `MF${refProveedor}`;\n  const baseSlug = slugify(name);\n  const slug = `${baseSlug}-${slugify(skuInterno)}`;\n\n  products.push({\n    json: {\n      proveedor: \"made_for_sport\",\n      ref_proveedor: refProveedor,\n      ref_variante: null,\n      ean,\n      stock,\n      name,\n      description,\n      price,\n      imagenes, // Array de URLs\n      slug,\n      sku_interno: skuInterno,\n      categoryId: defaultCategoryId,\n      subcategory: \"Made for Sport\",\n      marca: null,\n      categoria: null,\n      categoria_padre: null,\n      color: null,\n      talla: null,\n      published: true,\n      activo: true,\n      visible_web: true,\n    },\n  });\n}\n\nreturn products;\n"
+      },
+      "name": "Parse CSV Manual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 0],
+      "id": "node-code-parse-made"
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "name": "Loop Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [608, 0],
+      "id": "node-split-made"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO \"Product\" (\n  name,\n  slug,\n  description,\n  price,\n  images,\n  stock,\n  \"categoryId\",\n  subcategory,\n  published,\n  featured,\n  \"createdAt\",\n  \"updatedAt\",\n  proveedor,\n  ref_proveedor,\n  ref_variante,\n  ean,\n  marca,\n  categoria_texto,\n  categoria_padre,\n  color,\n  talla,\n  activo,\n  visible_web,\n  sku_interno\n) VALUES (\n  '{{ $json.name.replace(/'/g, \"''\") }}',\n  '{{ $json.slug.replace(/'/g, \"''\") }}',\n  '{{ $json.description.replace(/'/g, \"''\") }}',\n  {{ $json.price }},\n  {{ $json.imagenes.length > 0 ? \"ARRAY[\" + $json.imagenes.map(img => \"'\" + img.replace(/'/g, \"''\") + \"'\").join(\",\") + \"]::text[]\" : \"ARRAY[]::text[]\" }},\n  {{ $json.stock }},\n  '{{ $json.categoryId }}',\n  '{{ $json.subcategory.replace(/'/g, \"''\") }}',\n  {{ $json.published }},\n  false,\n  NOW(),\n  NOW(),\n  '{{ $json.proveedor }}',\n  '{{ $json.ref_proveedor }}',\n  NULL,\n  {{ $json.ean ? \"'\" + $json.ean + \"'\" : \"NULL\" }},\n  NULL,\n  NULL,\n  NULL,\n  NULL,\n  NULL,\n  {{ $json.activo }},\n  {{ $json.visible_web }},\n  '{{ $json.sku_interno.replace(/'/g, \"''\") }}'\n)\nON CONFLICT (sku_interno)\nDO UPDATE SET\n  \"categoryId\" = CASE\n    WHEN \"Product\".\"categoryId\" IS NULL OR \"Product\".\"categoryId\" = '' OR \"Product\".\"categoryId\" = 'default'\n      THEN EXCLUDED.\"categoryId\"\n    ELSE \"Product\".\"categoryId\"\n  END,\n  subcategory = CASE\n    WHEN \"Product\".subcategory IS NULL OR \"Product\".subcategory = ''\n      THEN EXCLUDED.subcategory\n    ELSE \"Product\".subcategory\n  END,\n  proveedor = EXCLUDED.proveedor,\n  ref_proveedor = EXCLUDED.ref_proveedor,\n  ref_variante = EXCLUDED.ref_variante,\n  ean = EXCLUDED.ean,\n  name = EXCLUDED.name,\n  slug = EXCLUDED.slug,\n  description = EXCLUDED.description,\n  price = EXCLUDED.price,\n  images = EXCLUDED.images,\n  stock = EXCLUDED.stock,\n  published = EXCLUDED.published,\n  activo = EXCLUDED.activo,\n  visible_web = EXCLUDED.visible_web,\n  \"updatedAt\" = NOW()\nRETURNING id;\n",
+        "options": {}
+      },
+      "name": "Insert to Neon",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [800, 0],
+      "id": "node-postgres-made",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "CREDENCIAL_NEON",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily at 2 AM": {
+      "main": [
+        [
+          {
+            "node": "Download CSV Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CSV Text": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV Manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV Manual": {
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Insert to Neon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert to Neon": {
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-26T00:00:00.000Z",
+  "versionId": "1"
+}

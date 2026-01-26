@@ -6,32 +6,36 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const parentSlug = searchParams.get('parent');
     const includeProducts = searchParams.get('includeProducts') === 'true';
 
     const categories = await prisma.category.findMany({
-      where: {
-        ...(parentSlug && {
-          // If parentSlug is provided, we could filter by parent category
-          // For now, we'll get all categories
-        }),
-      },
-      include: {
-        ...(includeProducts && {
-          products: {
-            where: {
-              published: true,
-            },
-            orderBy: {
-              name: 'asc',
-            },
-          },
-        }),
-      },
       orderBy: {
         name: 'asc',
       },
     });
+
+    // Si se solicitan productos, obtenerlos por separado ya que categoryId no es FK
+    if (includeProducts) {
+      const categoriesWithProducts = await Promise.all(
+        categories.map(async (category) => {
+          const products = await prisma.product.findMany({
+            where: {
+              categoryId: category.id,
+              visible_web: true,
+              activo: true,
+            },
+            orderBy: {
+              name: 'asc',
+            },
+          });
+          return {
+            ...category,
+            products,
+          };
+        })
+      );
+      return NextResponse.json(categoriesWithProducts);
+    }
 
     return NextResponse.json(categories);
   } catch (error) {

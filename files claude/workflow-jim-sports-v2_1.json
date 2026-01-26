@@ -1,0 +1,140 @@
+{
+  "name": "Sync Jim Sports CSV v2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300],
+      "id": "node-schedule-jim"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://jimsports.shop/fichero-b2b/integracion_producto.csv",
+        "options": {}
+      },
+      "name": "Download CSV Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 300],
+      "id": "node-http-jim",
+      "notes": "Descarga CSV como texto"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar CSV manualmente\nconst csvText = items[0].json.data;\nconst lines = csvText.split('\\n');\nconst products = [];\n\nfor (let i = 0; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue; // Saltar líneas vacías\n  \n  // Split por punto y coma, ignorando comillas\n  const fields = line.split(';');\n  \n  // Limpiar comillas de todos los campos\n  const cleanFields = fields.map(field => field.replace(/\"/g, '').trim());\n  \n  // Mapear a objeto\n  products.push({\n    json: {\n      proveedor: 'jim_sports',\n      ref_proveedor: cleanFields[0] || null,\n      ref_variante: cleanFields[1] || null,\n      ean: cleanFields[2] || null,\n      stock: parseInt(cleanFields[3]) || 0,\n      name: cleanFields[4] || '',\n      marca: cleanFields[5] || null,\n      imagen: cleanFields[6] || null,\n      categoria: cleanFields[7] || null,\n      categoria_padre: cleanFields[8] || null,\n      color: cleanFields[9] || null,\n      talla: cleanFields[10] || null,\n      slug: (cleanFields[4] || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + (cleanFields[0] || ''),\n      published: true,\n      activo: true,\n      visible_web: true\n    }\n  });\n}\n\nreturn products;"
+      },
+      "name": "Parse CSV Manual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300],
+      "id": "node-code-parse"
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "name": "Loop Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [850, 300],
+      "id": "node-split-jim"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO \"Product\" (\n  proveedor,\n  ref_proveedor,\n  ref_variante,\n  ean,\n  name,\n  slug,\n  marca,\n  images,\n  categoria_texto,\n  categoria_padre,\n  color,\n  talla,\n  stock,\n  published,\n  activo,\n  visible_web,\n  \"createdAt\",\n  \"updatedAt\"\n) VALUES (\n  '{{ $json.proveedor }}',\n  '{{ $json.proveedor }}',\n  '{{ $json.ref_proveedor }}',\n  {{ $json.ref_variante ? \"'\" + $json.ref_variante + \"'\" : \"NULL\" }},\n  {{ $json.ean ? \"'\" + $json.ean + \"'\" : \"NULL\" }},\n  '{{ $json.name.replace(/'/g, \"''\") }}',\n  '{{ $json.slug }}',\n  {{ $json.marca ? \"'\" + $json.marca.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  {{ $json.imagen ? \"ARRAY['\" + $json.imagen + \"']::text[]\" : \"ARRAY[]::text[]\" }},\n  {{ $json.categoria ? \"'\" + $json.categoria.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  {{ $json.categoria_padre ? \"'\" + $json.categoria_padre.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  {{ $json.color ? \"'\" + $json.color + \"'\" : \"NULL\" }},\n  {{ $json.talla ? \"'\" + $json.talla + \"'\" : \"NULL\" }},\n  {{ $json.stock }},\n  {{ $json.published }},\n  {{ $json.activo }},\n  {{ $json.visible_web }},\n  NOW(),\n  NOW()\n)\nON CONFLICT (proveedor, ref_proveedor, ref_variante)\nDO UPDATE SET\n  ean = EXCLUDED.ean,\n  name = EXCLUDED.name,\n  slug = EXCLUDED.slug,\n  marca = EXCLUDED.marca,\n  images = EXCLUDED.images,\n  categoria_texto = EXCLUDED.categoria_texto,\n  categoria_padre = EXCLUDED.categoria_padre,\n  color = EXCLUDED.color,\n  talla = EXCLUDED.talla,\n  stock = EXCLUDED.stock,\n  activo = EXCLUDED.activo,\n  visible_web = EXCLUDED.visible_web,\n  \"updatedAt\" = NOW();",
+        "options": {}
+      },
+      "name": "Insert to Neon",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1050, 300],
+      "id": "node-postgres-jim",
+      "credentials": {
+        "postgres": {
+          "id": "CREDENCIAL_NEON",
+          "name": "Neon PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [
+        [
+          {
+            "node": "Download CSV Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CSV Text": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV Manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV Manual": {
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Batches": {
+      "main": [
+        [
+          {
+            "node": "Insert to Neon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert to Neon": {
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-26T00:00:00.000Z",
+  "versionId": "2"
+}

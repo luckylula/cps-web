@@ -5,15 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  price: number | string;
+  price: number | null;
   images: string[];
-  category: {
-    name: string;
-    slug: string;
-  };
+  categoryId: string;
 }
 
 export default function SearchBar() {
@@ -81,12 +78,24 @@ export default function SearchBar() {
     setResults([]);
   };
 
-  const formatPrice = (price: number | string) => {
-    const numPrice = typeof price === "string" ? parseFloat(price) : price;
+  const formatPrice = (price: number | null) => {
+    if (price === null || price === undefined) {
+      return "Consultar";
+    }
     return new Intl.NumberFormat("es-ES", {
       style: "currency",
       currency: "EUR",
-    }).format(numPrice);
+    }).format(price);
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    const categoryMap: Record<string, string> = {
+      deportes: 'Deportes',
+      textil: 'Textil',
+      instalaciones: 'Instalaciones',
+      'material-escolar': 'Material Escolar',
+    };
+    return categoryMap[categoryId] || categoryId;
   };
 
   return (
@@ -153,6 +162,7 @@ export default function SearchBar() {
                           alt={product.name}
                           fill
                           className="object-cover"
+                          sizes="64px"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -177,7 +187,7 @@ export default function SearchBar() {
                         {product.name}
                       </h3>
                       <p className="text-xs text-gray-500 truncate">
-                        {product.category.name}
+                        {getCategoryName(product.categoryId)}
                       </p>
                       <p className="text-sm font-semibold text-[#003366] mt-1">
                         {formatPrice(product.price)}

@@ -101,34 +101,29 @@ export default function Home() {
             {/* Menú de Navegación - Centro */}
             <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-base md:text-lg lg:text-xl font-medium">
               <li>
-                <a href="#" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
+                <Link href="/" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/material-escolar" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
+                <Link href="/categoria/deportes" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
+                  Deportes
+                </Link>
+              </li>
+              <li>
+                <Link href="/categoria/textil" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
+                  Textil
+                </Link>
+              </li>
+              <li>
+                <Link href="/categoria/instalaciones" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
+                  Instalaciones
+                </Link>
+              </li>
+              <li>
+                <Link href="/categoria/material-escolar" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
                   Material Escolar
-                </a>
-              </li>
-              <li>
-                <a href="/deporte-individual" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Deporte Individual
-                </a>
-              </li>
-              <li>
-                <a href="/deportes-colectivos" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Deportes Colectivos
-                </a>
-              </li>
-              <li>
-                <a href="/material-complementario" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap hidden lg:inline">
-                  Material Complementario
-                </a>
-              </li>
-              <li>
-                <a href="/equipacion-textil" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap hidden lg:inline">
-                  Equipación Textil
-                </a>
+                </Link>
               </li>
             </ul>
             
@@ -158,10 +153,73 @@ export default function Home() {
               Material deportivo de alta calidad para cada necesidad
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-1.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1.5">
+            {/* Tarjeta Deportes */}
+            <Link
+              href="/categoria/deportes"
+              className="group bg-white overflow-hidden cursor-pointer"
+            >
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
+                <Image
+                  src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
+                  alt="Deportes"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Deportes</h3>
+                <p className="text-gray-600 text-sm">
+                  Material y equipamiento deportivo
+                </p>
+              </div>
+            </Link>
+
+            {/* Tarjeta Textil */}
+            <Link
+              href="/categoria/textil"
+              className="group bg-white overflow-hidden cursor-pointer"
+            >
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
+                <Image
+                  src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80"
+                  alt="Textil"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Textil</h3>
+                <p className="text-gray-600 text-sm">
+                  Ropa y calzado deportivo
+                </p>
+              </div>
+            </Link>
+
+            {/* Tarjeta Instalaciones */}
+            <Link
+              href="/categoria/instalaciones"
+              className="group bg-white overflow-hidden cursor-pointer"
+            >
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
+                <Image
+                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
+                  alt="Instalaciones"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Instalaciones</h3>
+                <p className="text-gray-600 text-sm">
+                  Equipamiento para instalaciones deportivas
+                </p>
+              </div>
+            </Link>
+
             {/* Tarjeta Material Escolar */}
-            <a
-              href="/material-escolar"
+            <Link
+              href="/categoria/material-escolar"
               className="group bg-white overflow-hidden cursor-pointer"
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
@@ -175,94 +233,10 @@ export default function Home() {
               <div className="pt-4">
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Material Escolar</h3>
                 <p className="text-gray-600 text-sm">
-                  Para aprender
+                  Material deportivo escolar
                 </p>
               </div>
-            </a>
-
-            {/* Tarjeta Material Deportivo Individual */}
-            <a
-              href="/deporte-individual"
-              className="group bg-white overflow-hidden cursor-pointer"
-            >
-              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
-                  alt="Jugador de pádel"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="pt-4">
-                <h3 className="text-gray-900 font-medium text-lg mb-1">Deporte Individual</h3>
-                <p className="text-gray-600 text-sm">
-                  Logra tus propios méritos
-                </p>
-              </div>
-            </a>
-
-            {/* Tarjeta Material Deportivo Colectivo */}
-            <a
-              href="/deportes-colectivos"
-              className="group bg-white overflow-hidden cursor-pointer"
-            >
-              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80"
-                  alt="Material deportivo colectivo"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="pt-4">
-                <h3 className="text-gray-900 font-medium text-lg mb-1">Deportes Colectivos</h3>
-                <p className="text-gray-600 text-sm">
-                  Rinde en equipo
-                </p>
-              </div>
-            </a>
-
-            {/* Tarjeta Material Deportivo Complementario */}
-            <a
-              href="/material-complementario"
-              className="group bg-white overflow-hidden cursor-pointer"
-            >
-              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
-                  alt="Material deportivo complementario"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="pt-4">
-                <h3 className="text-gray-900 font-medium text-lg mb-1">Material Complementario</h3>
-                <p className="text-gray-600 text-sm">
-                  Entrénate
-                </p>
-              </div>
-            </a>
-
-            {/* Tarjeta Equipación Textil */}
-            <a
-              href="/equipacion-textil"
-              className="group bg-white overflow-hidden cursor-pointer"
-            >
-              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80"
-                  alt="Equipación textil"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="pt-4">
-                <h3 className="text-gray-900 font-medium text-lg mb-1">Equipación Textil</h3>
-                <p className="text-gray-600 text-sm">
-                  Viste tu equipo
-                </p>
-              </div>
-            </a>
+            </Link>
           </div>
         </div>
       </section>

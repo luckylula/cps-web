@@ -5,29 +5,25 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'placehold.co',
+        hostname: 'jimsports.shop',
+        pathname: '/images/**',
       },
       {
         protocol: 'https',
-        hostname: 'via.placeholder.com',
+        hostname: 'madeforsport.eu',
+        pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'static.wixstatic.com',
+        hostname: 'cdn.jimsports.shop',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
+        pathname: '/**',
       },
     ],
-  },
-  typescript: {
-    // Ignorar errores de TypeScript durante el build para evitar problemas con scripts de scraping
-    ignoreBuildErrors: true,
   },
 };
 

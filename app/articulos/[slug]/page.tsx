@@ -10,13 +10,14 @@ import CartButton from "@/app/components/CartButton";
 import ProductCard from "@/app/components/ProductCard";
 import FavoritesButton from "@/app/components/FavoritesButton";
 import SearchBar from "@/app/components/SearchBar";
+import ImageGallery from "@/app/components/ImageGallery";
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  description: string;
-  price: string;
+  description: string | null;
+  price: number | null;
   images: string[];
   stock: number;
   category: {
@@ -24,19 +25,25 @@ interface Product {
     name: string;
     slug: string;
   };
-  subcategory?: string;
+  subcategory?: string | null;
+  sku_interno?: string | null;
+  marca?: string | null;
+  proveedor?: string | null;
+  color?: string | null;
+  talla?: string | null;
 }
 
 interface RelatedProduct {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  price: string;
+  price: number | null;
   images: string[];
   featured: boolean;
-  category: {
-    name: string;
-  };
+  marca?: string | null;
+  sku_interno?: string | null;
+  stock: number;
+  categoryId: string;
 }
 
 interface PageProps {
@@ -114,7 +121,7 @@ export default function ArticuloPage({ params }: PageProps) {
 
         // Fetch related products
         const relatedResponse = await fetch(
-          `/api/products?category=${data.category.slug}&excludeId=${data.id}&limit=8`
+          `/api/products?category=${data.category.id}&excludeId=${data.id}&limit=8`
         );
         if (relatedResponse.ok) {
           const relatedData = await relatedResponse.json();
@@ -142,13 +149,15 @@ export default function ArticuloPage({ params }: PageProps) {
 
     setIsAdding(true);
     for (let i = 0; i < quantity; i++) {
-      addItem({
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        price: Number(product.price),
-        images: product.images,
-      });
+      if (product.price !== null && product.price !== undefined) {
+        addItem({
+          id: String(product.id),
+          name: product.name,
+          slug: product.slug,
+          price: Number(product.price),
+          images: product.images,
+        });
+      }
     }
     setTimeout(() => {
       setIsAdding(false);
@@ -253,8 +262,16 @@ export default function ArticuloPage({ params }: PageProps) {
     );
   }
 
-  const priceWithIVA = Number(product.price);
-  const priceWithoutIVA = priceWithIVA / 1.21;
+  const hasPrice = product.price !== null && product.price !== undefined && product.price > 0;
+  const priceWithIVA = hasPrice ? Number(product.price) : 0;
+  const priceWithoutIVA = hasPrice ? priceWithIVA / 1.21 : 0;
+  
+  // Formatear nombre del proveedor
+  const proveedorName = product.proveedor === 'jim_sports' 
+    ? 'Jim Sports' 
+    : product.proveedor === 'made_for_sport' 
+    ? 'Made for Sport' 
+    : product.proveedor || 'N/A';
 
   return (
     <div className="min-h-screen bg-white">
@@ -351,32 +368,71 @@ export default function ArticuloPage({ params }: PageProps) {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
             {/* Image Section - Left Column */}
             <div className="sticky top-24">
-              <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
-                <Image
-                  src={product.images[0] || "/placeholder.png"}
-                  alt={product.name}
-                  fill
-                  className="object-contain"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
+              <ImageGallery images={product.images} productName={product.name} />
             </div>
 
             {/* Product Info Section - Right Column */}
             <div className="space-y-6">
+              {/* SKU y Proveedor */}
+              <div className="flex items-center gap-4 flex-wrap">
+                {product.sku_interno && (
+                  <span className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded">
+                    SKU: {product.sku_interno}
+                  </span>
+                )}
+                <span className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded">
+                  {proveedorName}
+                </span>
+              </div>
+
               {/* Product Name */}
               <h1 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">
                 {product.name}
               </h1>
               
+              {/* Marca */}
+              {product.marca && (
+                <p className="text-sm text-gray-600 uppercase tracking-wide">
+                  {product.marca}
+                </p>
+              )}
+
+              {/* Color y Talla (solo Jim Sports) */}
+              {(product.color || product.talla) && (
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  {product.color && (
+                    <span>
+                      <strong>Color:</strong> {product.color}
+                    </span>
+                  )}
+                  {product.talla && (
+                    <span>
+                      <strong>Talla:</strong> {product.talla}
+                    </span>
+                  )}
+                </div>
+              )}
+              
               {/* Price */}
-              <p className="text-3xl md:text-4xl font-bold text-gray-900">
-                {priceWithIVA.toFixed(2)} €
-              </p>
-              <p className="text-sm text-gray-500">
-                Precio sin IVA: {priceWithoutIVA.toFixed(2)} € (IVA 21% incluido)
-              </p>
+              {hasPrice ? (
+                <>
+                  <p className="text-3xl md:text-4xl font-bold text-gray-900">
+                    {priceWithIVA.toFixed(2)} €
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Precio sin IVA: {priceWithoutIVA.toFixed(2)} € (IVA 21% incluido)
+                  </p>
+                </>
+              ) : (
+                <div>
+                  <p className="text-xl md:text-2xl font-medium text-gray-600">
+                    Consultar precio
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Contacta con nosotros para obtener un presupuesto
+                  </p>
+                </div>
+              )}
 
               {/* Quantity Selector */}
               <div>
@@ -455,20 +511,20 @@ export default function ArticuloPage({ params }: PageProps) {
                   onClick={() => {
                     if (product) {
                       toggleFavorite({
-                        id: product.id,
+                        id: String(product.id),
                         name: product.name,
                         slug: product.slug,
-                        price: Number(product.price),
+                        price: product.price !== null && product.price !== undefined ? Number(product.price) : 0,
                         images: product.images,
                       });
                     }
                   }}
                   className={`px-2 py-1.5 rounded transition-colors flex items-center justify-center ${
-                    product && isFavorite(product.id)
+                    product && isFavorite(String(product.id))
                       ? 'bg-red-500 hover:bg-red-600 text-white'
                       : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                   }`}
-                  aria-label={product && isFavorite(product.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
+                  aria-label={product && isFavorite(String(product.id)) ? "Quitar de favoritos" : "Añadir a favoritos"}
                 >
                   <svg
                     className={`w-3 h-3 ${product && isFavorite(product.id) ? 'fill-current' : ''}`}
@@ -484,54 +540,63 @@ export default function ArticuloPage({ params }: PageProps) {
                     />
                   </svg>
                 </button>
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isAdding}
-                  className="bg-[#003366] hover:bg-[#004080] text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
-                >
-                  {isAdding ? (
-                    <>
-                      <svg
-                        className="animate-spin h-3 w-3 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
+                {hasPrice && product.stock > 0 ? (
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isAdding}
+                    className="bg-[#003366] hover:bg-[#004080] text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                  >
+                    {isAdding ? (
+                      <>
+                        <svg
+                          className="animate-spin h-3 w-3 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Añadiendo...
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
                           stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Añadiendo...
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                      Añadir a la cesta
-                    </>
-                  )}
-                </button>
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
+                        </svg>
+                        Añadir a la cesta
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <a
+                    href="#contacto"
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-normal py-1.5 px-3 rounded text-xs transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    Solicitar presupuesto
+                  </a>
+                )}
               </div>
 
               {/* Technical Description */}
@@ -574,7 +639,10 @@ export default function ArticuloPage({ params }: PageProps) {
                   price={relatedProduct.price}
                   images={relatedProduct.images}
                   featured={relatedProduct.featured}
-                  category={relatedProduct.category}
+                  marca={relatedProduct.marca}
+                  sku_interno={relatedProduct.sku_interno}
+                  stock={relatedProduct.stock}
+                  categoryId={relatedProduct.categoryId}
                 />
               ))}
             </div>
