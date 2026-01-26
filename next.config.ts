@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'www.madeforsport.eu',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdn.jimsports.shop',
         pathname: '/**',
       },
@@ -24,6 +29,12 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+    // Configuración para manejar imágenes que fallan
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Aumentar timeout para imágenes remotas
+    minimumCacheTTL: 60,
   },
 };
 

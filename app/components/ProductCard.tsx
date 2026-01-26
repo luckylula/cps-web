@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/app/context/CartContext';
 import { useFavorites } from '@/app/context/FavoritesContext';
 import { useState } from 'react';
+import SafeImage from './SafeImage';
 
 interface ProductCardProps {
   id: number;
@@ -96,12 +97,13 @@ export default function ProductCard({
         className="flex-1 flex flex-col"
       >
         <div className="relative aspect-square overflow-hidden bg-gray-100">
-          <Image
-            src={images[0] || '/placeholder.png'}
+          <SafeImage
+            src={images[0] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2U1ZTdlYiIvPjwvc3ZnPg=='}
             alt={name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            objectFit="cover"
           />
           {featured && (
             <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">

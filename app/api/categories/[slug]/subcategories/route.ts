@@ -6,15 +6,15 @@ export const dynamic = 'force-dynamic';
 // API para obtener subcategorías de una categoría específica
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ categoryId: string }> | { categoryId: string } }
+  { params }: { params: Promise<{ slug: string }> | { slug: string } }
 ) {
   try {
-    const { categoryId } = await Promise.resolve(params);
+    const { slug } = await Promise.resolve(params);
 
     // Obtener todas las subcategorías únicas para esta categoría
     const products = await prisma.product.findMany({
       where: {
-        categoryId: categoryId,
+        categoryId: slug, // slug es el categoryId (deportes, textil, etc.)
         visible_web: true,
         activo: true,
         subcategory: {

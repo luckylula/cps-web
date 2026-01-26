@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Image from 'next/image';
+import SafeImage from './SafeImage';
 
 interface ImageGalleryProps {
   images: string[];
@@ -25,13 +25,14 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   if (images.length === 1) {
     return (
       <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
-        <Image
+        <SafeImage
           src={images[0]}
           alt={productName}
           fill
-          className="object-contain"
+          className=""
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
+          objectFit="contain"
         />
       </div>
     );
@@ -42,13 +43,14 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
     <div className="space-y-4">
       {/* Imagen principal */}
       <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
-        <Image
+        <SafeImage
           src={images[selectedImageIndex]}
           alt={`${productName} - Imagen ${selectedImageIndex + 1}`}
           fill
-          className="object-contain"
+          className=""
           priority={selectedImageIndex === 0}
           sizes="(max-width: 768px) 100vw, 50vw"
+          objectFit="contain"
         />
       </div>
 
@@ -65,12 +67,13 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
             }`}
             aria-label={`Ver imagen ${index + 1}`}
           >
-            <Image
+            <SafeImage
               src={image}
               alt={`${productName} - Thumbnail ${index + 1}`}
               fill
-              className="object-cover"
+              className=""
               sizes="(max-width: 768px) 25vw, 12.5vw"
+              objectFit="cover"
             />
           </button>
         ))}

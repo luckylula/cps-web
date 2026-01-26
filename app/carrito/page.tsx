@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import SafeImage from "@/app/components/SafeImage";
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import CartButton from "@/app/components/CartButton";
@@ -261,11 +261,12 @@ export default function CarritoPage() {
                   <div key={item.id} className="p-6 flex flex-col sm:flex-row gap-4">
                     {/* Imagen */}
                     <div className="relative w-full sm:w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                      <Image
-                        src={item.images[0] || '/placeholder.png'}
+                      <SafeImage
+                        src={item.images[0] || ''}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        className=""
+                        objectFit="cover"
                       />
                     </div>
 

@@ -125,9 +125,8 @@ export default function ArticuloPage({ params }: PageProps) {
         );
         if (relatedResponse.ok) {
           const relatedData = await relatedResponse.json();
-          // Mezclar aleatoriamente y tomar 4
-          const shuffled = relatedData.sort(() => Math.random() - 0.5).slice(0, 4);
-          setRelatedProducts(shuffled);
+          // Tomar los primeros 4 productos (sin mezclar aleatoriamente para evitar problemas de hidratación)
+          setRelatedProducts(relatedData.slice(0, 4));
         }
       } catch (error: any) {
         console.error("[Page] Error fetching product:", error);
