@@ -526,8 +526,8 @@ export default function ArticuloPage({ params }: PageProps) {
                   aria-label={product && isFavorite(String(product.id)) ? "Quitar de favoritos" : "Añadir a favoritos"}
                 >
                   <svg
-                    className={`w-3 h-3 ${product && isFavorite(product.id) ? 'fill-current' : ''}`}
-                    fill={product && isFavorite(product.id) ? 'currentColor' : 'none'}
+                    className={`w-3 h-3 ${product ? (isFavorite(String(product.id)) ? 'fill-current' : '') : ''}`}
+                    fill={product ? (isFavorite(String(product.id)) ? 'currentColor' : 'none') : 'none'}
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
