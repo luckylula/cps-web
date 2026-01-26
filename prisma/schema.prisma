@@ -42,6 +42,7 @@ model Product {
   talla           String?          @db.VarChar(50)
   activo          Boolean          @default(true)
   visible_web     Boolean          @default(true)
+  grupo           String?          @db.VarChar(100)
   id              Int              @id @default(autoincrement())
   orderItems      OrderItem[]
   variants        ProductVariant[]
@@ -52,6 +53,7 @@ model Product {
   @@index([proveedor])
   @@index([visible_web, activo])
   @@index([subcategory])
+  @@index([grupo])
 }
 
 model ProductVariant {

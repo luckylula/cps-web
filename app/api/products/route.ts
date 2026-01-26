@@ -8,6 +8,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const subcategory = searchParams.get('subcategory');
+    const grupo = searchParams.get('grupo');
     const limit = searchParams.get('limit');
     const excludeId = searchParams.get('excludeId');
     const search = searchParams.get('search');
@@ -83,6 +84,12 @@ export async function GET(request: Request) {
     if (subcategory) {
       const trimmedSubcategory = decodeURIComponent(subcategory.trim());
       where.subcategory = trimmedSubcategory;
+    }
+
+    // Filter by grupo
+    if (grupo) {
+      const trimmedGrupo = decodeURIComponent(grupo.trim());
+      where.grupo = trimmedGrupo;
     }
 
     // Filter by marca

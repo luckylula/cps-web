@@ -5,21 +5,21 @@ export const dynamic = 'force-dynamic';
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import ProductCard from "@/app/components/ProductCard";
-import CartButton from "@/app/components/CartButton";
-import SearchBar from "@/app/components/SearchBar";
-import FavoritesButton from "@/app/components/FavoritesButton";
-import SubcategoryAccordion from "@/app/components/SubcategoryAccordion";
+import Navigation from "@/app/components/Navigation";
+import GroupAccordion from "@/app/components/GroupAccordion";
 
-interface SubcategoryGroup {
-  groupName: string;
-  items: Array<{
-    name: string;
-    fullName: string;
-    count: number;
-  }>;
-  totalCount: number;
+interface Deporte {
+  nombre: string;
+  subcategory: string;
+  count: number;
+}
+
+interface Grupo {
+  nombre: string;
+  count: number;
+  deportes: Deporte[];
 }
 
 interface Product {
@@ -64,11 +64,13 @@ const categoryMap: Record<string, { name: string; description: string }> = {
 
 export default function CategoryPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const categorySlug = params?.slug as string;
   const [products, setProducts] = useState<Product[]>([]);
-  const [subcategoryGroups, setSubcategoryGroups] = useState<SubcategoryGroup[]>([]);
+  const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [selectedGrupo, setSelectedGrupo] = useState<string | null>(null);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([]);
   const [selectedMarca, setSelectedMarca] = useState<string | null>(null);
   const [marcas, setMarcas] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState<string>('');
@@ -78,6 +80,22 @@ export default function CategoryPage() {
     name: categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1),
     description: '',
   };
+
+  // Leer parámetros de URL al cargar
+  useEffect(() => {
+    if (!categorySlug) return;
+
+    const grupoParam = searchParams?.get('grupo');
+    const subcategoryParam = searchParams?.get('subcategory');
+
+    if (grupoParam) {
+      setSelectedGrupo(decodeURIComponent(grupoParam));
+    }
+
+    if (subcategoryParam) {
+      setSelectedSubcategories([decodeURIComponent(subcategoryParam)]);
+    }
+  }, [categorySlug, searchParams]);
 
   useEffect(() => {
     if (!categorySlug) return;
@@ -90,8 +108,14 @@ export default function CategoryPage() {
           category: categorySlug,
         });
 
-        if (selectedSubcategory) {
-          params.append('subcategory', encodeURIComponent(selectedSubcategory));
+        if (selectedGrupo) {
+          params.append('grupo', encodeURIComponent(selectedGrupo));
+        }
+
+        // Si hay subcategorías seleccionadas, usar la primera (por ahora solo una)
+        // TODO: Actualizar API para aceptar múltiples subcategorías
+        if (selectedSubcategories.length > 0) {
+          params.append('subcategory', encodeURIComponent(selectedSubcategories[0]));
         }
 
         if (selectedMarca) {
@@ -124,25 +148,39 @@ export default function CategoryPage() {
       }
     };
 
-    // Fetch subcategories grouped
-    const fetchSubcategories = async () => {
+    // Fetch grupos structure
+    const fetchGrupos = async () => {
       try {
-        const response = await fetch(`/api/categories/${categorySlug}/subcategories-grouped`);
+        const response = await fetch(`/api/categories/${categorySlug}/structure`);
         if (response.ok) {
           const data = await response.json();
-          setSubcategoryGroups(data);
+          setGrupos(data.grupos || []);
         }
       } catch (error) {
-        console.error('Error fetching subcategories:', error);
+        console.error('Error fetching grupos:', error);
       }
     };
 
     fetchProducts();
-    fetchSubcategories();
-  }, [categorySlug, selectedSubcategory, selectedMarca, minPrice, maxPrice]);
+    fetchGrupos();
+  }, [categorySlug, selectedGrupo, selectedSubcategories, selectedMarca, minPrice, maxPrice]);
 
-  const handleSubcategoryClick = (subcategory: string | null) => {
-    setSelectedSubcategory(subcategory);
+  const handleGrupoToggle = (grupo: string) => {
+    if (selectedGrupo === grupo) {
+      setSelectedGrupo(null);
+    } else {
+      setSelectedGrupo(grupo);
+    }
+  };
+
+  const handleSubcategoryToggle = (subcategory: string) => {
+    setSelectedSubcategories((prev) => {
+      if (prev.includes(subcategory)) {
+        return prev.filter((s) => s !== subcategory);
+      } else {
+        return [...prev, subcategory];
+      }
+    });
   };
 
   const handleMarcaClick = (marca: string | null) => {
@@ -150,7 +188,8 @@ export default function CategoryPage() {
   };
 
   const clearFilters = () => {
-    setSelectedSubcategory(null);
+    setSelectedGrupo(null);
+    setSelectedSubcategories([]);
     setSelectedMarca(null);
     setMinPrice('');
     setMaxPrice('');
@@ -158,64 +197,8 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation - Estilo Minimalista */}
-      <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="w-full px-4 md:px-6 py-4 md:py-5">
-          <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
-            {/* Logo y Nombre - Izquierda */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
-              <Image
-                src="/logo.png"
-                alt="CPS Material Deportivo Logo"
-                width={100}
-                height={100}
-                className="object-contain"
-              />
-              <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-semibold tracking-tight whitespace-nowrap">
-                CPS Material Deportivo
-              </div>
-            </Link>
-            
-            {/* Menú de Navegación - Centro */}
-            <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-base md:text-lg lg:text-xl font-medium">
-              <li>
-                <Link href="/" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/deportes" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Deportes
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/textil" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Textil
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/instalaciones" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Instalaciones
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/material-escolar" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Material Escolar
-                </Link>
-              </li>
-            </ul>
-            
-            {/* Búsqueda, Favoritos y Carrito - Derecha */}
-            <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
-              <div className="hidden md:block">
-                <SearchBar />
-              </div>
-              <FavoritesButton />
-              <CartButton />
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Navigation */}
+      <Navigation />
 
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-200">
@@ -240,12 +223,15 @@ export default function CategoryPage() {
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
                   
-                  {/* Subcategorías con acordeón */}
-                  {subcategoryGroups.length > 0 && (
-                    <SubcategoryAccordion
-                      groups={subcategoryGroups}
-                      selectedSubcategory={selectedSubcategory}
-                      onSubcategorySelect={handleSubcategoryClick}
+                  {/* Grupos con acordeón */}
+                  {grupos.length > 0 && (
+                    <GroupAccordion
+                      grupos={grupos}
+                      selectedGrupo={selectedGrupo}
+                      selectedSubcategories={selectedSubcategories}
+                      onGrupoToggle={handleGrupoToggle}
+                      onSubcategoryToggle={handleSubcategoryToggle}
+                      onClearAll={clearFilters}
                     />
                   )}
 
@@ -303,7 +289,7 @@ export default function CategoryPage() {
                   </div>
 
                   {/* Limpiar filtros */}
-                  {(selectedSubcategory || selectedMarca || minPrice || maxPrice) && (
+                  {(selectedGrupo || selectedSubcategories.length > 0 || selectedMarca || minPrice || maxPrice) && (
                     <button
                       onClick={clearFilters}
                       className="w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-sm font-medium transition-colors"
