@@ -35,6 +35,7 @@ async function main() {
       console.log('   Creando la categoría...');
       const newCategory = await prisma.category.create({
         data: {
+          id: 'material-escolar', // El id debe coincidir con el slug para consistencia
           name: 'Material Escolar',
           slug: 'material-escolar',
           description: 'Artículos que te permiten enseñar y crear un entorno de aprendizaje deportivo.',
@@ -58,11 +59,6 @@ async function main() {
       // Buscar la categoría de subcategoría
       const subcategoryCategory = await prisma.category.findUnique({
         where: { slug },
-        include: {
-          products: {
-            where: { published: true },
-          },
-        },
       });
 
       if (!subcategoryCategory) {
@@ -70,10 +66,19 @@ async function main() {
         continue;
       }
 
-      console.log(`   Encontrados ${subcategoryCategory.products.length} productos en esta categoría`);
+      // Obtener productos por separado usando categoryId
+      const products = await prisma.product.findMany({
+        where: {
+          categoryId: subcategoryCategory.id,
+          visible_web: true,
+          activo: true,
+        },
+      });
+
+      console.log(`   Encontrados ${products.length} productos en esta categoría`);
 
       // Actualizar cada producto
-      for (const product of subcategoryCategory.products) {
+      for (const product of products) {
         try {
           await prisma.product.update({
             where: { id: product.id },
