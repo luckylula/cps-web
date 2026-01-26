@@ -27,7 +27,6 @@ interface MegaMenuProps {
 
 export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [hoveredGrupo, setHoveredGrupo] = useState<string | null>(null);
   const [structure, setStructure] = useState<CategoryStructure | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,6 +48,21 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
     fetchStructure();
   }, [categorySlug]);
 
+  // Calcular número de columnas según cantidad de grupos
+  const getColumnCount = (grupoCount: number) => {
+    if (grupoCount <= 2) return 2;
+    if (grupoCount <= 4) return 3;
+    if (grupoCount <= 6) return 4;
+    return 4; // Máximo 4 columnas
+  };
+
+  // Separar grupos normales de "Sin clasificar"
+  const separateGroups = (grupos: Grupo[]) => {
+    const normal = grupos.filter((g) => g.nombre !== 'Sin clasificar');
+    const sinClasificar = grupos.find((g) => g.nombre === 'Sin clasificar');
+    return { normal, sinClasificar };
+  };
+
   if (loading || !structure || structure.grupos.length === 0) {
     return (
       <Link
@@ -60,49 +74,15 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
     );
   }
 
-  // Si solo hay 1 grupo, mostrar directamente las subcategorías
-  if (structure.grupos.length === 1) {
-    const grupo = structure.grupos[0];
-    return (
-      <div
-        className="relative"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <Link
-          href={`/categoria/${categorySlug}`}
-          className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap flex items-center gap-1"
-        >
-          {categoryName}
-          <span className="text-xs">▼</span>
-        </Link>
+  const { normal, sinClasificar } = separateGroups(structure.grupos);
+  const columnCount = getColumnCount(normal.length + (sinClasificar ? 1 : 0));
+  const allGroups = sinClasificar ? [...normal, sinClasificar] : normal;
 
-        {isHovered && (
-          <div className="absolute top-full left-0 mt-0 w-64 bg-white shadow-lg border border-gray-200 rounded-md z-50 py-2">
-            {grupo.deportes.map((deporte) => (
-              <Link
-                key={deporte.subcategory}
-                href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}&subcategory=${encodeURIComponent(deporte.subcategory)}`}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-              >
-                {deporte.nombre} ({deporte.count})
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Estructura completa de 3 niveles
   return (
     <div
       className="relative"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setHoveredGrupo(null);
-      }}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Link
         href={`/categoria/${categorySlug}`}
@@ -113,49 +93,51 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
       </Link>
 
       {isHovered && (
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0 w-full max-w-6xl bg-white shadow-lg border border-gray-200 rounded-md z-50">
-          <div className="grid grid-cols-4 gap-0">
-            {/* Columna de grupos (nivel 2) */}
-            <div className="border-r border-gray-200">
-              {structure.grupos.map((grupo) => (
-                <div
-                  key={grupo.nombre}
-                  className="relative"
-                  onMouseEnter={() => setHoveredGrupo(grupo.nombre)}
-                >
-                  <div
-                    className={`px-4 py-3 text-sm font-medium transition-colors flex items-center justify-between ${
-                      hoveredGrupo === grupo.nombre
-                        ? 'bg-gray-50 text-[#003366]'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span>{grupo.nombre}</span>
-                    <span className="text-xs text-gray-500">({grupo.count})</span>
-                    {grupo.deportes.length > 0 && (
-                      <span className="text-xs ml-2">►</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-full max-w-[1200px] bg-white shadow-xl border border-gray-200 rounded-lg z-50 overflow-hidden mega-menu-panel">
+          <div 
+            className="grid gap-0 p-6"
+            style={{
+              gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
+            }}
+          >
+            {allGroups.map((grupo) => (
+              <div
+                key={grupo.nombre}
+                className="px-4 py-2 border-r border-gray-100 last:border-r-0"
+              >
+                {/* Título del grupo */}
+                <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3 pb-2 border-b border-gray-100">
+                  {grupo.nombre}
+                  <span className="ml-2 text-xs font-normal text-[#999]">
+                    ({grupo.count})
+                  </span>
+                </h3>
 
-            {/* Columna de deportes (nivel 3) */}
-            {hoveredGrupo && (
-              <div className="col-span-3 p-4">
-                {structure.grupos
-                  .find((g) => g.nombre === hoveredGrupo)
-                  ?.deportes.map((deporte) => (
-                    <Link
-                      key={deporte.subcategory}
-                      href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(hoveredGrupo)}&subcategory=${encodeURIComponent(deporte.subcategory)}`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded transition-colors mb-1"
-                    >
-                      {deporte.nombre} <span className="text-gray-500">({deporte.count})</span>
-                    </Link>
-                  ))}
+                {/* Lista de deportes */}
+                <ul className="space-y-1.5">
+                  {grupo.deportes.length > 0 ? (
+                    grupo.deportes.map((deporte) => (
+                      <li key={deporte.subcategory}>
+                        <Link
+                          href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}&subcategory=${encodeURIComponent(deporte.subcategory)}`}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded text-[13px] font-normal text-[#666] hover:bg-gray-50 hover:text-[#1a1a1a] transition-all duration-150 group"
+                        >
+                          <span className="text-[#999] group-hover:text-[#666]">•</span>
+                          <span className="flex-1">{deporte.nombre}</span>
+                          <span className="text-[11px] text-[#999] group-hover:text-[#666]">
+                            ({deporte.count})
+                          </span>
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-2 py-1.5 text-[13px] text-[#999] italic">
+                      Sin subcategorías
+                    </li>
+                  )}
+                </ul>
               </div>
-            )}
+            ))}
           </div>
         </div>
       )}
