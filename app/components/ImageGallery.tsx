@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import SafeImage from './SafeImage';
+import { getFirstValidImage, validateImageUrl } from '@/app/lib/imageUtils';
 
 interface ImageGalleryProps {
   images: string[];
@@ -11,7 +12,10 @@ interface ImageGalleryProps {
 export default function ImageGallery({ images, productName }: ImageGalleryProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  if (!images || images.length === 0) {
+  // Filtrar solo imágenes válidas
+  const validImages = images ? images.filter(img => validateImageUrl(img) !== null) : [];
+
+  if (!validImages || validImages.length === 0) {
     return (
       <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center text-gray-400">
@@ -22,11 +26,11 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   }
 
   // Si solo hay una imagen, mostrar solo esa
-  if (images.length === 1) {
+  if (validImages.length === 1) {
     return (
       <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
         <SafeImage
-          src={images[0]}
+          src={validImages[0]}
           alt={productName}
           fill
           className=""
@@ -44,7 +48,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
       {/* Imagen principal */}
       <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
         <SafeImage
-          src={images[selectedImageIndex]}
+          src={validImages[selectedImageIndex]}
           alt={`${productName} - Imagen ${selectedImageIndex + 1}`}
           fill
           className=""
@@ -56,7 +60,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
 
       {/* Thumbnails */}
       <div className="grid grid-cols-4 gap-2">
-        {images.map((image, index) => (
+        {validImages.map((image, index) => (
           <button
             key={index}
             onClick={() => setSelectedImageIndex(index)}

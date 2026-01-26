@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Aumentar timeout para imágenes remotas
     minimumCacheTTL: 60,
+    // Desactivar optimización para dominios problemáticos (se hace en el componente)
+    // Aumentar límite de tamaño de imagen
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 };
 

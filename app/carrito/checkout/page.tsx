@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import SafeImage from "@/app/components/SafeImage";
 import { useCart } from "@/app/context/CartContext";
 import CartButton from "@/app/components/CartButton";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { getFirstValidImage } from "@/app/lib/imageUtils";
 
 // Validar y inicializar Stripe
 const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -1261,11 +1262,12 @@ function CheckoutForm() {
                   >
                     {item.images && item.images.length > 0 ? (
                       <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                        <Image
-                          src={item.images[0]}
+                        <SafeImage
+                          src={getFirstValidImage(item.images) || ''}
                           alt={item.name}
                           fill
-                          className="object-cover"
+                          className=""
+                          objectFit="cover"
                         />
                       </div>
                     ) : (

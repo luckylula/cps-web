@@ -5,6 +5,7 @@ import SafeImage from "@/app/components/SafeImage";
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import CartButton from "@/app/components/CartButton";
+import { getFirstValidImage } from "@/app/lib/imageUtils";
 
 interface FormData {
   nombre: string;
@@ -262,7 +263,7 @@ export default function CarritoPage() {
                     {/* Imagen */}
                     <div className="relative w-full sm:w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                       <SafeImage
-                        src={item.images[0] || ''}
+                        src={getFirstValidImage(item.images) || ''}
                         alt={item.name}
                         fill
                         className=""
