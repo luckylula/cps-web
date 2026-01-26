@@ -18,37 +18,33 @@ model Category {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String   @unique
-  description String?  @db.Text
-  price       Decimal? @db.Decimal(10, 2)
-  images      String[]
-  stock       Int      @default(0)
-  published   Boolean  @default(false)
-  featured    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Sistema de categorías del cliente
-  categoryId  String // 'deportes', 'textil', 'instalaciones', 'material-escolar'
-  subcategory String?
-
-  // Campos multi-proveedor
-  proveedor       String? @db.VarChar(50) // 'jim_sports', 'made_for_sport'
-  ref_proveedor   String? @db.VarChar(100)
-  ref_variante    String? @db.VarChar(100)
-  sku_interno     String? @unique @db.VarChar(100)
-  ean             String? @db.VarChar(50)
-  marca           String? @db.VarChar(100)
-  categoria_texto String? @db.VarChar(200)
-  categoria_padre String? @db.VarChar(200)
-  color           String? @db.VarChar(50)
-  talla           String? @db.VarChar(50)
-  activo          Boolean @default(true)
-  visible_web     Boolean @default(true)
-
-  orderItems OrderItem[]
+  name            String
+  slug            String           @unique
+  description     String?
+  price           Decimal?         @db.Decimal(10, 2)
+  images          String[]
+  stock           Int              @default(0)
+  categoryId      String
+  published       Boolean          @default(false)
+  featured        Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  subcategory     String?
+  proveedor       String?          @db.VarChar(50)
+  ref_proveedor   String?          @db.VarChar(100)
+  ref_variante    String?          @db.VarChar(100)
+  sku_interno     String?          @unique @db.VarChar(100)
+  ean             String?          @db.VarChar(50)
+  marca           String?          @db.VarChar(100)
+  categoria_texto String?          @db.VarChar(200)
+  categoria_padre String?          @db.VarChar(200)
+  color           String?          @db.VarChar(50)
+  talla           String?          @db.VarChar(50)
+  activo          Boolean          @default(true)
+  visible_web     Boolean          @default(true)
+  id              Int              @id @default(autoincrement())
+  orderItems      OrderItem[]
+  variants        ProductVariant[]
 
   @@index([categoryId])
   @@index([slug])
@@ -58,38 +54,53 @@ model Product {
   @@index([subcategory])
 }
 
+model ProductVariant {
+  id            Int      @id @default(autoincrement())
+  productId     Int
+  proveedor     String?  @db.VarChar(50)
+  ref_proveedor String?  @db.VarChar(100)
+  ref_variante  String?  @db.VarChar(100)
+  sku_interno   String   @unique @db.VarChar(120)
+  ean           String?  @db.VarChar(50)
+  color         String?  @db.VarChar(50)
+  talla         String?  @db.VarChar(50)
+  stock         Int      @default(0)
+  price         Decimal? @db.Decimal(10, 2)
+  images        String[]
+  activo        Boolean  @default(true)
+  visible_web   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([productId])
+  @@index([proveedor, ref_proveedor, ref_variante], map: "ProductVariant_ref_idx")
+}
+
 model Order {
-  id          String @id @default(cuid())
-  orderNumber String @unique
-
-  // Campos nuevos (separados) - Opcionales para compatibilidad con pedidos legacy
-  nombre       String?
-  apellidos    String?
-  nifCif       String?
-  direccion    String? // Calle y número
-  piso         String?
-  codigoPostal String?
-  ciudad       String?
-  provincia    String?
-
-  // Campos legacy (mantener para compatibilidad)
+  id                String      @id @default(cuid())
+  orderNumber       String      @unique
   nombreCompleto    String?
-  direccionCompleta String? @db.Text
-
-  // Información de contacto
-  nombreCentro String?
-  email        String
-  telefono     String
-
-  // Información del pedido
-  status         OrderStatus @default(PENDING)
-  total          Decimal     @db.Decimal(10, 2)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  couponCode     String?
-  discountAmount Decimal?    @db.Decimal(10, 2)
-  paymentMethod  String?
-  items          OrderItem[]
+  nombreCentro      String?
+  email             String
+  telefono          String
+  direccion         String?
+  status            OrderStatus @default(PENDING)
+  total             Decimal     @db.Decimal(10, 2)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  couponCode        String?
+  discountAmount    Decimal?    @db.Decimal(10, 2)
+  paymentMethod     String?
+  apellidos         String?
+  ciudad            String?
+  codigoPostal      String?
+  direccionCompleta String?
+  nifCif            String?
+  nombre            String?
+  piso              String?
+  provincia         String?
+  items             OrderItem[]
 
   @@index([orderNumber])
   @@index([email])
@@ -102,13 +113,13 @@ model Order {
 model OrderItem {
   id          String   @id @default(cuid())
   orderId     String
-  productId   Int
   productName String
   productSlug String
   quantity    Int
   price       Decimal  @db.Decimal(10, 2)
   subtotal    Decimal  @db.Decimal(10, 2)
   createdAt   DateTime @default(now())
+  productId   Int
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product     Product  @relation(fields: [productId], references: [id])
 
