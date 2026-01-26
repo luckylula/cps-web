@@ -29,6 +29,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
   const [isHovered, setIsHovered] = useState(false);
   const [structure, setStructure] = useState<CategoryStructure | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchStructure = async () => {
@@ -47,6 +48,15 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
 
     fetchStructure();
   }, [categorySlug]);
+
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+      }
+    };
+  }, [hoverTimeout]);
 
   // Calcular número de columnas según cantidad de grupos
   const getColumnCount = (grupoCount: number) => {
@@ -67,7 +77,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
     return (
       <Link
         href={`/categoria/${categorySlug}`}
-        className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap"
+        className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap text-base md:text-lg lg:text-xl font-medium"
       >
         {categoryName}
       </Link>
@@ -78,22 +88,41 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
   const columnCount = getColumnCount(normal.length + (sinClasificar ? 1 : 0));
   const allGroups = sinClasificar ? [...normal, sinClasificar] : normal;
 
+  const handleMouseEnter = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setIsHovered(false);
+    }, 100); // Pequeño delay para permitir movimiento entre botón y panel
+    setHoverTimeout(timeout);
+  };
+
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <Link
-        href={`/categoria/${categorySlug}`}
-        className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap flex items-center gap-1"
+      <button
+        type="button"
+        className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap flex items-center gap-1 bg-transparent border-none cursor-pointer text-base md:text-lg lg:text-xl font-medium"
       >
         {categoryName}
         <span className="text-xs">▼</span>
-      </Link>
+      </button>
 
       {isHovered && (
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-full max-w-[1200px] bg-white shadow-xl border border-gray-200 rounded-lg z-50 overflow-hidden mega-menu-panel">
+        <div 
+          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[calc(100vw-2rem)] max-w-[1200px] bg-white shadow-xl border border-gray-200 rounded-lg z-[100] overflow-hidden mega-menu-panel"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <div 
             className="grid gap-0 p-6"
             style={{
