@@ -9,7 +9,7 @@ import CartButton from "@/app/components/CartButton";
 
 export default function Navigation() {
   return (
-    <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
+    <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-40">
       <div className="w-full px-4 md:px-6 py-4 md:py-5">
         <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
           {/* Logo y Nombre - Izquierda */}

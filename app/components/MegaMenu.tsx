@@ -58,6 +58,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
     };
   }, [hoverTimeout]);
 
+
   // Calcular número de columnas según cantidad de grupos
   const getColumnCount = (grupoCount: number) => {
     if (grupoCount <= 2) return 2;
@@ -99,7 +100,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
       setIsHovered(false);
-    }, 100); // Pequeño delay para permitir movimiento entre botón y panel
+    }, 300); // Delay para permitir movimiento entre botón y panel
     setHoverTimeout(timeout);
   };
 
@@ -117,14 +118,19 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
         <span className="text-xs">▼</span>
       </button>
 
-      {isHovered && (
+      {isHovered && structure && structure.grupos.length > 0 && (
         <div 
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[calc(100vw-2rem)] max-w-[1200px] bg-white shadow-xl border border-gray-200 rounded-lg z-[100] overflow-hidden mega-menu-panel"
+          className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-screen max-w-[1200px] bg-white shadow-xl border border-gray-200 rounded-lg z-[9999] overflow-hidden mega-menu-panel"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          style={{ 
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'min(calc(100vw - 2rem), 1200px)'
+          }}
         >
           <div 
-            className="grid gap-0 p-6"
+            className="grid gap-0 p-6 overflow-visible"
             style={{
               gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
             }}
@@ -137,9 +143,6 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                 {/* Título del grupo */}
                 <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3 pb-2 border-b border-gray-100">
                   {grupo.nombre}
-                  <span className="ml-2 text-xs font-normal text-[#999]">
-                    ({grupo.count})
-                  </span>
                 </h3>
 
                 {/* Lista de deportes */}
@@ -153,9 +156,6 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                         >
                           <span className="text-[#999] group-hover:text-[#666]">•</span>
                           <span className="flex-1">{deporte.nombre}</span>
-                          <span className="text-[11px] text-[#999] group-hover:text-[#666]">
-                            ({deporte.count})
-                          </span>
                         </Link>
                       </li>
                     ))
