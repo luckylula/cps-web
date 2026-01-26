@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ slug: string }> | { slug: string } }
@@ -18,18 +20,6 @@ export async function GET(
     const category = await prisma.category.findUnique({
       where: {
         slug: slug,
-      },
-      include: {
-        ...(includeProducts && {
-          products: {
-            where: {
-              published: true,
-            },
-            orderBy: {
-              name: 'asc',
-            },
-          },
-        }),
       },
     });
 
@@ -51,6 +41,25 @@ export async function GET(
         },
         { status: 404 }
       );
+    }
+
+    // Si se solicitan productos, obtenerlos por separado usando categoryId
+    if (includeProducts) {
+      const products = await prisma.product.findMany({
+        where: {
+          categoryId: category.id, // categoryId es un String que coincide con Category.id
+          visible_web: true,
+          activo: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      return NextResponse.json({
+        ...category,
+        products,
+      });
     }
 
     return NextResponse.json(category);
