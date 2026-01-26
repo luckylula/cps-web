@@ -22,7 +22,13 @@ async function getOrCreateCategory(data: {
       description: data.description,
       image: data.image,
     },
-    create: data,
+    create: {
+      id: data.slug, // El id debe coincidir con el slug para consistencia
+      name: data.name,
+      slug: data.slug,
+      description: data.description,
+      image: data.image,
+    },
   });
 }
 
