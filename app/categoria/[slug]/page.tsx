@@ -10,6 +10,17 @@ import ProductCard from "@/app/components/ProductCard";
 import CartButton from "@/app/components/CartButton";
 import SearchBar from "@/app/components/SearchBar";
 import FavoritesButton from "@/app/components/FavoritesButton";
+import SubcategoryAccordion from "@/app/components/SubcategoryAccordion";
+
+interface SubcategoryGroup {
+  groupName: string;
+  items: Array<{
+    name: string;
+    fullName: string;
+    count: number;
+  }>;
+  totalCount: number;
+}
 
 interface Product {
   id: number;
@@ -55,7 +66,7 @@ export default function CategoryPage() {
   const params = useParams();
   const categorySlug = params?.slug as string;
   const [products, setProducts] = useState<Product[]>([]);
-  const [subcategories, setSubcategories] = useState<string[]>([]);
+  const [subcategoryGroups, setSubcategoryGroups] = useState<SubcategoryGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [selectedMarca, setSelectedMarca] = useState<string | null>(null);
@@ -80,7 +91,7 @@ export default function CategoryPage() {
         });
 
         if (selectedSubcategory) {
-          params.append('subcategory', selectedSubcategory);
+          params.append('subcategory', encodeURIComponent(selectedSubcategory));
         }
 
         if (selectedMarca) {
@@ -113,13 +124,13 @@ export default function CategoryPage() {
       }
     };
 
-    // Fetch subcategories
+    // Fetch subcategories grouped
     const fetchSubcategories = async () => {
       try {
-        const response = await fetch(`/api/categories/${categorySlug}/subcategories`);
+        const response = await fetch(`/api/categories/${categorySlug}/subcategories-grouped`);
         if (response.ok) {
           const data = await response.json();
-          setSubcategories(data);
+          setSubcategoryGroups(data);
         }
       } catch (error) {
         console.error('Error fetching subcategories:', error);
@@ -229,36 +240,13 @@ export default function CategoryPage() {
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
                   
-                  {/* Subcategorías */}
-                  {subcategories.length > 0 && (
-                    <div className="mb-6">
-                      <h3 className="text-sm font-medium text-gray-700 mb-3">Subcategorías</h3>
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => handleSubcategoryClick(null)}
-                          className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                            selectedSubcategory === null
-                              ? 'bg-[#003366] text-white'
-                              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                          }`}
-                        >
-                          Todas
-                        </button>
-                        {subcategories.map((subcategory) => (
-                          <button
-                            key={subcategory}
-                            onClick={() => handleSubcategoryClick(subcategory)}
-                            className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                              selectedSubcategory === subcategory
-                                ? 'bg-[#003366] text-white'
-                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                            }`}
-                          >
-                            {subcategory}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                  {/* Subcategorías con acordeón */}
+                  {subcategoryGroups.length > 0 && (
+                    <SubcategoryAccordion
+                      groups={subcategoryGroups}
+                      selectedSubcategory={selectedSubcategory}
+                      onSubcategorySelect={handleSubcategoryClick}
+                    />
                   )}
 
                   {/* Marcas */}

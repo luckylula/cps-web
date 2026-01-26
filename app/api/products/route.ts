@@ -79,9 +79,9 @@ export async function GET(request: Request) {
       where.categoryId = category;
     }
 
-    // Filter by subcategory
+    // Filter by subcategory (puede contener ">" para jerarquías)
     if (subcategory) {
-      const trimmedSubcategory = subcategory.trim();
+      const trimmedSubcategory = decodeURIComponent(subcategory.trim());
       where.subcategory = trimmedSubcategory;
     }
 
