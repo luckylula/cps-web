@@ -25,24 +25,31 @@ async function checkProductSlug() {
       where: {
         slug: slugToCheck,
       },
-      include: {
-        category: true,
-      },
     });
 
     if (product) {
+      // Obtener la categoría por separado usando categoryId
+      const category = await prisma.category.findUnique({
+        where: {
+          id: product.categoryId,
+        },
+      });
+
       console.log('✅ Producto encontrado:');
       console.log(`   ID: ${product.id}`);
       console.log(`   Nombre: ${product.name}`);
       console.log(`   Slug: ${product.slug}`);
-      console.log(`   Publicado: ${product.published ? 'Sí' : 'No'}`);
-      console.log(`   Categoría: ${product.category.name} (${product.category.slug})`);
-      console.log(`   Precio: ${product.price}€`);
+      console.log(`   Visible web: ${product.visible_web ? 'Sí' : 'No'}`);
+      console.log(`   Activo: ${product.activo ? 'Sí' : 'No'}`);
+      console.log(`   Categoría: ${category ? `${category.name} (${category.slug})` : `ID: ${product.categoryId}`}`);
+      console.log(`   Precio: ${product.price ? `${product.price}€` : 'Consultar'}`);
       console.log(`   Stock: ${product.stock}`);
       console.log(`   Imágenes: ${product.images.length}`);
       
-      if (!product.published) {
-        console.log('\n⚠️  El producto existe pero NO está publicado (published: false)');
+      if (!product.visible_web || !product.activo) {
+        console.log('\n⚠️  El producto existe pero NO está visible en la web');
+        if (!product.visible_web) console.log('   - visible_web: false');
+        if (!product.activo) console.log('   - activo: false');
         console.log('   Por eso no aparece en la web.');
       }
     } else {
@@ -54,7 +61,8 @@ async function checkProductSlug() {
         select: {
           slug: true,
           name: true,
-          published: true,
+          visible_web: true,
+          activo: true,
         },
         take: 20,
         orderBy: {
@@ -64,7 +72,8 @@ async function checkProductSlug() {
 
       console.log(`📋 Primeros ${allProducts.length} productos en la base de datos:`);
       allProducts.forEach((p, i) => {
-        console.log(`   ${i + 1}. "${p.slug}" - ${p.name} ${p.published ? '✅' : '❌'}`);
+        const status = p.visible_web && p.activo ? '✅' : '❌';
+        console.log(`   ${i + 1}. "${p.slug}" - ${p.name} ${status}`);
       });
 
       // Buscar si hay algún slug que contenga parte del texto
@@ -82,14 +91,17 @@ async function checkProductSlug() {
 
     // Estadísticas generales
     const totalProducts = await prisma.product.count();
-    const publishedProducts = await prisma.product.count({
-      where: { published: true },
+    const visibleProducts = await prisma.product.count({
+      where: { 
+        visible_web: true,
+        activo: true,
+      },
     });
 
     console.log(`\n📊 Estadísticas:`);
     console.log(`   Total de productos: ${totalProducts}`);
-    console.log(`   Productos publicados: ${publishedProducts}`);
-    console.log(`   Productos no publicados: ${totalProducts - publishedProducts}`);
+    console.log(`   Productos visibles en web: ${visibleProducts}`);
+    console.log(`   Productos no visibles: ${totalProducts - visibleProducts}`);
   } catch (error: any) {
     console.error('❌ Error:', error.message);
     console.error('Stack:', error.stack);
