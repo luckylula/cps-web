@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { getFirstValidImage } from '@/app/lib/imageUtils';
 
 interface Deporte {
   nombre: string;
@@ -12,6 +14,7 @@ interface Deporte {
 interface Grupo {
   nombre: string;
   count: number;
+  image?: string | null;
   deportes: Deporte[];
 }
 
@@ -30,6 +33,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
   const [structure, setStructure] = useState<CategoryStructure | null>(null);
   const [loading, setLoading] = useState(true);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStructure = async () => {
@@ -59,12 +63,9 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
   }, [hoverTimeout]);
 
 
-  // Calcular número de columnas según cantidad de grupos
+  // Calcular número de columnas según cantidad de grupos (siempre 2 columnas para el diseño limpio)
   const getColumnCount = (grupoCount: number) => {
-    if (grupoCount <= 2) return 2;
-    if (grupoCount <= 4) return 3;
-    if (grupoCount <= 6) return 4;
-    return 4; // Máximo 4 columnas
+    return 2; // Siempre 2 columnas como en la imagen
   };
 
   // Separar grupos normales de "Sin clasificar"
@@ -104,6 +105,10 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
     setHoverTimeout(timeout);
   };
 
+  const handleGroupHover = (grupoNombre: string | null) => {
+    setHoveredGroup(grupoNombre);
+  };
+
   return (
     <div
       className="relative"
@@ -112,61 +117,104 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
     >
       <button
         type="button"
-        className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap flex items-center gap-1 bg-transparent border-none cursor-pointer text-base md:text-lg lg:text-xl font-medium"
+        className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap bg-transparent border-none outline-none focus:outline-none cursor-pointer text-base md:text-lg lg:text-xl font-medium"
       >
         {categoryName}
-        <span className="text-xs">▼</span>
       </button>
 
       {isHovered && structure && structure.grupos.length > 0 && (
         <div 
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-screen max-w-[1200px] bg-white shadow-xl border border-gray-200 rounded-lg z-[9999] overflow-hidden mega-menu-panel"
+          className="fixed bg-white shadow-xl border border-gray-200 rounded-lg z-[9999] overflow-hidden mega-menu-panel"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          style={{ 
+          style={{
+            top: '81px',
             left: '50%',
             transform: 'translateX(-50%)',
-            width: 'min(calc(100vw - 2rem), 1200px)'
+            width: 'min(calc(100vw - 2rem), 1200px)',
+            maxWidth: '1200px',
           }}
         >
           <div 
-            className="grid gap-0 p-6 overflow-visible"
-            style={{
-              gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
-            }}
+            className="grid grid-cols-2 gap-0 p-6"
           >
-            {allGroups.map((grupo) => (
-              <div
-                key={grupo.nombre}
-                className="px-4 py-2 border-r border-gray-100 last:border-r-0"
-              >
-                {/* Título del grupo */}
-                <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3 pb-2 border-b border-gray-100">
-                  {grupo.nombre}
-                </h3>
+            {allGroups.map((grupo) => {
+              const isHovered = hoveredGroup === grupo.nombre;
+              const hasSubcategories = grupo.deportes.length > 0;
+              const groupImage = grupo.image ? getFirstValidImage([grupo.image]) : null;
+              
+              return (
+                <div
+                  key={grupo.nombre}
+                  className="px-4 py-2 relative"
+                  onMouseEnter={() => hasSubcategories && handleGroupHover(grupo.nombre)}
+                  onMouseLeave={() => handleGroupHover(null)}
+                >
+                  {/* Item del grupo principal */}
+                  <div className="flex items-center gap-3 py-2">
+                    {/* Imagen circular */}
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden relative">
+                      {groupImage ? (
+                        <Image
+                          src={groupImage}
+                          alt={grupo.nombre}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                          unoptimized={groupImage.includes('jimsports.shop') || groupImage.includes('madeforsport.eu')}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-xs text-gray-500 font-medium">
+                            {grupo.nombre.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Nombre del grupo */}
+                    <Link
+                      href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}`}
+                      className="flex-1 text-sm font-medium text-[#1a1a1a] hover:text-gray-600 transition-colors"
+                    >
+                      {grupo.nombre}
+                    </Link>
+                    
+                    {/* Símbolo + si tiene subcategorías */}
+                    {hasSubcategories && (
+                      <div
+                        className="text-gray-400 text-lg font-light w-6 h-6 flex items-center justify-center transition-colors pointer-events-none"
+                      >
+                        +
+                      </div>
+                    )}
+                  </div>
 
-                {/* Lista de deportes */}
-                <ul className="space-y-1.5">
-                  {grupo.deportes.length > 0 ? (
-                    grupo.deportes.map((deporte) => (
-                      <li key={deporte.subcategory}>
-                        <Link
-                          href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}&subcategory=${encodeURIComponent(deporte.subcategory)}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded text-[13px] font-normal text-[#666] hover:bg-gray-50 hover:text-[#1a1a1a] transition-all duration-150 group"
-                        >
-                          <span className="text-[#999] group-hover:text-[#666]">•</span>
-                          <span className="flex-1">{deporte.nombre}</span>
-                        </Link>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="px-2 py-1.5 text-[13px] text-[#999] italic">
-                      Sin subcategorías
-                    </li>
+                  {/* Lista de deportes (subcategorías) - Solo mostrar si se hace hover sobre el grupo */}
+                  {isHovered && hasSubcategories && (
+                    <div 
+                      className="absolute left-full top-0 ml-2 bg-white z-10 shadow-lg border border-gray-200 rounded-lg p-3 min-w-[200px]"
+                      onMouseEnter={() => handleGroupHover(grupo.nombre)}
+                      onMouseLeave={() => handleGroupHover(null)}
+                    >
+                      <ul className="space-y-1.5">
+                        {grupo.deportes.map((deporte) => (
+                          <li key={deporte.subcategory}>
+                            <Link
+                              href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}&subcategory=${encodeURIComponent(deporte.subcategory)}`}
+                              className="flex items-center gap-2 px-2 py-1.5 rounded text-[13px] font-normal text-[#666] hover:bg-gray-50 hover:text-[#1a1a1a] transition-all duration-150"
+                            >
+                              <span className="text-[#999]">•</span>
+                              <span className="flex-1">{deporte.nombre}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
-                </ul>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

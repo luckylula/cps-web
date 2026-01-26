@@ -22,6 +22,7 @@ export async function GET(
       select: {
         grupo: true,
         subcategory: true,
+        images: true,
       },
     });
 
@@ -29,6 +30,7 @@ export async function GET(
     const estructura: Record<string, {
       nombre: string;
       count: number;
+      image: string | null;
       deportes: Record<string, {
         nombre: string;
         subcategory: string;
@@ -41,11 +43,19 @@ export async function GET(
       const subcategory = p.subcategory;
 
       if (!estructura[grupoName]) {
+        // Obtener la primera imagen válida de los productos de este grupo
+        const firstImage = p.images && p.images.length > 0 ? p.images[0] : null;
         estructura[grupoName] = {
           nombre: grupoName,
           count: 0,
+          image: firstImage,
           deportes: {},
         };
+      }
+
+      // Si no tiene imagen aún, intentar obtener una de este producto
+      if (!estructura[grupoName].image && p.images && p.images.length > 0) {
+        estructura[grupoName].image = p.images[0];
       }
 
       estructura[grupoName].count += 1;
@@ -72,6 +82,7 @@ export async function GET(
       .map((grupo) => ({
         nombre: grupo.nombre,
         count: grupo.count,
+        image: grupo.image,
         deportes: Object.values(grupo.deportes)
           .sort((a, b) => a.nombre.localeCompare(b.nombre)),
       }))
