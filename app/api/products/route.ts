@@ -16,10 +16,29 @@ export async function GET(request: Request) {
     const maxPrice = searchParams.get('maxPrice');
 
     // Build where clause - filtros base para productos visibles
+    // Excluir productos que son variantes (tienen color/talla pero NO tienen variantes asociadas)
+    // Solo mostrar productos padre (sin variantes) o productos que no tienen variantes
     const where: any = {
       visible_web: true,
       activo: true,
+      name: {
+        not: '',
+      },
     };
+
+    // Excluir productos que tienen sku_interno terminando en "-BASE" (restos antiguos)
+    const skuFilter: any[] = [
+      {
+        sku_interno: null,
+      },
+      {
+        sku_interno: {
+          not: {
+            endsWith: '-BASE',
+          },
+        },
+      },
+    ];
 
     // Search functionality - search in product name, SKU, or marca
     if (search && search.trim().length >= 2) {
@@ -44,6 +63,15 @@ export async function GET(request: Request) {
           },
         },
       ];
+      // Combinar con el filtro de SKU
+      where.AND = [
+        {
+          OR: skuFilter,
+        },
+      ];
+    } else {
+      // Si no hay búsqueda, aplicar el filtro de SKU directamente
+      where.OR = skuFilter;
     }
 
     // Filter by categoryId (now TEXT, not FK)

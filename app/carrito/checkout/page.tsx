@@ -1291,6 +1291,13 @@ function CheckoutForm() {
                       <p className="text-sm font-medium text-gray-900 line-clamp-2">
                         {item.name}
                       </p>
+                      {(item.color || item.talla) && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {item.color && <span>Color: {item.color}</span>}
+                          {item.color && item.talla && <span className="mx-1">•</span>}
+                          {item.talla && <span>Talla: {item.talla}</span>}
+                        </p>
+                      )}
                       <p className="text-xs text-gray-500 mt-1">
                         Cantidad: {item.quantity}
                       </p>

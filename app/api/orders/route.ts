@@ -4,10 +4,14 @@ import { Prisma } from '@/generated/client';
 
 interface OrderItemInput {
   id: string;
+  productId?: number;
+  variantId?: number;
   name: string;
   slug: string;
   price: number;
   quantity: number;
+  color?: string | null;
+  talla?: string | null;
 }
 
 interface CreateOrderRequest {
@@ -146,29 +150,54 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar que todos los productos existan y tengan stock suficiente
-    // Convertir IDs de string a número (Product.id ahora es Int)
-    const productIds = cart.items.map((item) => parseInt(item.id));
+    // Extraer productIds y variantIds
+    const productIds = cart.items
+      .map((item) => item.productId || parseInt(item.id.replace('product-', '').replace('variant-', '')))
+      .filter((id): id is number => !isNaN(id));
+    
+    const variantIds = cart.items
+      .map((item) => item.variantId)
+      .filter((id): id is number => id !== undefined && !isNaN(id));
+
     const products = await prisma.product.findMany({
       where: {
         id: { in: productIds },
       },
     });
 
-    if (products.length !== productIds.length) {
+    // Obtener variantes si existen
+    const variants = variantIds.length > 0
+      ? await prisma.productVariant.findMany({
+          where: {
+            id: { in: variantIds },
+          },
+        })
+      : [];
+
+    if (products.length !== new Set(productIds).size) {
       return NextResponse.json(
         { error: 'Uno o más productos no existen' },
         { status: 400 }
       );
     }
 
-    // Verificar stock (opcional - solo si quieres restar stock)
+    // Verificar stock (de variantes si existen, sino del producto)
     const stockIssues: string[] = [];
     for (const item of cart.items) {
-      const product = products.find((p) => p.id === parseInt(item.id));
-      if (product && product.stock < item.quantity) {
-        stockIssues.push(
-          `${product.name}: Stock disponible ${product.stock}, solicitado ${item.quantity}`
-        );
+      if (item.variantId) {
+        const variant = variants.find((v) => v.id === item.variantId);
+        if (variant && variant.stock < item.quantity) {
+          stockIssues.push(
+            `${item.name}: Stock disponible ${variant.stock}, solicitado ${item.quantity}`
+          );
+        }
+      } else {
+        const product = products.find((p) => p.id === (item.productId || parseInt(item.id.replace('product-', ''))));
+        if (product && product.stock < item.quantity) {
+          stockIssues.push(
+            `${item.name}: Stock disponible ${product.stock}, solicitado ${item.quantity}`
+          );
+        }
       }
     }
 
@@ -223,12 +252,14 @@ export async function POST(request: NextRequest) {
           status: 'PENDING',
           items: {
             create: cart.items.map((item) => {
-              const product = products.find((p) => p.id === parseInt(item.id))!;
+              const productId = item.productId || parseInt(item.id.replace('product-', '').replace('variant-', ''));
+              const product = products.find((p) => p.id === productId)!;
               const price = new Prisma.Decimal(item.price);
               const subtotal = price.mul(item.quantity);
 
               return {
-                productId: parseInt(item.id), // Convertir a Int
+                productId: productId,
+                variantId: item.variantId || null,
                 productName: item.name,
                 productSlug: item.slug,
                 quantity: item.quantity,
@@ -253,16 +284,30 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Restar stock de los productos (opcional)
+      // Restar stock de los productos/variantes (opcional)
       for (const item of cart.items) {
-        await tx.product.update({
-          where: { id: parseInt(item.id) }, // Convertir a Int
-          data: {
-            stock: {
-              decrement: item.quantity,
+        if (item.variantId) {
+          // Restar stock de la variante
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: {
+              stock: {
+                decrement: item.quantity,
+              },
             },
-          },
-        });
+          });
+        } else {
+          // Restar stock del producto
+          const productId = item.productId || parseInt(item.id.replace('product-', '').replace('variant-', ''));
+          await tx.product.update({
+            where: { id: productId },
+            data: {
+              stock: {
+                decrement: item.quantity,
+              },
+            },
+          });
+        }
       }
 
       return newOrder;
@@ -296,12 +341,18 @@ export async function POST(request: NextRequest) {
         telefono: customer.telefono,
         paymentMethod: customer.paymentMethod || null,
       },
-      items: order.items.map((item) => ({
-        name: item.productName,
-        quantity: item.quantity,
-        price: Number(item.price),
-        subtotal: Number(item.subtotal),
-      })),
+      items: order.items.map((item, index) => {
+        const cartItem = cart.items[index];
+        return {
+          name: item.productName,
+          quantity: item.quantity,
+          price: Number(item.price),
+          subtotal: Number(item.subtotal),
+          variantId: item.variantId || null,
+          color: cartItem?.color || null,
+          talla: cartItem?.talla || null,
+        };
+      }),
       coupon: order.couponCode ? {
         code: order.couponCode,
         discountAmount: order.discountAmount ? Number(order.discountAmount) : 0,

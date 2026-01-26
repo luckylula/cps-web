@@ -12,10 +12,22 @@ export async function GET(
     
     console.log('[API] Fetching product with slug:', slug);
 
-    // Buscar producto por slug
+    // Buscar producto por slug con sus variantes
     const product = await prisma.product.findUnique({
       where: {
         slug: slug,
+      },
+      include: {
+        variants: {
+          where: {
+            activo: true,
+            visible_web: true,
+          },
+          orderBy: [
+            { color: 'asc' },
+            { talla: 'asc' },
+          ],
+        },
       },
     });
 

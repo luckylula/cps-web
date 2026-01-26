@@ -280,6 +280,13 @@ export default function CarritoPage() {
                         >
                           {item.name}
                         </Link>
+                        {(item.color || item.talla) && (
+                          <div className="text-sm text-gray-500 mt-1">
+                            {item.color && <span>Color: {item.color}</span>}
+                            {item.color && item.talla && <span className="mx-2">•</span>}
+                            {item.talla && <span>Talla: {item.talla}</span>}
+                          </div>
+                        )}
                         <p className="text-gray-600 mt-1">
                           {item.price.toFixed(2)}€ unidad
                         </p>

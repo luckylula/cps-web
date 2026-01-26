@@ -3,12 +3,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface CartItem {
-  id: string;
+  id: string; // Será variantId si existe, sino productId
+  productId: number;
+  variantId?: number; // Opcional para productos sin variantes
   name: string;
   slug: string;
   price: number;
   images: string[];
   quantity: number;
+  color?: string | null;
+  talla?: string | null;
 }
 
 interface CartContextType {
@@ -56,17 +60,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (product: Omit<CartItem, 'quantity'>) => {
     setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+      // Buscar si ya existe el mismo producto/variante
+      const existingItem = prevItems.find((item) => {
+        if (product.variantId) {
+          // Si tiene variante, comparar por variantId
+          return item.variantId === product.variantId && item.productId === product.productId;
+        } else {
+          // Si no tiene variante, comparar solo por productId
+          return item.productId === product.productId && !item.variantId;
+        }
+      });
       
       if (existingItem) {
-        // Si el producto ya existe, incrementar la cantidad
+        // Si el producto/variante ya existe, incrementar la cantidad
         return prevItems.map((item) =>
-          item.id === product.id
+          item.id === existingItem.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        // Si es un producto nuevo, añadirlo con cantidad 1
+        // Si es un producto/variante nuevo, añadirlo con cantidad 1
         return [...prevItems, { ...product, quantity: 1 }];
       }
     });

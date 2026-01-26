@@ -12,6 +12,15 @@ import FavoritesButton from "@/app/components/FavoritesButton";
 import SearchBar from "@/app/components/SearchBar";
 import ImageGallery from "@/app/components/ImageGallery";
 
+interface ProductVariant {
+  id: number;
+  color: string | null;
+  talla: string | null;
+  stock: number;
+  images: string[];
+  sku_interno: string | null;
+}
+
 interface Product {
   id: number;
   name: string;
@@ -31,6 +40,7 @@ interface Product {
   proveedor?: string | null;
   color?: string | null;
   talla?: string | null;
+  variants?: ProductVariant[];
 }
 
 interface RelatedProduct {
@@ -82,6 +92,9 @@ export default function ArticuloPage({ params }: PageProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [slug, setSlug] = useState<string>("");
   const [notFound, setNotFound] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedTalla, setSelectedTalla] = useState<string | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
 
   // Resolver params (puede ser Promise en Next.js 15)
   useEffect(() => {
@@ -146,15 +159,34 @@ export default function ArticuloPage({ params }: PageProps) {
   const handleAddToCart = () => {
     if (!product) return;
 
+    // Si hay variantes, verificar que se haya seleccionado una
+    if (product.variants && product.variants.length > 0 && !selectedVariant) {
+      alert('Por favor, selecciona color y talla');
+      return;
+    }
+
+    // Verificar stock
+    const stock = selectedVariant ? selectedVariant.stock : product.stock;
+    if (stock === 0) {
+      alert('Este producto no está disponible');
+      return;
+    }
+
     setIsAdding(true);
     for (let i = 0; i < quantity; i++) {
       if (product.price !== null && product.price !== undefined) {
         addItem({
-          id: String(product.id),
+          id: selectedVariant ? `variant-${selectedVariant.id}` : `product-${product.id}`,
+          productId: product.id,
+          variantId: selectedVariant ? selectedVariant.id : undefined,
           name: product.name,
           slug: product.slug,
           price: Number(product.price),
-          images: product.images,
+          images: selectedVariant && selectedVariant.images.length > 0 
+            ? selectedVariant.images 
+            : product.images,
+          color: selectedVariant?.color || null,
+          talla: selectedVariant?.talla || null,
         });
       }
     }
@@ -162,6 +194,52 @@ export default function ArticuloPage({ params }: PageProps) {
       setIsAdding(false);
       setQuantity(1);
     }, 500);
+  };
+
+  // Obtener colores únicos de las variantes
+  const getAvailableColors = (): (string | null)[] => {
+    if (!product?.variants || product.variants.length === 0) return [];
+    const colors = new Set<string | null>();
+    product.variants.forEach(v => {
+      if (v.color !== null && v.color !== undefined) {
+        colors.add(v.color);
+      }
+    });
+    return Array.from(colors);
+  };
+
+  // Obtener tallas disponibles según el color seleccionado
+  const getAvailableTallas = (): (string | null)[] => {
+    if (!product?.variants || product.variants.length === 0) return [];
+    const tallas = new Set<string | null>();
+    product.variants.forEach(v => {
+      if ((selectedColor === null && v.color === null) || v.color === selectedColor) {
+        if (v.talla !== null && v.talla !== undefined) {
+          tallas.add(v.talla);
+        }
+      }
+    });
+    return Array.from(tallas);
+  };
+
+  // Actualizar variante seleccionada cuando cambian color/talla
+  useEffect(() => {
+    if (!product?.variants || product.variants.length === 0) {
+      setSelectedVariant(null);
+      return;
+    }
+
+    const variant = product.variants.find(v => 
+      v.color === selectedColor && v.talla === selectedTalla
+    );
+
+    setSelectedVariant(variant || null);
+  }, [selectedColor, selectedTalla, product]);
+
+  // Resetear selección cuando cambia el color
+  const handleColorChange = (color: string | null) => {
+    setSelectedColor(color);
+    setSelectedTalla(null); // Resetear talla al cambiar color
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -367,7 +445,14 @@ export default function ArticuloPage({ params }: PageProps) {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
             {/* Image Section - Left Column */}
             <div className="sticky top-24">
-              <ImageGallery images={product.images} productName={product.name} />
+              <ImageGallery 
+                images={
+                  selectedVariant && selectedVariant.images.length > 0
+                    ? selectedVariant.images
+                    : product.images
+                } 
+                productName={product.name} 
+              />
             </div>
 
             {/* Product Info Section - Right Column */}
@@ -433,6 +518,79 @@ export default function ArticuloPage({ params }: PageProps) {
                 </div>
               )}
 
+              {/* Variantes: Selectores de Color y Talla */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="space-y-4">
+                  {/* Selector de Color */}
+                  {getAvailableColors().length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Color
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {getAvailableColors().map((color) => (
+                          <button
+                            key={color || 'sin-color'}
+                            onClick={() => handleColorChange(color)}
+                            className={`px-4 py-2 rounded border-2 transition-all ${
+                              selectedColor === color
+                                ? 'border-[#003366] bg-[#003366] text-white'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                            }`}
+                          >
+                            {color || 'Sin color'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selector de Talla */}
+                  {getAvailableTallas().length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Talla
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {getAvailableTallas().map((talla) => (
+                          <button
+                            key={talla || 'sin-talla'}
+                            onClick={() => setSelectedTalla(talla)}
+                            disabled={!selectedColor && getAvailableColors().length > 0}
+                            className={`px-4 py-2 rounded border-2 transition-all ${
+                              selectedTalla === talla
+                                ? 'border-[#003366] bg-[#003366] text-white'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                            } ${
+                              !selectedColor && getAvailableColors().length > 0
+                                ? 'opacity-50 cursor-not-allowed'
+                                : ''
+                            }`}
+                          >
+                            {talla || 'Sin talla'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Stock de la variante seleccionada */}
+                  {selectedVariant && (
+                    <div className="text-sm">
+                      {selectedVariant.stock > 0 ? (
+                        <p className="text-gray-600">
+                          Stock: <span className="font-medium text-green-600">{selectedVariant.stock} unidades</span>
+                        </p>
+                      ) : (
+                        <p className="text-gray-500 italic">
+                          Stock: Agotado
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Quantity Selector */}
               <div>
                 <label
@@ -491,12 +649,21 @@ export default function ArticuloPage({ params }: PageProps) {
                       </svg>
                     </button>
                   </div>
-                  {product.stock > 0 && (
+                  {selectedVariant ? (
+                    selectedVariant.stock > 0 ? (
+                      <p className="text-xs text-gray-600">
+                        Stock: <span className="font-medium">{selectedVariant.stock} unidades</span>
+                      </p>
+                    ) : (
+                      <p className="text-xs text-red-500 italic">
+                        Stock: Agotado
+                      </p>
+                    )
+                  ) : product.stock > 0 ? (
                     <p className="text-xs text-gray-600">
                       Stock: <span className="font-medium">{product.stock} unidades</span>
                     </p>
-                  )}
-                  {product.stock === 0 && (
+                  ) : (
                     <p className="text-xs text-gray-500 italic">
                       Stock: Consultar disponibilidad
                     </p>
@@ -539,10 +706,13 @@ export default function ArticuloPage({ params }: PageProps) {
                     />
                   </svg>
                 </button>
-                {hasPrice && product.stock > 0 ? (
+                {hasPrice && (selectedVariant ? selectedVariant.stock > 0 : product.stock > 0) ? (
                   <button
                     onClick={handleAddToCart}
-                    disabled={isAdding}
+                    disabled={
+                      isAdding || 
+                      (product.variants && product.variants.length > 0 && !selectedVariant)
+                    }
                     className="bg-[#003366] hover:bg-[#004080] text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                   >
                     {isAdding ? (
