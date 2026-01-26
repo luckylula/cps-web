@@ -32,31 +32,36 @@ async function main() {
       // Buscar categoría por slug
       const category = await prisma.category.findUnique({
         where: { slug: expected.slug },
-        include: {
-          products: {
-            where: { published: true },
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              published: true,
-            },
-          },
-        },
       });
 
       if (category) {
+        // Obtener productos por separado usando categoryId
+        const products = await prisma.product.findMany({
+          where: {
+            categoryId: category.id,
+            visible_web: true,
+            activo: true,
+          },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            visible_web: true,
+            activo: true,
+          },
+        });
+
         console.log(`✅ Categoría encontrada: "${category.name}"`);
         console.log(`   ID: ${category.id}`);
-        console.log(`   Productos publicados: ${category.products.length}`);
+        console.log(`   Productos visibles: ${products.length}`);
         
-        if (category.products.length > 0) {
+        if (products.length > 0) {
           console.log(`   Ejemplos de productos:`);
-          category.products.slice(0, 3).forEach((p) => {
+          products.slice(0, 3).forEach((p) => {
             console.log(`     - ${p.name}`);
           });
         } else {
-          console.log(`   ⚠️  No hay productos publicados en esta categoría`);
+          console.log(`   ⚠️  No hay productos visibles en esta categoría`);
         }
       } else {
         console.log(`❌ Categoría NO encontrada con slug: ${expected.slug}`);
@@ -68,25 +73,29 @@ async function main() {
     console.log('─'.repeat(60));
     const materialEscolar = await prisma.category.findUnique({
       where: { slug: 'material-escolar' },
-      include: {
-        products: {
-          where: { published: true },
-          select: {
-            id: true,
-            name: true,
-            subcategory: true,
-          },
-          take: 5,
-        },
-      },
     });
 
     if (materialEscolar) {
+      // Obtener productos por separado usando categoryId
+      const products = await prisma.product.findMany({
+        where: {
+          categoryId: materialEscolar.id,
+          visible_web: true,
+          activo: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          subcategory: true,
+        },
+        take: 5,
+      });
+
       console.log(`✅ Categoría "Material Escolar" encontrada`);
-      console.log(`   Productos publicados: ${materialEscolar.products.length}`);
-      if (materialEscolar.products.length > 0) {
+      console.log(`   Productos visibles: ${products.length}`);
+      if (products.length > 0) {
         console.log(`   Ejemplos (con subcategoría):`);
-        materialEscolar.products.forEach((p) => {
+        products.forEach((p) => {
           console.log(`     - ${p.name}: subcategory="${p.subcategory || '(null)'}"`);
         });
       }
