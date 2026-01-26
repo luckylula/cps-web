@@ -78,7 +78,8 @@ export default function ProductCard({
     
     setIsAdding(true);
     addItem({
-      id: String(id),
+      id: `product-${id}`,
+      productId: id,
       name,
       slug,
       price: Number(price),
