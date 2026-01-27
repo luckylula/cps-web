@@ -168,16 +168,16 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                   className="px-4 py-2"
                 >
                   {/* Item del grupo principal */}
-                  <div className="flex items-center gap-3 py-2">
+                  <div className="flex items-center gap-4 py-3">
                     {/* Imagen circular */}
-                    <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden relative">
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden relative">
                       {groupImage ? (
                         <Image
                           src={groupImage}
                           alt={grupo.nombre}
                           fill
                           className="object-cover"
-                          sizes="48px"
+                          sizes="64px"
                           unoptimized={groupImage.includes('jimsports.shop') || groupImage.includes('madeforsport.eu')}
                         />
                       ) : (
@@ -193,7 +193,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                     <Link
                       href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}`}
                       onClick={closeMenu}
-                      className="flex-1 text-sm font-medium text-[#1a1a1a] hover:text-gray-600 transition-colors"
+                      className="flex-1 text-lg md:text-xl font-medium text-[#1a1a1a] hover:text-gray-600 transition-colors"
                     >
                       {grupo.nombre}
                     </Link>
@@ -207,7 +207,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                           e.stopPropagation();
                           toggleGroup(grupo.nombre);
                         }}
-                        className="text-gray-700 hover:text-gray-900 text-xl font-normal min-w-[32px] min-h-[32px] flex items-center justify-center transition-colors cursor-pointer bg-transparent border-none outline-none rounded hover:bg-gray-100"
+                        className="text-gray-700 hover:text-gray-900 text-2xl font-normal min-w-[36px] min-h-[36px] flex items-center justify-center transition-colors cursor-pointer bg-transparent border-none outline-none rounded hover:bg-gray-100"
                         aria-label={isExpanded ? 'Colapsar subcategorías' : 'Ver más deportes'}
                         aria-expanded={isExpanded}
                       >
@@ -216,18 +216,18 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                     )}
                   </div>
 
-                  {/* Lista de deportes (subcategorías) - Visible al hacer click en +, se mantiene abierta */}
+                  {/* Lista de deportes (subcategorías) - Visible al hacer click en +, letras más grandes */}
                   {isExpanded && hasSubcategories && (
-                    <div className="ml-16 mt-2">
-                      <ul className="space-y-1.5">
+                    <div className="ml-20 mt-3">
+                      <ul className="space-y-2">
                         {grupo.deportes.map((deporte) => (
                           <li key={deporte.subcategory}>
                             <Link
                               href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}&subcategory=${encodeURIComponent(deporte.subcategory)}`}
                               onClick={closeMenu}
-                              className="flex items-center gap-2 px-2 py-1.5 rounded text-[13px] font-normal text-[#666] hover:bg-gray-50 hover:text-[#1a1a1a] transition-all duration-150"
+                              className="flex items-center gap-2 px-2 py-2 rounded text-base md:text-lg font-normal text-[#666] hover:bg-gray-50 hover:text-[#1a1a1a] transition-all duration-150"
                             >
-                              <span className="text-[#999]">•</span>
+                              <span className="text-[#999] text-sm">•</span>
                               <span className="flex-1">{deporte.nombre}</span>
                             </Link>
                           </li>
