@@ -118,6 +118,16 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
     });
   };
 
+  // Cerrar el menú al hacer click en cualquier enlace (grupo o subcategoría) para que se vea la nueva página
+  const closeMenu = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
+    setIsHovered(false);
+    setExpandedGroups(new Set());
+  };
+
   return (
     <div
       className="relative"
@@ -179,9 +189,10 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                       )}
                     </div>
                     
-                    {/* Nombre del grupo */}
+                    {/* Nombre del grupo: al hacer click va a la categoría filtrada por ese grupo y cierra el menú */}
                     <Link
                       href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}`}
+                      onClick={closeMenu}
                       className="flex-1 text-sm font-medium text-[#1a1a1a] hover:text-gray-600 transition-colors"
                     >
                       {grupo.nombre}
@@ -213,6 +224,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                           <li key={deporte.subcategory}>
                             <Link
                               href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}&subcategory=${encodeURIComponent(deporte.subcategory)}`}
+                              onClick={closeMenu}
                               className="flex items-center gap-2 px-2 py-1.5 rounded text-[13px] font-normal text-[#666] hover:bg-gray-50 hover:text-[#1a1a1a] transition-all duration-150"
                             >
                               <span className="text-[#999]">•</span>

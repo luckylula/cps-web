@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import ProductCard from "@/app/components/ProductCard";
 import Navigation from "@/app/components/Navigation";
 import GroupAccordion from "@/app/components/GroupAccordion";
@@ -65,6 +65,7 @@ const categoryMap: Record<string, { name: string; description: string }> = {
 export default function CategoryPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const categorySlug = params?.slug as string;
   const [products, setProducts] = useState<Product[]>([]);
   const [grupos, setGrupos] = useState<Grupo[]>([]);
@@ -81,20 +82,15 @@ export default function CategoryPage() {
     description: '',
   };
 
-  // Leer parámetros de URL al cargar
+  // Leer parámetros de URL al cargar o cuando cambia la URL
   useEffect(() => {
     if (!categorySlug) return;
 
     const grupoParam = searchParams?.get('grupo');
     const subcategoryParam = searchParams?.get('subcategory');
 
-    if (grupoParam) {
-      setSelectedGrupo(decodeURIComponent(grupoParam));
-    }
-
-    if (subcategoryParam) {
-      setSelectedSubcategories([decodeURIComponent(subcategoryParam)]);
-    }
+    setSelectedGrupo(grupoParam ? decodeURIComponent(grupoParam) : null);
+    setSelectedSubcategories(subcategoryParam ? [decodeURIComponent(subcategoryParam)] : []);
   }, [categorySlug, searchParams]);
 
   useEffect(() => {
@@ -193,6 +189,7 @@ export default function CategoryPage() {
     setSelectedMarca(null);
     setMinPrice('');
     setMaxPrice('');
+    router.replace(`/categoria/${categorySlug}`);
   };
 
   return (
@@ -208,7 +205,15 @@ export default function CategoryPage() {
               Home
             </Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium">{category.name}</span>
+            <Link href={`/categoria/${categorySlug}`} className="hover:text-gray-900 transition-colors">
+              {category.name}
+            </Link>
+            {selectedGrupo && (
+              <>
+                <span>/</span>
+                <span className="text-gray-900 font-medium">{selectedGrupo}</span>
+              </>
+            )}
           </nav>
         </div>
       </div>
@@ -223,15 +228,17 @@ export default function CategoryPage() {
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
                   
-                  {/* Grupos con acordeón */}
+                  {/* Grupos: si hay ?grupo= en URL, mostrar solo ese grupo; si no, todos */}
                   {grupos.length > 0 && (
                     <GroupAccordion
-                      grupos={grupos}
+                      grupos={selectedGrupo ? grupos.filter((g) => g.nombre === selectedGrupo) : grupos}
                       selectedGrupo={selectedGrupo}
                       selectedSubcategories={selectedSubcategories}
                       onGrupoToggle={handleGrupoToggle}
                       onSubcategoryToggle={handleSubcategoryToggle}
                       onClearAll={clearFilters}
+                      singleGroupMode={!!selectedGrupo}
+                      categorySlug={categorySlug}
                     />
                   )}
 
@@ -305,10 +312,13 @@ export default function CategoryPage() {
             <div className="lg:col-span-3">
               <div className="mb-6">
                 <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-2 tracking-tight">
-                  {category.name}
+                  {selectedGrupo ?? category.name}
                 </h1>
-                {category.description && (
+                {!selectedGrupo && category.description && (
                   <p className="text-gray-600">{category.description}</p>
+                )}
+                {selectedGrupo && (
+                  <p className="text-gray-600">{category.name}</p>
                 )}
                 <p className="text-sm text-gray-500 mt-2">
                   {loading ? 'Cargando...' : `${products.length} productos encontrados`}

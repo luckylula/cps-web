@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface SubcategoryItem {
   nombre: string;
@@ -20,6 +21,9 @@ interface GroupAccordionProps {
   onGrupoToggle: (grupo: string) => void;
   onSubcategoryToggle: (subcategory: string) => void;
   onClearAll?: () => void;
+  /** Cuando estamos en vista de un solo grupo (?grupo= en URL), mostrar "Ver todos los grupos" */
+  singleGroupMode?: boolean;
+  categorySlug?: string;
 }
 
 export default function GroupAccordion({
@@ -29,8 +33,17 @@ export default function GroupAccordion({
   onGrupoToggle,
   onSubcategoryToggle,
   onClearAll,
+  singleGroupMode = false,
+  categorySlug,
 }: GroupAccordionProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  // En modo un solo grupo, tenerlo expandido por defecto
+  useEffect(() => {
+    if (singleGroupMode && grupos.length === 1) {
+      setExpandedGroups(new Set([grupos[0].nombre]));
+    }
+  }, [singleGroupMode, grupos]);
 
   const toggleGroup = (grupoName: string) => {
     setExpandedGroups((prev) => {
@@ -56,29 +69,37 @@ export default function GroupAccordion({
     <div className="mb-6">
       <h3 className="text-sm font-medium text-gray-700 mb-3">Grupos</h3>
       <div className="space-y-1">
-        {/* Botón "Todos" */}
-        <button
-          onClick={() => {
-            if (onClearAll) {
-              onClearAll();
-            } else {
-              // Limpiar todas las selecciones manualmente
-              selectedSubcategories.forEach((sub) => {
-                onSubcategoryToggle(sub);
-              });
-              if (selectedGrupo) {
-                onGrupoToggle(selectedGrupo);
+        {/* "Ver todos los grupos" cuando estamos en un solo grupo; "Todos" cuando vemos todos */}
+        {singleGroupMode && categorySlug ? (
+          <Link
+            href={`/categoria/${categorySlug}`}
+            className="w-full block text-left px-3 py-2 rounded text-sm transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700"
+          >
+            ← Ver todos los grupos
+          </Link>
+        ) : (
+          <button
+            onClick={() => {
+              if (onClearAll) {
+                onClearAll();
+              } else {
+                selectedSubcategories.forEach((sub) => {
+                  onSubcategoryToggle(sub);
+                });
+                if (selectedGrupo) {
+                  onGrupoToggle(selectedGrupo);
+                }
               }
-            }
-          }}
-          className={`w-full text-left px-3 py-2 rounded text-sm transition-colors flex items-center justify-between ${
-            selectedGrupo === null && selectedSubcategories.length === 0
-              ? 'bg-[#003366] text-white'
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-          }`}
-        >
-          <span>Todos</span>
-        </button>
+            }}
+            className={`w-full text-left px-3 py-2 rounded text-sm transition-colors flex items-center justify-between ${
+              selectedGrupo === null && selectedSubcategories.length === 0
+                ? 'bg-[#003366] text-white'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            }`}
+          >
+            <span>Todos</span>
+          </button>
+        )}
 
         {/* Grupos con acordeón */}
         {grupos.map((grupo) => {
