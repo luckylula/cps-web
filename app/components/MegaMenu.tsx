@@ -33,7 +33,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
   const [structure, setStructure] = useState<CategoryStructure | null>(null);
   const [loading, setLoading] = useState(true);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchStructure = async () => {
@@ -101,12 +101,21 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
       setIsHovered(false);
+      setExpandedGroups(new Set()); // Al cerrar el menú, colapsar todos los grupos para empezar limpio
     }, 300); // Delay para permitir movimiento entre botón y panel
     setHoverTimeout(timeout);
   };
 
-  const handleGroupHover = (grupoNombre: string | null) => {
-    setHoveredGroup(grupoNombre);
+  const toggleGroup = (grupoNombre: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(grupoNombre)) {
+        next.delete(grupoNombre);
+      } else {
+        next.add(grupoNombre);
+      }
+      return next;
+    });
   };
 
   return (
@@ -139,7 +148,7 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
             className="grid grid-cols-2 gap-0 p-6"
           >
             {allGroups.map((grupo) => {
-              const isHovered = hoveredGroup === grupo.nombre;
+              const isExpanded = expandedGroups.has(grupo.nombre);
               const hasSubcategories = grupo.deportes.length > 0;
               const groupImage = grupo.image ? getFirstValidImage([grupo.image]) : null;
               
@@ -178,25 +187,27 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                       {grupo.nombre}
                     </Link>
                     
-                    {/* Símbolo + si tiene subcategorías - Hover activo aquí */}
+                    {/* Símbolo + / − solo con click: expande y mantiene abierto; no depende del hover */}
                     {hasSubcategories && (
-                      <div
-                        className="text-gray-700 hover:text-gray-900 text-xl font-normal w-6 h-6 flex items-center justify-center transition-colors cursor-pointer"
-                        onMouseEnter={() => handleGroupHover(grupo.nombre)}
-                        onMouseLeave={() => handleGroupHover(null)}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleGroup(grupo.nombre);
+                        }}
+                        className="text-gray-700 hover:text-gray-900 text-xl font-normal min-w-[32px] min-h-[32px] flex items-center justify-center transition-colors cursor-pointer bg-transparent border-none outline-none rounded hover:bg-gray-100"
+                        aria-label={isExpanded ? 'Colapsar subcategorías' : 'Ver más deportes'}
+                        aria-expanded={isExpanded}
                       >
-                        +
-                      </div>
+                        {isExpanded ? '−' : '+'}
+                      </button>
                     )}
                   </div>
 
-                  {/* Lista de deportes (subcategorías) - Se expande dentro del mismo menú */}
-                  {isHovered && hasSubcategories && (
-                    <div 
-                      className="ml-16 mt-2"
-                      onMouseEnter={() => handleGroupHover(grupo.nombre)}
-                      onMouseLeave={() => handleGroupHover(null)}
-                    >
+                  {/* Lista de deportes (subcategorías) - Visible al hacer click en +, se mantiene abierta */}
+                  {isExpanded && hasSubcategories && (
+                    <div className="ml-16 mt-2">
                       <ul className="space-y-1.5">
                         {grupo.deportes.map((deporte) => (
                           <li key={deporte.subcategory}>

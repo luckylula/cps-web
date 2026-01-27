@@ -1,0 +1,179 @@
+{
+  "name": "Jim Sports v4 - ENCODING FIXED + SIN NOMBRES VACÍOS",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "hours", "hoursInterval": 4}]
+        }
+      },
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "id": "trigger-1"
+    },
+    {
+      "parameters": {
+        "url": "https://jimsports.shop/fichero-b2b/integracion_producto.csv",
+        "options": {}
+      },
+      "name": "Download CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [200, 0],
+      "id": "download-1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const csvText = items[0].json.data ?? items[0].json.body ?? items[0].json;\nconst lines = String(csvText).split(/\\r?\\n/);\n\nfunction slugify(str) {\n  return String(str || \"\")\n    .toLowerCase()\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/[^a-z0-9]+/g, \"-\")\n    .replace(/^-|-$/g, \"\");\n}\n\nfunction fixEncoding(str) {\n  if (!str) return str;\n  return str\n    .replace(/Ã³/g, 'ó')\n    .replace(/Ã¡/g, 'á')\n    .replace(/Ã©/g, 'é')\n    .replace(/Ã­/g, 'í')\n    .replace(/Ãº/g, 'ú')\n    .replace(/Ã±/g, 'ñ')\n    .replace(/Ã\\u0081/g, 'Á')\n    .replace(/Ã\\u0089/g, 'É')\n    .replace(/Ã\\u008d/g, 'Í')\n    .replace(/Ã\\u0093/g, 'Ó')\n    .replace(/Ã\\u009a/g, 'Ú')\n    .replace(/Ã\\u0091/g, 'Ñ')\n    .replace(/Ã¼/g, 'ü')\n    .replace(/Ã\\u009c/g, 'Ü')\n    .replace(/Ã§/g, 'ç')\n    .replace(/Ã\\u0087/g, 'Ç')\n    .replace(/Ã\\u00a0/g, 'à')\n    .replace(/Ã\\u0080/g, 'À')\n    .replace(/Ã¨/g, 'è')\n    .replace(/Ã\\u0088/g, 'È')\n    .replace(/Ã¬/g, 'ì')\n    .replace(/Ã\\u008c/g, 'Ì')\n    .replace(/Ã²/g, 'ò')\n    .replace(/Ã\\u0092/g, 'Ò')\n    .replace(/Ã¹/g, 'ù')\n    .replace(/Ã\\u0099/g, 'Ù');\n}\n\nfunction resolveCategoryId(categoriaPadre, categoriaTexto) {\n  if (categoriaTexto === \"Textil\" || [\"Calzado\",\"Bañadores\"].includes(categoriaTexto) || [\"Casual\",\"Equipaciones\"].includes(categoriaPadre)) return \"textil\";\n  if (categoriaPadre === \"Equipamiento\" || [\"Redes\",\"Vestuarios\",\"Equipamiento agua\",\"Colchonetas\",\"Baloncesto\",\"Fútbol 11 y 7\",\"Fútbol sala - Balonmano\",\"Voleibol\",\"Banquillos\",\"Gimnasia\",\"Tenis\",\"Protecciones columnas\",\"Otros deportes\",\"Pádel\"].includes(categoriaTexto)) return \"instalaciones\";\n  if ([\"Psicomotricidad\",\"Juegos\"].includes(categoriaPadre)) return \"material-escolar\";\n  return \"deportes\";\n}\n\nconst groups = new Map();\n\nfor (let i = 1; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n  const fields = line.split(\";\");\n  const clean = fields.map(f => f.replace(/\"/g, \"\").trim());\n  const refPatron = clean[0] || null;\n  const refVariante = clean[1] || null;\n  const ean = clean[2] || null;\n  const stock = parseInt(clean[3], 10) || 0;\n  const name = fixEncoding(clean[4] || \"\");\n  const marca = fixEncoding(clean[5] || null);\n  const imagen = clean[6] || null;\n  const categoriaTexto = fixEncoding(clean[7] || null);\n  const categoriaPadre = fixEncoding(clean[8] || null);\n  const color = fixEncoding(clean[9] || null);\n  const talla = fixEncoding(clean[10] || null);\n  if (!refPatron || !name || name.trim() === \"\") continue;\n  if (!groups.has(refPatron)) {\n    const categoryId = resolveCategoryId(categoriaPadre || \"\", categoriaTexto || \"\");\n    const subcategory = `${categoriaPadre || \"\"} > ${categoriaTexto || \"\"}`;\n    const baseSlug = slugify(name);\n    const skuPadre = `J${refPatron}`;\n    const slug = `${baseSlug}-${slugify(skuPadre)}`;\n    groups.set(refPatron, {\n      product: {proveedor: \"jim_sports\", ref_proveedor: refPatron, sku_interno: skuPadre, name, marca, imagen, categoryId, subcategory, slug, published: true, activo: true, visible_web: true},\n      variants: []\n    });\n  }\n  const variantSku = refVariante ? `J${refPatron}-${refVariante}` : `J${refPatron}-BASE`;\n  groups.get(refPatron).variants.push({proveedor: \"jim_sports\", ref_proveedor: refPatron, ref_variante: refVariante, sku_interno: variantSku, ean, stock, color, talla, imagen});\n}\n\nconst out = [];\nfor (const [refPatron, g] of groups.entries()) {\n  out.push({ json: { type: \"product\", ...g.product } });\n  for (const v of g.variants) out.push({ json: { type: \"variant\", ...v } });\n}\nreturn out;"
+      },
+      "name": "Parse CSV + Fix Encoding",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 0],
+      "id": "parse-1",
+      "notes": "✅ Limpia UTF-8 + Filtra vacíos"
+    },
+    {
+      "parameters": {
+        "jsCode": "const uniqueRefs = new Set();\nfor (const item of items) {\n  if (item.json.ref_proveedor) uniqueRefs.add(item.json.ref_proveedor);\n}\nreturn Array.from(uniqueRefs).map(ref => ({json: { ref_proveedor: ref }}));"
+      },
+      "name": "Extract Unique REF_PATRON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [600, 0],
+      "id": "extract-refs"
+    },
+    {
+      "parameters": {"batchSize": 10, "options": {}},
+      "name": "Loop REF_PATRON",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [800, 0],
+      "id": "loop-refs"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.jimsports.com/v1/product/byref/{{ $json.ref_proveedor }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "ClientAuth", "value": "61b4bac3-4afb-401e-b40a-f242271acd83"}
+          ]
+        },
+        "options": {"batching": {"batch": {"batchSize": 1, "batchInterval": 100}}}
+      },
+      "name": "API Get Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 0],
+      "id": "api-get-product",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  return {precioBase: parseFloat(precio.toFixed(2)), precioFinal: parseFloat((precio * multiplicador).toFixed(2))};\n}\n\nconst results = [];\nfor (const item of items) {\n  if (!item.json.reference) continue;\n  const refPatron = item.json.reference;\n  const productPrice = calcularPrecioConMargen(item.json.price || 0);\n  results.push({json: {type: \"price\", ref_proveedor: refPatron, ref_variante: null, precioBase: productPrice.precioBase, price: productPrice.precioFinal}});\n  if (item.json.variants && Array.isArray(item.json.variants)) {\n    for (const variant of item.json.variants) {\n      const variantPrice = calcularPrecioConMargen(variant.price || 0);\n      results.push({json: {type: \"price\", ref_proveedor: refPatron, ref_variante: variant.reference, precioBase: variantPrice.precioBase, price: variantPrice.precioFinal}});\n    }\n  }\n}\nreturn results;"
+      },
+      "name": "Extract Prices + Apply Margins",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 0],
+      "id": "extract-prices"
+    },
+    {
+      "parameters": {},
+      "name": "Wait for API Loop",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1400, 0],
+      "id": "wait-api"
+    },
+    {
+      "parameters": {
+        "jsCode": "const csvItems = $('Parse CSV + Fix Encoding').all();\nconst priceItems = $input.all();\nconst priceMap = new Map();\nfor (const item of priceItems) {\n  const key = `${item.json.ref_proveedor}|${item.json.ref_variante || \"\"}`;\n  priceMap.set(key, {precioBase: item.json.precioBase, price: item.json.price});\n}\nconst result = [];\nfor (const item of csvItems) {\n  const key = `${item.json.ref_proveedor}|${item.json.ref_variante || \"\"}`;\n  const prices = priceMap.get(key) || { precioBase: 0, price: 0 };\n  result.push({json: {...item.json, precioBase: prices.precioBase, price: prices.price}});\n}\nreturn result;"
+      },
+      "name": "Merge CSV + Prices",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 0],
+      "id": "merge-data"
+    },
+    {
+      "parameters": {"batchSize": 100, "options": {}},
+      "name": "Loop Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1800, 0],
+      "id": "loop-batches"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {"conditions": {"options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict"}, "conditions": [{"leftValue": "={{$json.type}}", "rightValue": "product", "operator": {"type": "string", "operation": "equals"}}]}},
+            {"conditions": {"options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict"}, "conditions": [{"leftValue": "={{ $json.type }}", "rightValue": "variant", "operator": {"type": "string", "operation": "equals"}}]}}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [2000, 0],
+      "id": "switch-type",
+      "name": "Switch Type"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"Product\" (name,slug,description,price,\"precioBase\",images,stock,\"categoryId\",subcategory,published,featured,\"createdAt\",\"updatedAt\",proveedor,ref_proveedor,ref_variante,ean,marca,categoria_texto,categoria_padre,color,talla,activo,visible_web,sku_interno) VALUES ('{{ ($json.name ?? \"\").replace(/'/g, \"''\") }}','{{ ((($json.slug ?? \"\").trim() !== \"\" ? $json.slug : ($json.sku_interno ?? \"producto\"))).replace(/'/g, \"''\") }}','',{{ $json.price ?? 0 }},{{ $json.precioBase ?? 0 }},{{ $json.imagen ? \"ARRAY['\" + $json.imagen.replace(/'/g, \"''\") + \"']::text[]\" : \"ARRAY[]::text[]\" }},0,'{{ $json.categoryId ?? \"deportes\" }}','{{ ($json.subcategory ?? \"\").replace(/'/g, \"''\") }}',{{ $json.published === false ? 'false' : 'true' }},false,NOW(),NOW(),'{{ $json.proveedor ?? \"jim_sports\" }}','{{ $json.ref_proveedor ?? \"\" }}',NULL,NULL,{{ $json.marca ? \"'\" + $json.marca.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},NULL,NULL,NULL,NULL,{{ $json.activo === false ? 'false' : 'true' }},{{ $json.visible_web === false ? 'false' : 'true' }},'{{ ($json.sku_interno ?? \"\").replace(/'/g, \"''\") }}') ON CONFLICT (sku_interno) DO UPDATE SET \"categoryId\"=CASE WHEN \"Product\".\"categoryId\" IS NULL OR \"Product\".\"categoryId\"='' OR \"Product\".\"categoryId\"='default' THEN EXCLUDED.\"categoryId\" ELSE \"Product\".\"categoryId\" END,subcategory=CASE WHEN \"Product\".subcategory IS NULL OR \"Product\".subcategory='' THEN EXCLUDED.subcategory ELSE \"Product\".subcategory END,proveedor=EXCLUDED.proveedor,ref_proveedor=EXCLUDED.ref_proveedor,name=EXCLUDED.name,slug=CASE WHEN EXCLUDED.slug IS NULL OR EXCLUDED.slug='' THEN \"Product\".slug ELSE EXCLUDED.slug END,price=EXCLUDED.price,\"precioBase\"=EXCLUDED.\"precioBase\",images=EXCLUDED.images,stock=0,published=EXCLUDED.published,featured=EXCLUDED.featured,marca=EXCLUDED.marca,activo=EXCLUDED.activo,visible_web=EXCLUDED.visible_web,\"updatedAt\"=NOW() RETURNING id;",
+        "options": {}
+      },
+      "name": "Insert Product",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [2200, -100],
+      "id": "insert-product",
+      "alwaysOutputData": true,
+      "credentials": {"postgres": {"id": "wum06K40sV6oLIqF", "name": "Postgres account"}}
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"ProductVariant\" (\"productId\",proveedor,ref_proveedor,ref_variante,sku_interno,ean,color,talla,stock,images,activo,visible_web,\"createdAt\",\"updatedAt\") SELECT DISTINCT ON (v.sku_interno) p.id,v.proveedor,v.ref_proveedor,v.ref_variante,v.sku_interno,v.ean,v.color,v.talla,v.stock,v.images,v.activo,v.visible_web,NOW(),NOW() FROM (SELECT '{{ $json.proveedor ?? \"jim_sports\" }}'::text AS proveedor,'{{ $json.ref_proveedor ?? \"\" }}'::text AS ref_proveedor,{{ $json.ref_variante ? \"'\" + $json.ref_variante + \"'\" : \"NULL\" }}::text AS ref_variante,'{{ ($json.sku_interno ?? \"\").replace(/'/g, \"''\") }}'::text AS sku_interno,{{ $json.ean ? \"'\" + $json.ean + \"'\" : \"NULL\" }}::text AS ean,{{ $json.color ? \"'\" + $json.color.replace(/'/g, \"''\") + \"'\" : \"NULL\" }}::text AS color,{{ $json.talla ? \"'\" + $json.talla.replace(/'/g, \"''\") + \"'\" : \"NULL\" }}::text AS talla,{{ $json.stock ?? 0 }}::int AS stock,{{ $json.imagen ? \"ARRAY['\" + $json.imagen.replace(/'/g, \"''\") + \"']::text[]\" : \"ARRAY[]::text[]\" }} AS images,{{ $json.activo === false ? 'false' : 'true' }}::boolean AS activo,{{ $json.visible_web === false ? 'false' : 'true' }}::boolean AS visible_web) v JOIN \"Product\" p ON p.proveedor=v.proveedor AND p.ref_proveedor=v.ref_proveedor ORDER BY v.sku_interno, v.ean NULLS LAST ON CONFLICT (sku_interno) DO UPDATE SET ean=EXCLUDED.ean,color=EXCLUDED.color,talla=EXCLUDED.talla,stock=EXCLUDED.stock,images=EXCLUDED.images,activo=EXCLUDED.activo,visible_web=EXCLUDED.visible_web,\"updatedAt\"=NOW();",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [2200, 100],
+      "id": "insert-variant",
+      "name": "Insert ProductVariant",
+      "credentials": {"postgres": {"id": "wum06K40sV6oLIqF", "name": "Postgres account"}}
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 4 hours": {"main": [[{"node": "Download CSV", "type": "main", "index": 0}]]},
+    "Download CSV": {"main": [[{"node": "Parse CSV + Fix Encoding", "type": "main", "index": 0}]]},
+    "Parse CSV + Fix Encoding": {"main": [[{"node": "Extract Unique REF_PATRON", "type": "main", "index": 0}]]},
+    "Extract Unique REF_PATRON": {"main": [[{"node": "Loop REF_PATRON", "type": "main", "index": 0}]]},
+    "Loop REF_PATRON": {"main": [[{"node": "Wait for API Loop", "type": "main", "index": 0}], [{"node": "API Get Product", "type": "main", "index": 0}]]},
+    "API Get Product": {"main": [[{"node": "Extract Prices + Apply Margins", "type": "main", "index": 0}]]},
+    "Extract Prices + Apply Margins": {"main": [[{"node": "Loop REF_PATRON", "type": "main", "index": 0}]]},
+    "Wait for API Loop": {"main": [[{"node": "Merge CSV + Prices", "type": "main", "index": 0}]]},
+    "Merge CSV + Prices": {"main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]},
+    "Loop Batches": {"main": [[], [{"node": "Switch Type", "type": "main", "index": 0}]]},
+    "Switch Type": {"main": [[{"node": "Insert Product", "type": "main", "index": 0}], [{"node": "Insert ProductVariant", "type": "main", "index": 0}]]},
+    "Insert Product": {"main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]},
+    "Insert ProductVariant": {"main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "versionId": "v4-encoding-fixed-v2",
+  "meta": {"instanceId": "aef744e3957da2c375c7aacb4bff35ae811f44f72fadc18bfa3421d85ee62dfe"},
+  "id": "jim-sports-v4-encoding-v2",
+  "tags": []
+}

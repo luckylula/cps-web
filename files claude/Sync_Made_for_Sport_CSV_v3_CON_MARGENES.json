@@ -1,0 +1,121 @@
+{
+  "name": "Sync Made for Sport CSV v3 - CON MARGENES",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "name": "Daily at 2 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [544, 16],
+      "id": "179dd189-0139-44e2-9141-3770432f7b5b"
+    },
+    {
+      "parameters": {
+        "url": "https://madeforsport.eu/csv/productoses.csv",
+        "options": {}
+      },
+      "name": "Download CSV Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [752, 16],
+      "id": "ac21fe9f-7a0b-4256-b659-c713307abe4e",
+      "notes": "CSV actualizado diariamente por Made for Sport"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar CSV Made for Sport con análisis inteligente\nconst csvText = items[0].json.data ?? items[0].json.body ?? items[0].json;\nconst lines = String(csvText).split(/\\r?\\n/);\nconst products = [];\n\nfunction slugify(str) {\n  return String(str || \"\")\n    .toLowerCase()\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/[^a-z0-9]+/g, \"-\")\n    .replace(/^-|-$/g, \"\");\n}\n\n// Función para analizar producto y asignar categoría + subcategoría\nfunction analizarProducto(nombre, descripcion) {\n  const n = nombre.toLowerCase();\n  const d = (descripcion || \"\").toLowerCase();\n  const texto = n + \" \" + d;\n  \n  // ═══════════════════════════════════════════════════════\n  // TEXTIL\n  // ═══════════════════════════════════════════════════════\n  \n  if (texto.match(/camiseta|polo|sudadera|jersey|chaleco/)) {\n    return { categoryId: \"textil\", subcategory: \"Camisetas y polos\" };\n  }\n  \n  if (texto.match(/pantalon|short|bermuda|leggin|malla|culotte/)) {\n    return { categoryId: \"textil\", subcategory: \"Pantalones y shorts\" };\n  }\n  \n  if (texto.match(/chandal|chaqueta|cortaviento|anorak/)) {\n    return { categoryId: \"textil\", subcategory: \"Chaquetas y chándales\" };\n  }\n  \n  if (texto.match(/zapatilla|calzado|bota|playera/)) {\n    return { categoryId: \"textil\", subcategory: \"Calzado\" };\n  }\n  \n  if (texto.match(/bañador|bikini|traje de baño|lycra/)) {\n    return { categoryId: \"textil\", subcategory: \"Bañadores\" };\n  }\n  \n  if (texto.match(/calcetin|media|tobillera/)) {\n    return { categoryId: \"textil\", subcategory: \"Calcetines\" };\n  }\n  \n  // ═══════════════════════════════════════════════════════\n  // INSTALACIONES\n  // ═══════════════════════════════════════════════════════\n  \n  if (texto.match(/red|porteria|canasta|poste|tablero/)) {\n    return { categoryId: \"instalaciones\", subcategory: \"Redes y porterías\" };\n  }\n  \n  if (texto.match(/colchoneta|tatami|quitamiedos|espaldera/)) {\n    return { categoryId: \"instalaciones\", subcategory: \"Colchonetas y protecciones\" };\n  }\n  \n  if (texto.match(/banco|banquillo|grada/)) {\n    return { categoryId: \"instalaciones\", subcategory: \"Mobiliario deportivo\" };\n  }\n  \n  // ═══════════════════════════════════════════════════════\n  // MATERIAL ESCOLAR\n  // ═══════════════════════════════════════════════════════\n  \n  if (texto.match(/psicomotricidad|sensorial|didactico/)) {\n    return { categoryId: \"material-escolar\", subcategory: \"Psicomotricidad\" };\n  }\n  \n  if (texto.match(/juego|ludico|recreo/)) {\n    return { categoryId: \"material-escolar\", subcategory: \"Juegos\" };\n  }\n  \n  // ═══════════════════════════════════════════════════════\n  // DEPORTES - POR DISCIPLINA\n  // ═══════════════════════════════════════════════════════\n  \n  // Tenis de mesa\n  if (texto.match(/ping.*pong|tenis de mesa|donic|schildkrot|cornilleau/) ||\n      (texto.match(/pelota/) && texto.match(/tenis de mesa|ping|pong/))) {\n    return { categoryId: \"deportes\", subcategory: \"Tenis de mesa\" };\n  }\n  \n  // Fútbol\n  if (texto.match(/futbol|soccer/) || \n      (texto.match(/balon/) && texto.match(/futbol|porteria|gol/))) {\n    return { categoryId: \"deportes\", subcategory: \"Fútbol\" };\n  }\n  \n  // Baloncesto\n  if (texto.match(/baloncesto|basket/) ||\n      (texto.match(/balon/) && texto.match(/baloncesto|canasta/))) {\n    return { categoryId: \"deportes\", subcategory: \"Baloncesto\" };\n  }\n  \n  // Voleibol\n  if (texto.match(/voleibol|voley/) ||\n      (texto.match(/balon/) && texto.match(/volei|voley/))) {\n    return { categoryId: \"deportes\", subcategory: \"Voleibol\" };\n  }\n  \n  // Balonmano\n  if (texto.match(/balonmano|handball/) ||\n      (texto.match(/balon/) && texto.match(/balonmano|handball/))) {\n    return { categoryId: \"deportes\", subcategory: \"Balonmano\" };\n  }\n  \n  // Natación\n  if (texto.match(/natacion|swimming|piscina/) ||\n      texto.match(/gorra|gafas.*nata|aleta|pullboy|tabla.*nata|manguito/)) {\n    return { categoryId: \"deportes\", subcategory: \"Natación\" };\n  }\n  \n  // Tenis\n  if (texto.match(/\\btenis\\b/) && !texto.match(/mesa/) ||\n      (texto.match(/raqueta/) && texto.match(/tenis/)) ||\n      (texto.match(/pelota/) && texto.match(/tenis/) && !texto.match(/mesa/))) {\n    return { categoryId: \"deportes\", subcategory: \"Tenis\" };\n  }\n  \n  // Pádel\n  if (texto.match(/padel|pala de padel/)) {\n    return { categoryId: \"deportes\", subcategory: \"Pádel\" };\n  }\n  \n  // Bádminton\n  if (texto.match(/badminton|volante|pluma/)) {\n    return { categoryId: \"deportes\", subcategory: \"Bádminton\" };\n  }\n  \n  // Atletismo / Running\n  if (texto.match(/atletismo|running|carrera|maraton/) ||\n      texto.match(/cronometro|testigo|valla.*atletismo|jabalina|disco.*atletismo/)) {\n    return { categoryId: \"deportes\", subcategory: \"Atletismo\" };\n  }\n  \n  // Ciclismo\n  if (texto.match(/ciclismo|bicicleta|bici|cycling/)) {\n    return { categoryId: \"deportes\", subcategory: \"Ciclismo\" };\n  }\n  \n  // Fitness / Gimnasio\n  if (texto.match(/fitness|gym|gimnasio|musculacion/) ||\n      texto.match(/mancuerna|pesa|barra|disco.*fitness|kettlebell|step|bosu/)) {\n    return { categoryId: \"deportes\", subcategory: \"Fitness\" };\n  }\n  \n  // Yoga / Pilates\n  if (texto.match(/yoga|pilates|mat|esterilla|fitball/)) {\n    return { categoryId: \"deportes\", subcategory: \"Yoga y Pilates\" };\n  }\n  \n  // Artes marciales\n  if (texto.match(/karate|judo|taekwondo|boxeo|kimono|guante.*boxeo/)) {\n    return { categoryId: \"deportes\", subcategory: \"Artes marciales\" };\n  }\n  \n  // Rugby\n  if (texto.match(/rugby/) || (texto.match(/balon/) && texto.match(/rugby/))) {\n    return { categoryId: \"deportes\", subcategory: \"Rugby\" };\n  }\n  \n  // Hockey\n  if (texto.match(/hockey|stick/)) {\n    return { categoryId: \"deportes\", subcategory: \"Hockey\" };\n  }\n  \n  // Arbitraje\n  if (texto.match(/arbitr|silbato|tarjeta.*roja|tarjeta.*amarilla|moneda.*arbitr/)) {\n    return { categoryId: \"deportes\", subcategory: \"Arbitraje\" };\n  }\n  \n  // ═══════════════════════════════════════════════════════\n  // DEPORTES - POR TIPO DE PRODUCTO\n  // ═══════════════════════════════════════════════════════\n  \n  // Balones y pelotas (genérico)\n  if (texto.match(/\\bbalon\\b|\\bpelota\\b|\\bball\\b/)) {\n    return { categoryId: \"deportes\", subcategory: \"Balones y pelotas\" };\n  }\n  \n  // Accesorios genéricos\n  if (texto.match(/bolsa|mochila|botella|bidon|neceser|toalla/)) {\n    return { categoryId: \"deportes\", subcategory: \"Accesorios\" };\n  }\n  \n  // Protecciones\n  if (texto.match(/rodillera|codera|tobillera|munequera|protector|espinillera/)) {\n    return { categoryId: \"deportes\", subcategory: \"Protecciones\" };\n  }\n  \n  // Entrenamiento\n  if (texto.match(/entrena|training|conos|pica|aros|escalera.*agilidad/)) {\n    return { categoryId: \"deportes\", subcategory: \"Entrenamiento\" };\n  }\n  \n  // Cronometraje\n  if (texto.match(/cronometro|temporizador|marcador/)) {\n    return { categoryId: \"deportes\", subcategory: \"Cronometraje\" };\n  }\n  \n  // DEFAULT: Otros deportes\n  return { categoryId: \"deportes\", subcategory: \"Otros deportes\" };\n}\n\nfor (let i = 1; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n\n  const fields = line.split(\";\");\n  const cleanFields = fields.map((field) => field.replace(/\"/g, \"\").trim());\n\n  const name = cleanFields[0] || \"\";\n  const price = parseFloat(cleanFields[1]) || 0;\n  const refProveedor = cleanFields[2] || null;\n  const ean = cleanFields[3] || null;\n  const stock = parseInt(cleanFields[4], 10) || 0;\n  const description = cleanFields[5] || \"\";\n  const imagenesStr = cleanFields[6] || \"\";\n\n  const imagenes = imagenesStr\n    .split(\",\")\n    .map((url) => url.trim())\n    .filter((url) => url.length > 0);\n\n  const skuInterno = `MF${refProveedor}`;\n  const baseSlug = slugify(name);\n  const slug = `${baseSlug}-${slugify(skuInterno)}`;\n\n  // Análisis inteligente\n  const analisis = analizarProducto(name, description);\n\n  products.push({\n    json: {\n      proveedor: \"made_for_sport\",\n      ref_proveedor: refProveedor,\n      ref_variante: null,\n      ean,\n      stock,\n      name,\n      description,\n      price,\n      imagenes,\n      slug,\n      sku_interno: skuInterno,\n      categoryId: analisis.categoryId,\n      subcategory: analisis.subcategory,\n      marca: null,\n      categoria: null,\n      categoria_padre: null,\n      color: null,\n      talla: null,\n      published: true,\n      activo: true,\n      visible_web: true,\n    },\n  });\n}\n\nreturn products;\n"
+      },
+      "name": "Parse CSV Manual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [944, 16],
+      "id": "e84f8af9-1712-429b-ae0d-919539ce3a90"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aplicar márgenes dinámicos a precios de Made for Sport\nfunction calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  \n  if (isNaN(precio) || precio <= 0) {\n    return { precioBase: 0, precioFinal: 0 };\n  }\n  \n  let multiplicador;\n  \n  if (precio < 50) {\n    multiplicador = 1.50;\n  } else if (precio < 100) {\n    multiplicador = 1.47;\n  } else if (precio < 200) {\n    multiplicador = 1.43;\n  } else if (precio < 400) {\n    multiplicador = 1.38;\n  } else {\n    multiplicador = 1.30;\n  }\n  \n  return {\n    precioBase: parseFloat(precio.toFixed(2)),\n    precioFinal: parseFloat((precio * multiplicador).toFixed(2))\n  };\n}\n\n// Procesar todos los items\nconst results = [];\n\nfor (const item of items) {\n  const precioOriginal = item.json.price;\n  const precios = calcularPrecioConMargen(precioOriginal);\n  \n  results.push({\n    json: {\n      ...item.json,\n      precioBase: precios.precioBase,\n      price: precios.precioFinal\n    }\n  });\n}\n\nreturn results;"
+      },
+      "name": "Apply Margins",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1048, 16],
+      "id": "apply-margins-mfs",
+      "notes": "Calcula precio final con margen dinámico según rango"
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "name": "Loop Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1152, 16],
+      "id": "7e117ebf-7e45-4b35-83df-9d05bbfb2c48"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"Product\" (\n  name,\n  slug,\n  description,\n  price,\n  \"precioBase\",\n  images,\n  stock,\n  \"categoryId\",\n  subcategory,\n  published,\n  featured,\n  \"createdAt\",\n  \"updatedAt\",\n  proveedor,\n  ref_proveedor,\n  ref_variante,\n  ean,\n  marca,\n  categoria_texto,\n  categoria_padre,\n  color,\n  talla,\n  activo,\n  visible_web,\n  sku_interno\n) VALUES (\n  '{{ $json.name.replace(/'/g, \"''\") }}',\n  '{{ $json.slug.replace(/'/g, \"''\") }}',\n  '{{ $json.description.replace(/'/g, \"''\") }}',\n  {{ $json.price }},\n  {{ $json.precioBase }},\n  {{ $json.imagenes.length > 0 ? \"ARRAY[\" + $json.imagenes.map(img => \"'\" + img.replace(/'/g, \"''\") + \"'\").join(\",\") + \"]::text[]\" : \"ARRAY[]::text[]\" }},\n  {{ $json.stock }},\n  '{{ $json.categoryId }}',\n  '{{ $json.subcategory.replace(/'/g, \"''\") }}',\n  {{ $json.published }},\n  false,\n  NOW(),\n  NOW(),\n  '{{ $json.proveedor }}',\n  '{{ $json.ref_proveedor }}',\n  NULL,\n  {{ $json.ean ? \"'\" + $json.ean + \"'\" : \"NULL\" }},\n  NULL,\n  NULL,\n  NULL,\n  NULL,\n  NULL,\n  {{ $json.activo }},\n  {{ $json.visible_web }},\n  '{{ $json.sku_interno.replace(/'/g, \"''\") }}'\n)\nON CONFLICT (sku_interno)\nDO UPDATE SET\n  \"categoryId\" = CASE\n    WHEN \"Product\".\"categoryId\" IS NULL OR \"Product\".\"categoryId\" = '' OR \"Product\".\"categoryId\" = 'default'\n      THEN EXCLUDED.\"categoryId\"\n    ELSE \"Product\".\"categoryId\"\n  END,\n  subcategory = EXCLUDED.subcategory,\n  proveedor = EXCLUDED.proveedor,\n  ref_proveedor = EXCLUDED.ref_proveedor,\n  ref_variante = EXCLUDED.ref_variante,\n  ean = EXCLUDED.ean,\n  name = EXCLUDED.name,\n  slug = EXCLUDED.slug,\n  description = EXCLUDED.description,\n  price = EXCLUDED.price,\n  \"precioBase\" = EXCLUDED.\"precioBase\",\n  images = EXCLUDED.images,\n  stock = EXCLUDED.stock,\n  published = EXCLUDED.published,\n  activo = EXCLUDED.activo,\n  visible_web = EXCLUDED.visible_web,\n  \"updatedAt\" = NOW()\nRETURNING id;",
+        "options": {}
+      },
+      "name": "Insert to Neon",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1344, 16],
+      "id": "a8f5eeb1-6a70-4f0e-8dc4-5555d3480ddf",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wum06K40sV6oLIqF",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Daily at 2 AM": {
+      "main": [[{ "node": "Download CSV Text", "type": "main", "index": 0 }]]
+    },
+    "Download CSV Text": {
+      "main": [[{ "node": "Parse CSV Manual", "type": "main", "index": 0 }]]
+    },
+    "Parse CSV Manual": {
+      "main": [[{ "node": "Apply Margins", "type": "main", "index": 0 }]]
+    },
+    "Apply Margins": {
+      "main": [[{ "node": "Loop Batches", "type": "main", "index": 0 }]]
+    },
+    "Loop Batches": {
+      "main": [
+        [],
+        [{ "node": "Insert to Neon", "type": "main", "index": 0 }]
+      ]
+    },
+    "Insert to Neon": {
+      "main": [[{ "node": "Loop Batches", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "v3-con-margenes",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aef744e3957da2c375c7aacb4bff35ae811f44f72fadc18bfa3421d85ee62dfe"
+  },
+  "id": "made-for-sport-v3-margenes",
+  "tags": []
+}
