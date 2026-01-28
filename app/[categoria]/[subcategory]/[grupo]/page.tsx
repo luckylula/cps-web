@@ -31,6 +31,7 @@ async function getProducts(
   grupoSlug: string,
   filters: {
     marcas?: string[];
+    tipos?: string[];
     precio_min?: string;
     precio_max?: string;
     disponibilidad?: string;
@@ -65,6 +66,13 @@ async function getProducts(
   if (filters.marcas && filters.marcas.length > 0) {
     where.marca = {
       in: filters.marcas,
+    };
+  }
+
+  // Filtro por tipo de producto
+  if (filters.tipos && filters.tipos.length > 0) {
+    where.tipo_producto = {
+      in: filters.tipos,
     };
   }
 
@@ -150,10 +158,46 @@ async function getFilterOptions(
     .map(p => p.price ? Number(p.price) : null)
     .filter((p): p is number => p !== null && !isNaN(p));
   
+  // Obtener tipos de producto disponibles (solo para deportes)
+  let availableTipos: { tipo_producto: string; _count: { tipo_producto: number } }[] = [];
+  if (categoriaSlug === 'deportes') {
+    const tiposWhere: any = {
+      categoryId: categoriaSlug,
+      visible_web: true,
+      activo: true,
+      tipo_producto: { not: null },
+    };
+    
+    if (subcategoryName) {
+      tiposWhere.subcategory = subcategoryName;
+    }
+    
+    if (grupoName) {
+      tiposWhere.grupo = grupoName;
+    }
+    
+    const tiposData = await prisma.product.groupBy({
+      by: ['tipo_producto'],
+      where: tiposWhere,
+      _count: {
+        tipo_producto: true,
+      },
+    });
+    
+    availableTipos = tiposData
+      .filter(t => t.tipo_producto !== null)
+      .map(t => ({
+        tipo_producto: t.tipo_producto!,
+        _count: { tipo_producto: t._count.tipo_producto },
+      }))
+      .sort((a, b) => a.tipo_producto.localeCompare(b.tipo_producto));
+  }
+  
   return {
     marcas: marcas.sort(),
     minPrice: prices.length > 0 ? Math.floor(Math.min(...prices)) : null,
     maxPrice: prices.length > 0 ? Math.ceil(Math.max(...prices)) : null,
+    availableTipos,
   };
 }
 
@@ -197,10 +241,12 @@ export default async function GrupoPage({ params, searchParams }: PageProps) {
   const grupoName = getGrupoName(categoria, subcategory, grupo) || grupo;
   
   const marcaParams = Array.isArray(filters.marca) ? filters.marca : filters.marca ? [filters.marca] : [];
+  const tipoParams = Array.isArray(filters.tipo) ? filters.tipo : filters.tipo ? [filters.tipo] : [];
   
   const [products, filterOptions] = await Promise.all([
     getProducts(categoria, subcategory, grupo, {
       marcas: marcaParams as string[],
+      tipos: tipoParams as string[],
       precio_min: filters.precio_min as string,
       precio_max: filters.precio_max as string,
       disponibilidad: filters.disponibilidad as string,
@@ -243,6 +289,8 @@ export default async function GrupoPage({ params, searchParams }: PageProps) {
                 minPrice={filterOptions.minPrice}
                 maxPrice={filterOptions.maxPrice}
                 totalProducts={products.length}
+                availableTipos={filterOptions.availableTipos}
+                categoryId={categoria}
               />
             </div>
 

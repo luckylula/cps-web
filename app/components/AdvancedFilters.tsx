@@ -3,11 +3,20 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+interface TipoProducto {
+  tipo_producto: string;
+  _count: {
+    tipo_producto: number;
+  };
+}
+
 interface AdvancedFiltersProps {
   marcas: string[];
   minPrice: number | null;
   maxPrice: number | null;
   totalProducts: number;
+  availableTipos?: TipoProducto[];
+  categoryId?: string;
 }
 
 type SortOption = 'name-asc' | 'price-asc' | 'price-desc' | 'newest';
@@ -19,7 +28,7 @@ const sortOptions = [
   { value: 'newest', label: 'Más recientes' },
 ] as const;
 
-export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProducts }: AdvancedFiltersProps) {
+export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProducts, availableTipos = [], categoryId }: AdvancedFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -30,6 +39,7 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
   
   // Estado de filtros
   const [selectedMarcas, setSelectedMarcas] = useState<string[]>([]);
+  const [selectedTipos, setSelectedTipos] = useState<string[]>([]);
   const [currentPriceRange, setCurrentPriceRange] = useState({
     min: defaultMinPrice,
     max: defaultMaxPrice,
@@ -40,12 +50,14 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
   // Cargar estado desde URL params
   useEffect(() => {
     const marcaParams = searchParams?.getAll('marca') || [];
+    const tipoParams = searchParams?.getAll('tipo') || [];
     const minPriceParam = searchParams?.get('precio_min');
     const maxPriceParam = searchParams?.get('precio_max');
     const stockParam = searchParams?.get('disponibilidad');
     const sortParam = searchParams?.get('ordenar') as SortOption;
 
     setSelectedMarcas(marcaParams);
+    setSelectedTipos(tipoParams);
     
     if (minPriceParam) {
       const min = parseFloat(minPriceParam);
@@ -77,6 +89,14 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
     );
   };
 
+  const handleTipoToggle = (tipo: string) => {
+    setSelectedTipos(prev =>
+      prev.includes(tipo)
+        ? prev.filter(t => t !== tipo)
+        : [...prev, tipo]
+    );
+  };
+
   const handlePriceChange = (type: 'min' | 'max', value: number) => {
     const min = type === 'min' ? Math.max(defaultMinPrice, Math.min(defaultMaxPrice, value)) : currentPriceRange.min;
     const max = type === 'max' ? Math.max(defaultMinPrice, Math.min(defaultMaxPrice, value)) : currentPriceRange.max;
@@ -96,6 +116,10 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
     
     selectedMarcas.forEach(marca => {
       params.append('marca', marca);
+    });
+
+    selectedTipos.forEach(tipo => {
+      params.append('tipo', tipo);
     });
 
     if (currentPriceRange.min > defaultMinPrice) {
@@ -121,6 +145,7 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
 
   const clearFilters = () => {
     setSelectedMarcas([]);
+    setSelectedTipos([]);
     setCurrentPriceRange({
       min: defaultMinPrice,
       max: defaultMaxPrice,
@@ -133,6 +158,7 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
 
   const hasActiveFilters = 
     selectedMarcas.length > 0 ||
+    selectedTipos.length > 0 ||
     currentPriceRange.min > defaultMinPrice ||
     currentPriceRange.max < defaultMaxPrice ||
     availability === 'in-stock' ||
@@ -256,6 +282,28 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
         </div>
       )}
 
+      {/* Filtro por tipo de producto - Solo para Deportes */}
+      {categoryId === 'deportes' && availableTipos.length > 0 && (
+        <div>
+          <h3 className="text-sm font-medium text-gray-900 mb-3">Tipo de producto</h3>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {availableTipos.map((tipo) => (
+              <label key={tipo.tipo_producto} className="flex items-center cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={selectedTipos.includes(tipo.tipo_producto)}
+                  onChange={() => handleTipoToggle(tipo.tipo_producto)}
+                  className="w-4 h-4 text-[#003366] border-gray-300 rounded focus:ring-[#003366] focus:ring-2"
+                />
+                <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                  {tipo.tipo_producto} <span className="text-gray-500">({tipo._count.tipo_producto})</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Filtro por disponibilidad */}
       <div>
         <h3 className="text-sm font-medium text-gray-900 mb-3">Disponibilidad</h3>
@@ -337,7 +385,7 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
         >
           <span>Filtros y ordenar</span>
           <span className="text-gray-500">
-            {hasActiveFilters && `(${selectedMarcas.length + (availability === 'in-stock' ? 1 : 0) + (currentPriceRange.min > (minPrice || 0) || currentPriceRange.max < (maxPrice || 1000) ? 1 : 0)} activos)`}
+            {hasActiveFilters && `(${selectedMarcas.length + selectedTipos.length + (availability === 'in-stock' ? 1 : 0) + (currentPriceRange.min > (minPrice || 0) || currentPriceRange.max < (maxPrice || 1000) ? 1 : 0)} activos)`}
             <svg className="ml-2 w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
