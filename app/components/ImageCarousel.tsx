@@ -7,8 +7,6 @@ interface Slide {
   title: string;
   subtitle: string;
   image: string;
-  ctaText: string;
-  ctaLink: string;
 }
 
 const slides: Slide[] = [
@@ -16,22 +14,21 @@ const slides: Slide[] = [
     title: "Equipamiento Deportivo de Alto Rendimiento",
     subtitle: "Innovación y seguridad certificada para centros educativos, clubes y colectivos.",
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
-    ctaText: "Ver Catálogo 2025",
-    ctaLink: "/catalogo.pdf",
   },
   {
     title: "Asesoramiento Técnico Especializado",
     subtitle: "No solo vendemos material, diseñamos soluciones integrales para tus espacios deportivos.",
     image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1920&q=80",
-    ctaText: "Solicitar Asesoramiento",
-    ctaLink: "#contacto",
   },
   {
     title: "Tu Socio Estratégico en el Deporte",
     subtitle: "Explora nuestro catálogo. Material deportivo para cada espacio y cada nivel",
     image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&q=80",
-    ctaText: "Ver Catálogo 2025",
-    ctaLink: "/catalogo.pdf",
+  },
+  {
+    title: "Soluciones Deportivas Profesionales",
+    subtitle: "Equipamos espacios deportivos donde la calidad, la seguridad y el rendimiento van de la mano.",
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
   },
 ];
 
@@ -101,20 +98,11 @@ export default function ImageCarousel() {
                   {slide.title}
                 </h1>
                 <p
-                  className="text-lg md:text-xl lg:text-2xl text-white/90 mb-10 font-light max-w-3xl mx-auto leading-relaxed"
+                  className="text-lg md:text-xl lg:text-2xl text-white/90 font-light max-w-3xl mx-auto leading-relaxed"
                   style={{ fontFamily: "var(--font-poppins)" }}
                 >
                   {slide.subtitle}
                 </p>
-                <a
-                  href={slide.ctaLink}
-                  target={slide.ctaLink.startsWith("#") ? undefined : "_blank"}
-                  rel={slide.ctaLink.startsWith("#") ? undefined : "noopener noreferrer"}
-                  className="inline-block bg-black hover:bg-gray-800 text-white font-semibold px-8 py-4 text-base md:text-lg transition-all duration-300 uppercase tracking-wide"
-                  style={{ fontFamily: "var(--font-poppins)" }}
-                >
-                  {slide.ctaText}
-                </a>
               </div>
             </div>
           )}

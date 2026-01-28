@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ImageCarousel from "./components/ImageCarousel";
 import Navigation from "@/app/components/Navigation";
+import ContactForm from "./components/ContactForm";
 
 export default function Home() {
   const categories = {
@@ -413,7 +414,7 @@ export default function Home() {
 
       {/* Contact Section - Estilo Minimalista */}
       <section id="contacto" className="py-20 px-8 bg-black text-white">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-light mb-4 tracking-tight">
               Contacto
@@ -423,6 +424,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-12">
+            {/* Información de contacto */}
             <div>
               <h3 className="text-xl font-medium mb-6">Información de contacto</h3>
               <div className="space-y-4 text-gray-300">
@@ -442,13 +444,17 @@ export default function Home() {
                   pedidos@cpsmaterialdeportivo.com
                 </p>
               </div>
-            </div>
-            <div>
-              <h3 className="text-xl font-medium mb-6">Horarios de oficina</h3>
-              <div className="space-y-2 text-gray-300 font-light">
-                <p>Lunes - Jueves: 9:00 a 13:00 y 15:00 a 19:00</p>
-                <p>Viernes: 9:00 a 13:00 y 15:00 a 18:00</p>
+              <div className="mt-8">
+                <h3 className="text-xl font-medium mb-6">Horarios de oficina</h3>
+                <div className="space-y-2 text-gray-300 font-light">
+                  <p>Lunes - Jueves: 9:00 a 13:00 y 15:00 a 19:00</p>
+                  <p>Viernes: 9:00 a 13:00 y 15:00 a 18:00</p>
+                </div>
               </div>
+            </div>
+            {/* Formulario de contacto */}
+            <div>
+              <ContactForm />
             </div>
           </div>
         </div>
