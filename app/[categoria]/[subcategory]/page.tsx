@@ -157,7 +157,7 @@ export default async function SubcategoryPage({ params }: PageProps) {
               <p className="text-gray-600 text-lg">No hay grupos disponibles en esta subcategoría</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {groups.map((grupo) => (
                 <GroupCard
                   key={grupo.slug}

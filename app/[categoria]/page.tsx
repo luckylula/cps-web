@@ -6,10 +6,12 @@ import Navigation from '@/app/components/Navigation';
 import ProductCard from '@/app/components/ProductCard';
 import AdvancedFilters from '@/app/components/AdvancedFilters';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
-import { getCategoryName } from '@/app/lib/navigationMapping';
+import SubcategoryCard from '@/app/components/SubcategoryCard';
+import { getCategoryName, getSubcategoryName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
 import { convertProductsToClient } from '@/app/lib/productUtils';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
+import { navigationStructure } from '@/app/lib/navigationStructure';
 
 export const dynamic = 'force-dynamic';
 
@@ -144,6 +146,39 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
+async function getSubcategoriesForCategory(categoriaSlug: string) {
+  const categoria = navigationStructure.find(c => c.slug === categoriaSlug);
+  
+  if (!categoria || !categoria.subcategorias || categoria.subcategorias.length === 0) {
+    return [];
+  }
+
+  // Verificar cuáles subcategorías tienen productos usando el nombre completo
+  const subcategoriesWithProducts = await Promise.all(
+    categoria.subcategorias.map(async (subcategoria) => {
+      // Obtener el nombre completo de la subcategoría usando el mapping
+      const subcategoryName = getSubcategoryName(categoriaSlug, subcategoria.slug) || subcategoria.nombre;
+      
+      const count = await prisma.product.count({
+        where: {
+          categoryId: categoriaSlug,
+          subcategory: subcategoryName,
+          visible_web: true,
+          activo: true,
+        },
+      });
+      
+      return {
+        ...subcategoria,
+        hasProducts: count > 0,
+      };
+    })
+  );
+
+  // Retornar solo las que tienen productos
+  return subcategoriesWithProducts.filter(s => s.hasProducts);
+}
+
 export default async function CategoriaPage({ params, searchParams }: PageProps) {
   const { categoria } = await params;
   const filters = await searchParams;
@@ -155,6 +190,67 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
 
   const categoryName = getCategoryName(categoria) || category.name;
   
+  // Obtener subcategorías de esta categoría
+  const subcategories = await getSubcategoriesForCategory(categoria);
+  
+  // Si hay subcategorías, mostrar la vista de subcategorías (como Material Escolar)
+  if (subcategories.length > 0) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+
+        {/* Breadcrumb */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+            <Breadcrumbs 
+              items={generateBreadcrumbs({ categoria })} 
+              baseUrl={process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
+                ? `https://${process.env.VERCEL_URL}` 
+                : 'https://cpsmaterialdeportivo.es'}
+            />
+          </div>
+        </div>
+
+        {/* Hero Section */}
+        <section className="pt-16 pb-12 px-8 bg-white">
+          <div className="max-w-6xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-4 tracking-tight">
+              {categoryName}
+            </h1>
+            {category.description && (
+              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+                {category.description}
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Subcategories Grid */}
+        <section className="py-16 px-4 md:px-8 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {subcategories.map((subcategory) => (
+                <SubcategoryCard
+                  key={subcategory.slug}
+                  subcategory={subcategory}
+                  categoriaSlug={categoria}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-8 px-8 border-t border-gray-200 bg-white">
+          <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
+            <p>© 2024 Control Play Sports S.L. Todos los derechos reservados.</p>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
+  // Si no hay subcategorías, mostrar productos directamente (comportamiento anterior)
   const marcaParams = Array.isArray(filters.marca) ? filters.marca : filters.marca ? [filters.marca] : [];
   
   const [products, filterOptions] = await Promise.all([
