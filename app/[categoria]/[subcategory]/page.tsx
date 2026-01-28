@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import Navigation from '@/app/components/Navigation';
 import ProductCard from '@/app/components/ProductCard';
-import ProductFilters from '@/app/components/ProductFilters';
+import AdvancedFilters from '@/app/components/AdvancedFilters';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
 import { getSubcategoryName, getCategoryName } from '@/app/lib/navigationMapping';
+import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,10 +28,11 @@ async function getProducts(
   categoriaSlug: string,
   subcategorySlug: string,
   filters: {
-    marca?: string;
-    minPrice?: string;
-    maxPrice?: string;
-    stock?: string;
+    marcas?: string[];
+    precio_min?: string;
+    precio_max?: string;
+    disponibilidad?: string;
+    ordenar?: string;
   }
 ) {
   const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
@@ -51,33 +54,54 @@ async function getProducts(
     where.subcategory = subcategoryName;
   }
 
-  if (filters.marca) {
+  // Filtro por múltiples marcas
+  if (filters.marcas && filters.marcas.length > 0) {
     where.marca = {
-      contains: filters.marca,
-      mode: 'insensitive',
+      in: filters.marcas,
     };
   }
 
-  if (filters.minPrice || filters.maxPrice) {
+  // Filtro por precio
+  if (filters.precio_min || filters.precio_max) {
     where.price = {};
-    if (filters.minPrice) {
-      where.price.gte = parseFloat(filters.minPrice);
+    if (filters.precio_min) {
+      where.price.gte = parseFloat(filters.precio_min);
     }
-    if (filters.maxPrice) {
-      where.price.lte = parseFloat(filters.maxPrice);
+    if (filters.precio_max) {
+      where.price.lte = parseFloat(filters.precio_max);
     }
     where.price.not = null;
   }
 
-  if (filters.stock === 'true') {
+  // Filtro por disponibilidad
+  if (filters.disponibilidad === 'en-stock') {
     where.stock = { gt: 0 };
+  }
+
+  // Ordenamiento
+  let orderBy: any = { name: 'asc' };
+  if (filters.ordenar) {
+    switch (filters.ordenar) {
+      case 'name-asc':
+        orderBy = { name: 'asc' };
+        break;
+      case 'price-asc':
+        orderBy = { price: 'asc' };
+        break;
+      case 'price-desc':
+        orderBy = { price: 'desc' };
+        break;
+      case 'newest':
+        orderBy = { createdAt: 'desc' };
+        break;
+      default:
+        orderBy = { name: 'asc' };
+    }
   }
 
   const products = await prisma.product.findMany({
     where,
-    orderBy: {
-      name: 'asc',
-    },
+    orderBy,
   });
 
   return products;
@@ -120,13 +144,24 @@ async function getFilterOptions(categoriaSlug: string, subcategorySlug: string) 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categoria, subcategory } = await params;
   const category = await getCategory(categoria);
-  const categoryName = getCategoryName(categoria) || category?.name || categoria;
-  const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+  const subcategoryName = getSubcategoryName(categoria, subcategory);
+  
+  // Obtener conteo de productos
+  const productCount = await prisma.product.count({
+    where: {
+      categoryId: categoria,
+      subcategory: subcategoryName || undefined,
+      visible_web: true,
+      activo: true,
+    },
+  });
 
-  return {
-    title: `${subcategoryName} - ${categoryName} | CPS Material Deportivo`,
-    description: `Explora nuestra selección de productos de ${subcategoryName} en ${categoryName}`,
-  };
+  return generateCategoryMetadata({
+    categoria,
+    subcategory,
+    categoryDescription: category?.description || undefined,
+    productCount,
+  });
 }
 
 export default async function SubcategoryPage({ params, searchParams }: PageProps) {
@@ -141,12 +176,15 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
   const categoryName = getCategoryName(categoria) || category.name;
   const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
   
+  const marcaParams = Array.isArray(filters.marca) ? filters.marca : filters.marca ? [filters.marca] : [];
+  
   const [products, filterOptions] = await Promise.all([
     getProducts(categoria, subcategory, {
-      marca: filters.marca as string,
-      minPrice: filters.minPrice as string,
-      maxPrice: filters.maxPrice as string,
-      stock: filters.stock as string,
+      marcas: marcaParams as string[],
+      precio_min: filters.precio_min as string,
+      precio_max: filters.precio_max as string,
+      disponibilidad: filters.disponibilidad as string,
+      ordenar: filters.ordenar as string,
     }),
     getFilterOptions(categoria, subcategory),
   ]);
@@ -158,17 +196,12 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
-          <nav className="flex items-center gap-2 text-sm md:text-base text-gray-600">
-            <Link href="/" className="hover:text-gray-900 transition-colors">
-              Home
-            </Link>
-            <span>/</span>
-            <Link href={`/${categoria}`} className="hover:text-gray-900 transition-colors">
-              {categoryName}
-            </Link>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">{subcategoryName}</span>
-          </nav>
+          <Breadcrumbs 
+            items={generateBreadcrumbs({ categoria, subcategory })} 
+            baseUrl={process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
+              ? `https://${process.env.VERCEL_URL}` 
+              : 'https://cpsmaterialdeportivo.es'}
+          />
         </div>
       </div>
 
@@ -184,14 +217,14 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar con filtros */}
-            <aside className="lg:col-span-1">
-              <ProductFilters
+            <div className="lg:col-span-1">
+              <AdvancedFilters
                 marcas={filterOptions.marcas}
                 minPrice={filterOptions.minPrice}
                 maxPrice={filterOptions.maxPrice}
                 totalProducts={products.length}
               />
-            </aside>
+            </div>
 
             {/* Grid de productos */}
             <div className="lg:col-span-3">
