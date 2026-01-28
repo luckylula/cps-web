@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Category {
@@ -45,6 +44,7 @@ model Product {
   visible_web     Boolean          @default(true)
   id              Int              @id @default(autoincrement())
   grupo           String?          @db.VarChar(100)
+  tipo_producto   String?          @db.VarChar(100)
   orderItems      OrderItem[]
   variants        ProductVariant[]
 
@@ -55,6 +55,7 @@ model Product {
   @@index([visible_web, activo])
   @@index([subcategory])
   @@index([grupo], map: "idx_product_grupo")
+  @@index([tipo_producto])
 }
 
 model ProductVariant {

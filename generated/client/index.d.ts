@@ -2479,6 +2479,7 @@ export namespace Prisma {
     visible_web: boolean | null
     id: number | null
     grupo: string | null
+    tipo_producto: string | null
   }
 
   export type ProductMaxAggregateOutputType = {
@@ -2507,6 +2508,7 @@ export namespace Prisma {
     visible_web: boolean | null
     id: number | null
     grupo: string | null
+    tipo_producto: string | null
   }
 
   export type ProductCountAggregateOutputType = {
@@ -2536,6 +2538,7 @@ export namespace Prisma {
     visible_web: number
     id: number
     grupo: number
+    tipo_producto: number
     _all: number
   }
 
@@ -2578,6 +2581,7 @@ export namespace Prisma {
     visible_web?: true
     id?: true
     grupo?: true
+    tipo_producto?: true
   }
 
   export type ProductMaxAggregateInputType = {
@@ -2606,6 +2610,7 @@ export namespace Prisma {
     visible_web?: true
     id?: true
     grupo?: true
+    tipo_producto?: true
   }
 
   export type ProductCountAggregateInputType = {
@@ -2635,6 +2640,7 @@ export namespace Prisma {
     visible_web?: true
     id?: true
     grupo?: true
+    tipo_producto?: true
     _all?: true
   }
 
@@ -2751,6 +2757,7 @@ export namespace Prisma {
     visible_web: boolean
     id: number
     grupo: string | null
+    tipo_producto: string | null
     _count: ProductCountAggregateOutputType | null
     _avg: ProductAvgAggregateOutputType | null
     _sum: ProductSumAggregateOutputType | null
@@ -2799,6 +2806,7 @@ export namespace Prisma {
     visible_web?: boolean
     id?: boolean
     grupo?: boolean
+    tipo_producto?: boolean
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     variants?: boolean | Product$variantsArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
@@ -2831,6 +2839,7 @@ export namespace Prisma {
     visible_web?: boolean
     id?: boolean
     grupo?: boolean
+    tipo_producto?: boolean
   }, ExtArgs["result"]["product"]>
 
   export type ProductSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2860,6 +2869,7 @@ export namespace Prisma {
     visible_web?: boolean
     id?: boolean
     grupo?: boolean
+    tipo_producto?: boolean
   }, ExtArgs["result"]["product"]>
 
   export type ProductSelectScalar = {
@@ -2889,9 +2899,10 @@ export namespace Prisma {
     visible_web?: boolean
     id?: boolean
     grupo?: boolean
+    tipo_producto?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"name" | "slug" | "description" | "price" | "images" | "stock" | "categoryId" | "published" | "featured" | "createdAt" | "updatedAt" | "subcategory" | "proveedor" | "ref_proveedor" | "ref_variante" | "sku_interno" | "ean" | "marca" | "categoria_texto" | "categoria_padre" | "color" | "talla" | "activo" | "visible_web" | "id" | "grupo", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"name" | "slug" | "description" | "price" | "images" | "stock" | "categoryId" | "published" | "featured" | "createdAt" | "updatedAt" | "subcategory" | "proveedor" | "ref_proveedor" | "ref_variante" | "sku_interno" | "ean" | "marca" | "categoria_texto" | "categoria_padre" | "color" | "talla" | "activo" | "visible_web" | "id" | "grupo" | "tipo_producto", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     variants?: boolean | Product$variantsArgs<ExtArgs>
@@ -2933,6 +2944,7 @@ export namespace Prisma {
       visible_web: boolean
       id: number
       grupo: string | null
+      tipo_producto: string | null
     }, ExtArgs["result"]["product"]>
     composites: {}
   }
@@ -3384,6 +3396,7 @@ export namespace Prisma {
     readonly visible_web: FieldRef<"Product", 'Boolean'>
     readonly id: FieldRef<"Product", 'Int'>
     readonly grupo: FieldRef<"Product", 'String'>
+    readonly tipo_producto: FieldRef<"Product", 'String'>
   }
     
 
@@ -8699,7 +8712,8 @@ export namespace Prisma {
     activo: 'activo',
     visible_web: 'visible_web',
     id: 'id',
-    grupo: 'grupo'
+    grupo: 'grupo',
+    tipo_producto: 'tipo_producto'
   };
 
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -8999,6 +9013,7 @@ export namespace Prisma {
     visible_web?: BoolFilter<"Product"> | boolean
     id?: IntFilter<"Product"> | number
     grupo?: StringNullableFilter<"Product"> | string | null
+    tipo_producto?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
     variants?: ProductVariantListRelationFilter
   }
@@ -9030,6 +9045,7 @@ export namespace Prisma {
     visible_web?: SortOrder
     id?: SortOrder
     grupo?: SortOrderInput | SortOrder
+    tipo_producto?: SortOrderInput | SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
     variants?: ProductVariantOrderByRelationAggregateInput
   }
@@ -9064,6 +9080,7 @@ export namespace Prisma {
     activo?: BoolFilter<"Product"> | boolean
     visible_web?: BoolFilter<"Product"> | boolean
     grupo?: StringNullableFilter<"Product"> | string | null
+    tipo_producto?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
     variants?: ProductVariantListRelationFilter
   }, "id" | "slug" | "sku_interno">
@@ -9095,6 +9112,7 @@ export namespace Prisma {
     visible_web?: SortOrder
     id?: SortOrder
     grupo?: SortOrderInput | SortOrder
+    tipo_producto?: SortOrderInput | SortOrder
     _count?: ProductCountOrderByAggregateInput
     _avg?: ProductAvgOrderByAggregateInput
     _max?: ProductMaxOrderByAggregateInput
@@ -9132,6 +9150,7 @@ export namespace Prisma {
     visible_web?: BoolWithAggregatesFilter<"Product"> | boolean
     id?: IntWithAggregatesFilter<"Product"> | number
     grupo?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    tipo_producto?: StringNullableWithAggregatesFilter<"Product"> | string | null
   }
 
   export type ProductVariantWhereInput = {
@@ -9633,6 +9652,7 @@ export namespace Prisma {
     activo?: boolean
     visible_web?: boolean
     grupo?: string | null
+    tipo_producto?: string | null
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
   }
@@ -9664,6 +9684,7 @@ export namespace Prisma {
     visible_web?: boolean
     id?: number
     grupo?: string | null
+    tipo_producto?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
   }
@@ -9694,6 +9715,7 @@ export namespace Prisma {
     activo?: BoolFieldUpdateOperationsInput | boolean
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
   }
@@ -9725,6 +9747,7 @@ export namespace Prisma {
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     id?: IntFieldUpdateOperationsInput | number
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -9756,6 +9779,7 @@ export namespace Prisma {
     visible_web?: boolean
     id?: number
     grupo?: string | null
+    tipo_producto?: string | null
   }
 
   export type ProductUpdateManyMutationInput = {
@@ -9784,6 +9808,7 @@ export namespace Prisma {
     activo?: BoolFieldUpdateOperationsInput | boolean
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductUncheckedUpdateManyInput = {
@@ -9813,6 +9838,7 @@ export namespace Prisma {
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     id?: IntFieldUpdateOperationsInput | number
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductVariantCreateInput = {
@@ -10490,6 +10516,7 @@ export namespace Prisma {
     visible_web?: SortOrder
     id?: SortOrder
     grupo?: SortOrder
+    tipo_producto?: SortOrder
   }
 
   export type ProductAvgOrderByAggregateInput = {
@@ -10524,6 +10551,7 @@ export namespace Prisma {
     visible_web?: SortOrder
     id?: SortOrder
     grupo?: SortOrder
+    tipo_producto?: SortOrder
   }
 
   export type ProductMinOrderByAggregateInput = {
@@ -10552,6 +10580,7 @@ export namespace Prisma {
     visible_web?: SortOrder
     id?: SortOrder
     grupo?: SortOrder
+    tipo_producto?: SortOrder
   }
 
   export type ProductSumOrderByAggregateInput = {
@@ -11642,6 +11671,7 @@ export namespace Prisma {
     activo?: boolean
     visible_web?: boolean
     grupo?: string | null
+    tipo_producto?: string | null
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
   }
 
@@ -11672,6 +11702,7 @@ export namespace Prisma {
     visible_web?: boolean
     id?: number
     grupo?: string | null
+    tipo_producto?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -11717,6 +11748,7 @@ export namespace Prisma {
     activo?: BoolFieldUpdateOperationsInput | boolean
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
   }
 
@@ -11747,6 +11779,7 @@ export namespace Prisma {
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     id?: IntFieldUpdateOperationsInput | number
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -11881,6 +11914,7 @@ export namespace Prisma {
     activo?: boolean
     visible_web?: boolean
     grupo?: string | null
+    tipo_producto?: string | null
     variants?: ProductVariantCreateNestedManyWithoutProductInput
   }
 
@@ -11911,6 +11945,7 @@ export namespace Prisma {
     visible_web?: boolean
     id?: number
     grupo?: string | null
+    tipo_producto?: string | null
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -12017,6 +12052,7 @@ export namespace Prisma {
     activo?: BoolFieldUpdateOperationsInput | boolean
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
   }
 
@@ -12047,6 +12083,7 @@ export namespace Prisma {
     visible_web?: BoolFieldUpdateOperationsInput | boolean
     id?: IntFieldUpdateOperationsInput | number
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
   }
 

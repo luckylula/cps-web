@@ -156,7 +156,8 @@ exports.Prisma.ProductScalarFieldEnum = {
   activo: 'activo',
   visible_web: 'visible_web',
   id: 'id',
-  grupo: 'grupo'
+  grupo: 'grupo',
+  tipo_producto: 'tipo_producto'
 };
 
 exports.Prisma.ProductVariantScalarFieldEnum = {
