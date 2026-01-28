@@ -26,24 +26,24 @@ export default function GroupCard({ grupo, categoriaSlug, subcategorySlug }: Gro
   return (
     <Link
       href={href}
-      className="group relative bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-[#003366] hover:shadow-lg transition-all duration-300"
+      className="group bg-white overflow-hidden cursor-pointer"
     >
-      <div className="aspect-square relative overflow-hidden bg-gray-100">
+      <div className="relative aspect-square overflow-hidden bg-gray-100">
         <Image
           src={defaultImage}
           alt={grupo.nombre}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           unoptimized={shouldUnoptimize}
         />
       </div>
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-[#003366] transition-colors">
+      <div className="pt-6 pb-4">
+        <h3 className="text-gray-900 font-medium text-xl md:text-2xl mb-2">
           {grupo.nombre}
         </h3>
-        <p className="text-sm text-gray-500">
-          {grupo.count} {grupo.count === 1 ? 'producto' : 'productos'}
+        <p className="text-gray-600 text-base md:text-lg">
+          {grupo.count} {grupo.count === 1 ? 'producto' : 'productos'} disponible{grupo.count === 1 ? '' : 's'}
         </p>
       </div>
     </Link>
