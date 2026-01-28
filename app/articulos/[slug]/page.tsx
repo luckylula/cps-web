@@ -11,6 +11,7 @@ import ProductCard from "@/app/components/ProductCard";
 import FavoritesButton from "@/app/components/FavoritesButton";
 import SearchBar from "@/app/components/SearchBar";
 import ImageGallery from "@/app/components/ImageGallery";
+import Navigation from "@/app/components/Navigation";
 
 interface ProductVariant {
   id: number;
@@ -268,31 +269,7 @@ export default function ArticuloPage({ params }: PageProps) {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Navigation */}
-        <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
-            <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
-              <Link
-                href="/"
-                className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors"
-              >
-                CPS Material Deportivo
-              </Link>
-              <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
-                <li>
-                  <Link
-                    href="/"
-                    className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <CartButton />
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
+      <Navigation />
 
         {/* 404 Content */}
         <div className="max-w-2xl mx-auto px-4 py-16">
@@ -352,69 +329,8 @@ export default function ArticuloPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation - Estilo Minimalista */}
-      <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="w-full px-4 md:px-6 py-4 md:py-5">
-          <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
-            {/* Logo y Nombre - Izquierda */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
-              <Image
-                src="/logo.png"
-                alt="CPS Material Deportivo Logo"
-                width={100}
-                height={100}
-                className="object-contain"
-              />
-              <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-semibold tracking-tight whitespace-nowrap">
-                CPS Material Deportivo
-              </div>
-            </Link>
-            
-            {/* Menú de Navegación - Centro */}
-            <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-base md:text-lg lg:text-xl font-medium">
-              <li>
-                <Link href="/" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/material-escolar" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Material Escolar
-                </Link>
-              </li>
-              <li>
-                <Link href="/deporte-individual" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Deporte Individual
-                </Link>
-              </li>
-              <li>
-                <Link href="/deportes-colectivos" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                  Deportes Colectivos
-                </Link>
-              </li>
-              <li>
-                <Link href="/material-complementario" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap hidden lg:inline">
-                  Material Complementario
-                </Link>
-              </li>
-              <li>
-                <Link href="/equipacion-textil" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap hidden lg:inline">
-                  Equipación Textil
-                </Link>
-              </li>
-            </ul>
-            
-            {/* Búsqueda, Favoritos y Carrito - Derecha */}
-            <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
-              <div className="hidden md:block">
-                <SearchBar />
-              </div>
-              <FavoritesButton />
-              <CartButton />
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Navigation */}
+      <Navigation />
 
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-200">

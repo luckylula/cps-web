@@ -17,12 +17,12 @@ export default function Navigation() {
         <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
           {/* Logo y Nombre - Izquierda. Logo = archivo public/logo.png — más grande */}
           <Link href="/" className="flex items-center gap-3 md:gap-4 hover:opacity-80 transition-opacity flex-shrink-0 min-w-0">
-            <span className="relative w-16 h-16 md:w-24 md:h-24 flex-shrink-0 flex items-center justify-center bg-white">
+            <span className="relative w-20 h-20 md:w-28 md:h-28 flex-shrink-0 flex items-center justify-center bg-white">
               <Image
                 src="/logo.png"
                 alt="CPS Material Deportivo"
-                width={96}
-                height={96}
+                width={112}
+                height={112}
                 className="object-contain w-full h-full"
               />
             </span>

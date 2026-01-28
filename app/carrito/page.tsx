@@ -5,6 +5,7 @@ import SafeImage from "@/app/components/SafeImage";
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import CartButton from "@/app/components/CartButton";
+import Navigation from "@/app/components/Navigation";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
 
 interface FormData {
@@ -123,25 +124,7 @@ export default function CarritoPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Navigation */}
-        <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
-            <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
-              <Link href="/" className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors">
-                CPS Material Deportivo
-              </Link>
-              <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
-                <li>
-                  <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <CartButton />
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
+        <Navigation />
 
         {/* Success Message */}
         <div className="max-w-2xl mx-auto px-4 py-16">
@@ -173,25 +156,7 @@ export default function CarritoPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Navigation */}
-        <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
-            <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
-              <Link href="/" className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors">
-                CPS Material Deportivo
-              </Link>
-              <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
-                <li>
-                  <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <CartButton />
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
+        <Navigation />
 
         {/* Empty Cart */}
         <div className="max-w-2xl mx-auto px-4 py-16">
