@@ -5,13 +5,13 @@ import { prisma } from '@/lib/prisma';
 import Navigation from '@/app/components/Navigation';
 import ProductCard from '@/app/components/ProductCard';
 import ProductFilters from '@/app/components/ProductFilters';
+import { getCategoryName } from '@/app/lib/navigationMapping';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
-import { getSubcategoryName, getCategoryName } from '@/app/lib/navigationMapping';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-  params: Promise<{ categoria: string; subcategory: string }>;
+  params: Promise<{ categoria: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
@@ -22,18 +22,12 @@ async function getCategory(slug: string) {
   return category;
 }
 
-async function getProducts(
-  categoriaSlug: string,
-  subcategorySlug: string,
-  filters: {
-    marca?: string;
-    minPrice?: string;
-    maxPrice?: string;
-    stock?: string;
-  }
-) {
-  const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
-  
+async function getProducts(categoriaSlug: string, filters: {
+  marca?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  stock?: string;
+}) {
   const where: any = {
     categoryId: categoriaSlug,
     visible_web: true,
@@ -46,10 +40,6 @@ async function getProducts(
       { sku_interno: { not: { endsWith: '-BASE' } } },
     ],
   };
-
-  if (subcategoryName) {
-    where.subcategory = subcategoryName;
-  }
 
   if (filters.marca) {
     where.marca = {
@@ -83,22 +73,14 @@ async function getProducts(
   return products;
 }
 
-async function getFilterOptions(categoriaSlug: string, subcategorySlug: string) {
-  const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
-  
-  const where: any = {
-    categoryId: categoriaSlug,
-    visible_web: true,
-    activo: true,
-    marca: { not: null },
-  };
-
-  if (subcategoryName) {
-    where.subcategory = subcategoryName;
-  }
-
+async function getFilterOptions(categoriaSlug: string) {
   const products = await prisma.product.findMany({
-    where,
+    where: {
+      categoryId: categoriaSlug,
+      visible_web: true,
+      activo: true,
+      marca: { not: null },
+    },
     select: {
       marca: true,
       price: true,
@@ -118,19 +100,18 @@ async function getFilterOptions(categoriaSlug: string, subcategorySlug: string) 
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { categoria, subcategory } = await params;
+  const { categoria } = await params;
   const category = await getCategory(categoria);
   const categoryName = getCategoryName(categoria) || category?.name || categoria;
-  const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
 
   return {
-    title: `${subcategoryName} - ${categoryName} | CPS Material Deportivo`,
-    description: `Explora nuestra selección de productos de ${subcategoryName} en ${categoryName}`,
+    title: `${categoryName} | CPS Material Deportivo`,
+    description: category?.description || `Explora nuestra selección de productos de ${categoryName}`,
   };
 }
 
-export default async function SubcategoryPage({ params, searchParams }: PageProps) {
-  const { categoria, subcategory } = await params;
+export default async function CategoriaPage({ params, searchParams }: PageProps) {
+  const { categoria } = await params;
   const filters = await searchParams;
   
   const category = await getCategory(categoria);
@@ -139,16 +120,15 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
   }
 
   const categoryName = getCategoryName(categoria) || category.name;
-  const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
   
   const [products, filterOptions] = await Promise.all([
-    getProducts(categoria, subcategory, {
+    getProducts(categoria, {
       marca: filters.marca as string,
       minPrice: filters.minPrice as string,
       maxPrice: filters.maxPrice as string,
       stock: filters.stock as string,
     }),
-    getFilterOptions(categoria, subcategory),
+    getFilterOptions(categoria),
   ]);
 
   return (
@@ -163,11 +143,7 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
               Home
             </Link>
             <span>/</span>
-            <Link href={`/${categoria}`} className="hover:text-gray-900 transition-colors">
-              {categoryName}
-            </Link>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">{subcategoryName}</span>
+            <span className="text-gray-900 font-medium">{categoryName}</span>
           </nav>
         </div>
       </div>
@@ -177,9 +153,11 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-2 tracking-tight">
-              {subcategoryName}
+              {categoryName}
             </h1>
-            <p className="text-gray-600">{categoryName}</p>
+            {category.description && (
+              <p className="text-gray-600">{category.description}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

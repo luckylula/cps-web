@@ -1,76 +1,172 @@
-"use client";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
+import Navigation from '@/app/components/Navigation';
+import ProductCard from '@/app/components/ProductCard';
+import ProductFilters from '@/app/components/ProductFilters';
+import ProductsPageClient from '@/app/components/ProductsPageClient';
+import { getGrupoName, getSubcategoryName, getCategoryName } from '@/app/lib/navigationMapping';
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import ProductCard from "@/app/components/ProductCard";
-import Navigation from "@/app/components/Navigation";
-import { getGrupoName, getSubcategoryName, getCategoryName } from "@/app/lib/navigationMapping";
-
-interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  price: number | null;
-  images: string[];
-  featured: boolean;
-  marca?: string | null;
-  sku_interno?: string | null;
-  stock: number;
-  categoryId: string;
+interface PageProps {
+  params: Promise<{ categoria: string; subcategory: string; grupo: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function GrupoPage() {
-  const params = useParams();
-  const categoriaSlug = params?.categoria as string;
-  const subcategorySlug = params?.subcategory as string;
-  const grupoSlug = params?.grupo as string;
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+async function getCategory(slug: string) {
+  const category = await prisma.category.findUnique({
+    where: { slug },
+  });
+  return category;
+}
 
-  useEffect(() => {
-    if (!categoriaSlug || !subcategorySlug || !grupoSlug) return;
+async function getProducts(
+  categoriaSlug: string,
+  subcategorySlug: string,
+  grupoSlug: string,
+  filters: {
+    marca?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    stock?: string;
+  }
+) {
+  const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupoSlug);
+  const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
+  
+  const where: any = {
+    categoryId: categoriaSlug,
+    visible_web: true,
+    activo: true,
+    name: {
+      not: '',
+    },
+    OR: [
+      { sku_interno: null },
+      { sku_interno: { not: { endsWith: '-BASE' } } },
+    ],
+  };
 
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        // Convertir slugs a nombres para la API
-        const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupoSlug);
-        const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
-        
-        const params = new URLSearchParams({
-          category: categoriaSlug,
-        });
-        
-        if (subcategoryName) {
-          params.append('subcategory', subcategoryName);
-        }
-        
-        if (grupoName) {
-          params.append('grupo', grupoName);
-        }
+  if (subcategoryName) {
+    where.subcategory = subcategoryName;
+  }
 
-        const response = await fetch(`/api/products?${params.toString()}`);
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
+  if (grupoName) {
+    where.grupo = grupoName;
+  }
+
+  if (filters.marca) {
+    where.marca = {
+      contains: filters.marca,
+      mode: 'insensitive',
     };
+  }
 
-    fetchProducts();
-  }, [categoriaSlug, subcategorySlug, grupoSlug]);
+  if (filters.minPrice || filters.maxPrice) {
+    where.price = {};
+    if (filters.minPrice) {
+      where.price.gte = parseFloat(filters.minPrice);
+    }
+    if (filters.maxPrice) {
+      where.price.lte = parseFloat(filters.maxPrice);
+    }
+    where.price.not = null;
+  }
 
-  const categoryName = getCategoryName(categoriaSlug) || categoriaSlug;
-  const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug) || subcategorySlug;
-  const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupoSlug) || grupoSlug;
+  if (filters.stock === 'true') {
+    where.stock = { gt: 0 };
+  }
+
+  const products = await prisma.product.findMany({
+    where,
+    orderBy: {
+      name: 'asc',
+    },
+  });
+
+  return products;
+}
+
+async function getFilterOptions(
+  categoriaSlug: string,
+  subcategorySlug: string,
+  grupoSlug: string
+) {
+  const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupoSlug);
+  const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
+  
+  const where: any = {
+    categoryId: categoriaSlug,
+    visible_web: true,
+    activo: true,
+    marca: { not: null },
+  };
+
+  if (subcategoryName) {
+    where.subcategory = subcategoryName;
+  }
+
+  if (grupoName) {
+    where.grupo = grupoName;
+  }
+
+  const products = await prisma.product.findMany({
+    where,
+    select: {
+      marca: true,
+      price: true,
+    },
+  });
+
+  const marcas = Array.from(new Set(products.map(p => p.marca).filter(Boolean))) as string[];
+  const prices = products
+    .map(p => p.price ? Number(p.price) : null)
+    .filter((p): p is number => p !== null && !isNaN(p));
+  
+  return {
+    marcas: marcas.sort(),
+    minPrice: prices.length > 0 ? Math.floor(Math.min(...prices)) : null,
+    maxPrice: prices.length > 0 ? Math.ceil(Math.max(...prices)) : null,
+  };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { categoria, subcategory, grupo } = await params;
+  const category = await getCategory(categoria);
+  const categoryName = getCategoryName(categoria) || category?.name || categoria;
+  const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+  const grupoName = getGrupoName(categoria, subcategory, grupo) || grupo;
+
+  return {
+    title: `${grupoName} - ${subcategoryName} - ${categoryName} | CPS Material Deportivo`,
+    description: `Explora nuestra selección de productos de ${grupoName} en ${subcategoryName}, ${categoryName}`,
+  };
+}
+
+export default async function GrupoPage({ params, searchParams }: PageProps) {
+  const { categoria, subcategory, grupo } = await params;
+  const filters = await searchParams;
+  
+  const category = await getCategory(categoria);
+  if (!category) {
+    notFound();
+  }
+
+  const categoryName = getCategoryName(categoria) || category.name;
+  const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+  const grupoName = getGrupoName(categoria, subcategory, grupo) || grupo;
+  
+  const [products, filterOptions] = await Promise.all([
+    getProducts(categoria, subcategory, grupo, {
+      marca: filters.marca as string,
+      minPrice: filters.minPrice as string,
+      maxPrice: filters.maxPrice as string,
+      stock: filters.stock as string,
+    }),
+    getFilterOptions(categoria, subcategory, grupo),
+  ]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -84,11 +180,11 @@ export default function GrupoPage() {
               Home
             </Link>
             <span>/</span>
-            <Link href={`/${categoriaSlug}`} className="hover:text-gray-900 transition-colors">
+            <Link href={`/${categoria}`} className="hover:text-gray-900 transition-colors">
               {categoryName}
             </Link>
             <span>/</span>
-            <Link href={`/${categoriaSlug}/${subcategorySlug}`} className="hover:text-gray-900 transition-colors">
+            <Link href={`/${categoria}/${subcategory}`} className="hover:text-gray-900 transition-colors">
               {subcategoryName}
             </Link>
             <span>/</span>
@@ -105,38 +201,24 @@ export default function GrupoPage() {
               {grupoName}
             </h1>
             <p className="text-gray-600">{categoryName} · {subcategoryName}</p>
-            <p className="text-sm text-gray-500 mt-2">
-              {loading ? 'Cargando...' : `${products.length} productos encontrados`}
-            </p>
           </div>
 
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003366]"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar con filtros */}
+            <aside className="lg:col-span-1">
+              <ProductFilters
+                marcas={filterOptions.marcas}
+                minPrice={filterOptions.minPrice}
+                maxPrice={filterOptions.maxPrice}
+                totalProducts={products.length}
+              />
+            </aside>
+
+            {/* Grid de productos */}
+            <div className="lg:col-span-3">
+              <ProductsPageClient products={products} />
             </div>
-          ) : products.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No se encontraron productos</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  slug={product.slug}
-                  price={product.price}
-                  images={product.images}
-                  featured={product.featured}
-                  marca={product.marca}
-                  sku_interno={product.sku_interno}
-                  stock={product.stock}
-                  categoryId={product.categoryId}
-                />
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
 
