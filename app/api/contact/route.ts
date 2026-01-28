@@ -24,29 +24,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Aquí puedes:
-    // 1. Guardar en base de datos (si tienes tabla de mensajes)
-    // 2. Enviar email (usando un servicio como Resend, SendGrid, etc.)
-    // 3. Enviar a un webhook (Zapier, Make, etc.)
-    
-    // Por ahora, solo logueamos el mensaje (en producción deberías guardarlo o enviarlo)
-    console.log('Nuevo mensaje de contacto:', {
+    // Preparar datos para enviar al webhook
+    const messageData = {
       nombre,
-      telefono: telefono || 'No proporcionado',
+      telefono: telefono || null,
       email,
       asunto,
       mensaje,
       fecha: new Date().toISOString(),
-    });
+      origen: 'formulario-web',
+    };
 
-    // TODO: Implementar envío de email o guardado en BD
-    // Ejemplo con Resend:
-    // await resend.emails.send({
-    //   from: 'contacto@cpsmaterialdeportivo.com',
-    //   to: 'pedidos@cpsmaterialdeportivo.com',
-    //   subject: `Nuevo mensaje: ${asunto}`,
-    //   html: `<p>De: ${nombre} (${email})</p><p>Teléfono: ${telefono || 'No proporcionado'}</p><p>Mensaje: ${mensaje}</p>`,
-    // });
+    // Enviar a webhook de N8N si está configurado
+    const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
+    
+    if (n8nWebhookUrl) {
+      try {
+        const webhookResponse = await fetch(n8nWebhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(process.env.N8N_WEBHOOK_TOKEN && {
+              'Authorization': `Bearer ${process.env.N8N_WEBHOOK_TOKEN}`,
+            }),
+          },
+          body: JSON.stringify(messageData),
+        });
+
+        if (!webhookResponse.ok) {
+          console.error('Error enviando a N8N webhook:', await webhookResponse.text());
+          // Continuamos aunque falle el webhook para no bloquear la respuesta al usuario
+        } else {
+          console.log('Mensaje enviado correctamente a N8N webhook');
+        }
+      } catch (webhookError) {
+        console.error('Error conectando con N8N webhook:', webhookError);
+        // Continuamos aunque falle el webhook
+      }
+    } else {
+      // Si no hay webhook configurado, solo logueamos (modo desarrollo)
+      console.log('Nuevo mensaje de contacto (sin webhook configurado):', messageData);
+    }
 
     return NextResponse.json(
       { message: 'Mensaje enviado correctamente' },

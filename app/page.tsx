@@ -13,7 +13,7 @@ export default function Home() {
     escolar: {
       title: "Material Escolar",
       subtitle: "Para aprender",
-      description: "Artículos que te permiten enseñar y crear un entorno de aprendizaje deportivo.",
+      description: "Equipamiento seguro y resistente para centros educativos.",
       items: [
         "Psicomotricidad",
         "Figuras espuma",
@@ -29,7 +29,7 @@ export default function Home() {
     individual: {
       title: "Deporte Individual",
       subtitle: "Logra tus propios méritos",
-      description: "Accede a una variedad de material para tu deporte y supérate a ti mismo.",
+      description: "Material técnico para el rendimiento personal.",
       items: [
         "Tenis de Mesa",
         "Tenis",
@@ -45,7 +45,7 @@ export default function Home() {
     colectivo: {
       title: "Deportes Colectivos",
       subtitle: "Rinde en equipo",
-      description: "Cada deporte cuenta con su equipación. Encuentra material para entrenar y practicar deportes en equipo.",
+      description: "Soluciones completas para el juego en equipo.",
       items: [
         "Fútbol / F. Sala",
         "Baloncesto",
@@ -58,9 +58,9 @@ export default function Home() {
       ]
     },
     complementario: {
-      title: "Material Deportivo Complementario",
+      title: "Material Complementario",
       subtitle: "Entrénate",
-      description: "Imprescindibles para tus instalaciones deportivas y ejercitar tu cuerpo.",
+      description: "Todo lo que completa tu espacio deportivo.",
       items: [
         "Material Entrenamiento",
         "Complemento de balones",
@@ -72,7 +72,7 @@ export default function Home() {
     textil: {
       title: "Equipación Textil",
       subtitle: "Viste tu equipo",
-      description: "Equipación completa para todas tus necesidades deportivas.",
+      description: "Ropa deportiva cómoda, funcional y duradera.",
       items: []
     }
   };
@@ -180,6 +180,199 @@ export default function Home() {
                 </p>
               </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Hero Section - Estilo Minimalista */}
+      <section className="pt-16 pb-20 px-8 relative overflow-hidden bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 tracking-tight">
+              Material Deportivo
+              <br />
+              <span className="font-normal">de Alta Calidad</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 mb-10 font-light max-w-2xl mx-auto leading-relaxed">
+              Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
+              instalaciones deportivas, piscinas y gimnasios en toda España.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <a
+                href="/catalogo.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-3 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors uppercase tracking-wide"
+              >
+                Descargar Catálogo
+              </a>
+              <a
+                href="#contacto"
+                className="px-8 py-3 bg-white text-gray-900 border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors uppercase tracking-wide"
+              >
+                Contactar
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Material Escolar Section - Estilo Minimalista */}
+      <section id="material-escolar" className="py-20 px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.escolar.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.escolar.description}
+            </p>
+          </div>
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
+              <Image
+                src="/material_escolar_cps.png"
+                alt="Material escolar"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {categories.escolar.items.map((item, index) => (
+              <div
+                key={index}
+                className="text-center"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Deporte Individual Section - Estilo Minimalista */}
+      <section id="deporte-individual" className="py-20 px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.individual.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.individual.description}
+            </p>
+          </div>
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
+              <Image
+                src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600&q=80"
+                alt="Jugador de pádel"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {categories.individual.items.map((item, index) => (
+              <div
+                key={index}
+                className="text-center"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Deportes Colectivos Section - Estilo Minimalista */}
+      <section id="deportes-colectivos" className="py-20 px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.colectivo.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.colectivo.description}
+            </p>
+          </div>
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
+              <Image
+                src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=80"
+                alt="Niños durante una práctica deportiva en equipo"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {categories.colectivo.items.map((item, index) => (
+              <div
+                key={index}
+                className="text-center"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Material Complementario Section - Estilo Minimalista */}
+      <section id="material-complementario" className="py-20 px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.complementario.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.complementario.description}
+            </p>
+          </div>
+          <div className="mb-12 overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
+              <Image
+                src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80"
+                alt="Gimnasio moderno con equipamiento deportivo"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {categories.complementario.items.map((item, index) => (
+              <div
+                key={index}
+                className="text-center"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Equipación Textil Section - Estilo Minimalista */}
+      <section id="equipacion-textil" className="py-20 px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+              {categories.textil.title}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+              {categories.textil.description}
+            </p>
+          </div>
+          <div className="overflow-hidden">
+            <div className="relative h-[500px] bg-gray-100">
+              <Image
+                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&q=80"
+                alt="Equipación textil deportiva"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
