@@ -215,7 +215,7 @@ export default function Home() {
           <div className="mb-12 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
-                src="/material_escolar_cps.png"
+                src="/categorias/materialescolar1.png"
                 alt="Material escolar"
                 fill
                 className="object-cover"
@@ -249,7 +249,7 @@ export default function Home() {
           <div className="mb-12 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
-                src="/categorias/deporte-individual/padel.jpg"
+                src="/categorias/deporteindividual.png"
                 alt="Deporte Individual"
                 fill
                 className="object-cover"
@@ -283,7 +283,7 @@ export default function Home() {
           <div className="mb-12 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
-                src="/categorias/Gemini_Generated_Image_h2sbo2h2sbo2h2sb.png"
+                src="/categorias/deportescolectivos.png"
                 alt="Deportes Colectivos"
                 fill
                 className="object-cover"
@@ -317,7 +317,7 @@ export default function Home() {
           <div className="mb-12 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
-                src="/categorias/Gemini_Generated_Image_hbgkbjhbgkbjhbgk.png"
+                src="/categorias/materialcomplementario.png"
                 alt="Material Complementario"
                 fill
                 className="object-cover"
@@ -351,7 +351,7 @@ export default function Home() {
           <div className="overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
-                src="/categorias/Gemini_Generated_Image_i9paq2i9paq2i9pa.png"
+                src="/categorias/equipaciontextil.png"
                 alt="Equipación Textil"
                 fill
                 className="object-cover"
