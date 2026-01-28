@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import Navigation from '@/app/components/Navigation';
 import ProductCard from '@/app/components/ProductCard';
 import BalonesFilters from '@/app/components/BalonesFilters';
+import { convertProductsToClient } from '@/app/lib/productUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -157,8 +158,9 @@ export default async function BalonesPage({ searchParams }: PageProps) {
     getFilterOptions(),
   ]);
 
-  const groupedProducts = groupProductsByDeporte(products);
-  const totalProducts = products.length;
+  const convertedProducts = convertProductsToClient(products);
+  const groupedProducts = groupProductsByDeporte(convertedProducts);
+  const totalProducts = convertedProducts.length;
 
   return (
     <div className="min-h-screen bg-white">
