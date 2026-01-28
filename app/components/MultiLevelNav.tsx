@@ -68,7 +68,7 @@ export default function MultiLevelNav({ categoria }: MultiLevelNavProps) {
           onMouseEnter={handleCategoryMouseEnter}
           onMouseLeave={handleCategoryMouseLeave}
           style={{
-            top: '81px',
+            top: '100px',
             left: '50%',
             transform: 'translateX(-50%)',
             width: 'min(calc(100vw - 2rem), 1200px)',

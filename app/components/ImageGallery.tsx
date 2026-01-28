@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import SafeImage from './SafeImage';
+import ImageLoader from './ImageLoader';
 import { getFirstValidImage, validateImageUrl } from '@/app/lib/imageUtils';
 
 interface ImageGalleryProps {
@@ -29,14 +29,14 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   if (validImages.length === 1) {
     return (
       <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
-        <SafeImage
+        <ImageLoader
           src={validImages[0]}
           alt={productName}
           fill
-          className=""
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
           objectFit="contain"
+          quality={80}
         />
       </div>
     );
@@ -47,14 +47,14 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
     <div className="space-y-4">
       {/* Imagen principal */}
       <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
-        <SafeImage
+        <ImageLoader
           src={validImages[selectedImageIndex]}
           alt={`${productName} - Imagen ${selectedImageIndex + 1}`}
           fill
-          className=""
           priority={selectedImageIndex === 0}
           sizes="(max-width: 768px) 100vw, 50vw"
           objectFit="contain"
+          quality={80}
         />
       </div>
 
@@ -71,13 +71,13 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
             }`}
             aria-label={`Ver imagen ${index + 1}`}
           >
-            <SafeImage
+            <ImageLoader
               src={image}
               alt={`${productName} - Thumbnail ${index + 1}`}
               fill
-              className=""
               sizes="(max-width: 768px) 25vw, 12.5vw"
               objectFit="cover"
+              quality={75}
             />
           </button>
         ))}
