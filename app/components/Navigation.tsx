@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import MegaMenu from "@/app/components/MegaMenu";
+import MultiLevelNav, { navigationStructure } from "@/app/components/MultiLevelNav";
 import SearchBar from "@/app/components/SearchBar";
 import FavoritesButton from "@/app/components/FavoritesButton";
 import CartButton from "@/app/components/CartButton";
@@ -33,18 +33,11 @@ export default function Navigation() {
           
           {/* Menú de Navegación - Centro */}
           <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-base md:text-lg lg:text-xl font-medium">
-            <li>
-              <MegaMenu categorySlug="deportes" categoryName="Deportes" />
-            </li>
-            <li>
-              <MegaMenu categorySlug="textil" categoryName="Textil" />
-            </li>
-            <li>
-              <MegaMenu categorySlug="instalaciones" categoryName="Instalaciones" />
-            </li>
-            <li>
-              <MegaMenu categorySlug="material-escolar" categoryName="Material Escolar" />
-            </li>
+            {navigationStructure.map((categoria) => (
+              <li key={categoria.slug}>
+                <MultiLevelNav categoria={categoria} />
+              </li>
+            ))}
           </ul>
           
           {/* Búsqueda, Favoritos y Carrito - Derecha */}
