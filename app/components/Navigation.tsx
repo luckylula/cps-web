@@ -34,11 +34,6 @@ export default function Navigation() {
           {/* Menú de Navegación - Centro */}
           <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-base md:text-lg lg:text-xl font-medium">
             <li>
-              <Link href="/" className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap">
-                Home
-              </Link>
-            </li>
-            <li>
               <MegaMenu categorySlug="deportes" categoryName="Deportes" />
             </li>
             <li>

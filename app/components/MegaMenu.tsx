@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { getFirstValidImage } from '@/app/lib/imageUtils';
 
 interface Deporte {
   nombre: string;
@@ -134,12 +132,12 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button
-        type="button"
+      <Link
+        href={`/categoria/${categorySlug}`}
         className="text-gray-900 hover:text-gray-600 transition-colors py-2 whitespace-nowrap bg-transparent border-none outline-none focus:outline-none cursor-pointer text-base md:text-lg lg:text-xl font-medium"
       >
         {categoryName}
-      </button>
+      </Link>
 
       {isHovered && structure && structure.grupos.length > 0 && (
         <div 
@@ -160,7 +158,6 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
             {allGroups.map((grupo) => {
               const isExpanded = expandedGroups.has(grupo.nombre);
               const hasSubcategories = grupo.deportes.length > 0;
-              const groupImage = grupo.image ? getFirstValidImage([grupo.image]) : null;
               
               return (
                 <div
@@ -169,26 +166,6 @@ export default function MegaMenu({ categorySlug, categoryName }: MegaMenuProps) 
                 >
                   {/* Item del grupo principal */}
                   <div className="flex items-center gap-4 py-3">
-                    {/* Imagen circular */}
-                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden relative">
-                      {groupImage ? (
-                        <Image
-                          src={groupImage}
-                          alt={grupo.nombre}
-                          fill
-                          className="object-cover"
-                          sizes="64px"
-                          unoptimized={groupImage.includes('jimsports.shop') || groupImage.includes('madeforsport.eu')}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-xs text-gray-500 font-medium">
-                            {grupo.nombre.charAt(0)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
                     {/* Nombre del grupo: al hacer click va a la categoría filtrada por ese grupo y cierra el menú */}
                     <Link
                       href={`/categoria/${categorySlug}?grupo=${encodeURIComponent(grupo.nombre)}`}
