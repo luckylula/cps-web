@@ -1,7 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { prisma } from '@/lib/prisma';
-import { getSubcategoryName } from '@/app/lib/navigationMapping';
 
 interface SubcategoryCardProps {
   subcategory: {
@@ -11,44 +9,12 @@ interface SubcategoryCardProps {
   categoriaSlug: string;
 }
 
-async function getSubcategoryImage(categoriaSlug: string, subcategorySlug: string): Promise<string | null> {
-  // Obtener el nombre completo de la subcategoría usando el mapping
-  const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
-  
-  if (!subcategoryName) {
-    return null;
-  }
-
-  // Buscar un producto de esta subcategoría para obtener su imagen
-  const sampleProduct = await prisma.product.findFirst({
-    where: {
-      categoryId: categoriaSlug,
-      subcategory: subcategoryName,
-      visible_web: true,
-      activo: true,
-      images: {
-        isEmpty: false,
-      },
-    },
-    select: {
-      images: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-
-  return sampleProduct?.images && sampleProduct.images.length > 0 
-    ? sampleProduct.images[0] 
-    : null;
-}
-
-export default async function SubcategoryCard({ subcategory, categoriaSlug }: SubcategoryCardProps) {
+export default function SubcategoryCard({ subcategory, categoriaSlug }: SubcategoryCardProps) {
   const href = `/${categoriaSlug}/${subcategory.slug}`;
   
-  // Obtener imagen de ejemplo de la subcategoría usando el slug
-  const subcategoryImage = await getSubcategoryImage(categoriaSlug, subcategory.slug);
-  const defaultImage = subcategoryImage || '/categorias/Gemini_Generated_Image_brwh6gbrwh6gbrwh.png';
+  // Usar imagen local basada en el slug de la subcategoría
+  // Formato: /categorias/{slug}.png (ej: /categorias/colectivos.png, /categorias/individual.png, /categorias/raqueta.png)
+  const defaultImage = `/categorias/${subcategory.slug}.png`;
   
   // Desactivar optimización para CDNs externos problemáticos
   const shouldUnoptimize = defaultImage.includes('cdn.jimsports.shop') || 
