@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import MultiLevelNav, { navigationStructure } from "@/app/components/MultiLevelNav";
+import MultiLevelNav from "@/app/components/MultiLevelNav";
+import { navigationStructure } from "@/app/lib/navigationStructure";
 import SearchBar from "@/app/components/SearchBar";
 import FavoritesButton from "@/app/components/FavoritesButton";
 import CartButton from "@/app/components/CartButton";

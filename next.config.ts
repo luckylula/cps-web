@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'jimsports.shop',
-        pathname: '/images/**',
+        pathname: '/**',
       },
       {
         protocol: 'https',
