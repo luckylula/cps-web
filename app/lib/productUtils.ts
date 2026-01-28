@@ -1,4 +1,4 @@
-import { Prisma } from '../generated/client';
+import { Prisma } from '@/generated/client';
 
 interface PrismaProduct {
   id: number;
