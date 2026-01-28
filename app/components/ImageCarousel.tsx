@@ -13,22 +13,22 @@ const slides: Slide[] = [
   {
     title: "Equipamiento Deportivo de Alto Rendimiento",
     subtitle: "Innovación y seguridad certificada para centros educativos, clubes y colectivos.",
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
+    image: "/categorias/Gemini_Generated_Image_brwh6gbrwh6gbrwh.png",
   },
   {
     title: "Asesoramiento Técnico Especializado",
     subtitle: "No solo vendemos material, diseñamos soluciones integrales para tus espacios deportivos.",
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1920&q=80",
+    image: "/categorias/Gemini_Generated_Image_c5e769c5e769c5e7.png",
   },
   {
     title: "Tu Socio Estratégico en el Deporte",
     subtitle: "Explora nuestro catálogo. Material deportivo para cada espacio y cada nivel",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&q=80",
+    image: "/categorias/Gemini_Generated_Image_ca3eqjca3eqjca3e.png",
   },
   {
     title: "Soluciones Deportivas Profesionales",
     subtitle: "Equipamos espacios deportivos donde la calidad, la seguridad y el rendimiento van de la mano.",
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
+    image: "/categorias/Gemini_Generated_Image_d1coetd1coetd1co.png",
   },
 ];
 
