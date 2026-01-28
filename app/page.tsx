@@ -104,7 +104,7 @@ export default function Home() {
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
-                  src="/categorias/Gemini_Generated_Image_elw7jvelw7jvelw7.png"
+                  src="/categorias/deportes.png"
                   alt="Deportes"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -125,7 +125,7 @@ export default function Home() {
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
-                  src="/categorias/Gemini_Generated_Image_gn0cjign0cjign0c.png"
+                  src="/categorias/textil.png"
                   alt="Textil"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -146,7 +146,7 @@ export default function Home() {
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
-                  src="/categorias/Gemini_Generated_Image_grm7kigrm7kigrm7.png"
+                  src="/categorias/instalaciones.png"
                   alt="Instalaciones"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -167,7 +167,7 @@ export default function Home() {
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
                 <Image
-                  src="/categorias/material-escolar/material_escolar_cps.png"
+                  src="/categorias/materialescolar.png"
                   alt="Material escolar"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -197,22 +197,6 @@ export default function Home() {
               Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
               instalaciones deportivas, piscinas y gimnasios en toda España.
             </p>
-            <div className="flex gap-4 justify-center">
-              <a
-                href="/catalogo.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-8 py-3 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors uppercase tracking-wide"
-              >
-                Descargar Catálogo
-              </a>
-              <a
-                href="#contacto"
-                className="px-8 py-3 bg-white text-gray-900 border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors uppercase tracking-wide"
-              >
-                Contactar
-              </a>
-            </div>
           </div>
         </div>
       </section>
