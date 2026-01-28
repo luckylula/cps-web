@@ -402,7 +402,7 @@ export default function Home() {
           </div>
           <div className="overflow-hidden rounded-lg">
             <Image
-              src="/categorias/somosequipo.png"
+              src="/somosequipo.png"
               alt="Equipo Control Play Sports"
               width={1200}
               height={800}
