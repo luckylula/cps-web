@@ -8,6 +8,7 @@ import AdvancedFilters from '@/app/components/AdvancedFilters';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import { getCategoryName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
+import { convertProductsToClient } from '@/app/lib/productUtils';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
 
 export const dynamic = 'force-dynamic';
@@ -208,7 +209,7 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
 
             {/* Grid de productos */}
             <div className="lg:col-span-3">
-              <ProductsPageClient products={products} />
+              <ProductsPageClient products={convertProductsToClient(products)} />
             </div>
           </div>
         </div>

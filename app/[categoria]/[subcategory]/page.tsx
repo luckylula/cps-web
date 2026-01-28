@@ -9,6 +9,7 @@ import Breadcrumbs from '@/app/components/Breadcrumbs';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
 import { getSubcategoryName, getCategoryName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
+import { convertProductsToClient } from '@/app/lib/productUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -228,7 +229,7 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
 
             {/* Grid de productos */}
             <div className="lg:col-span-3">
-              <ProductsPageClient products={products} />
+              <ProductsPageClient products={convertProductsToClient(products)} />
             </div>
           </div>
         </div>
