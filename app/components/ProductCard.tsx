@@ -90,7 +90,6 @@ export default function ProductCard({
   };
 
   const hasPrice = price !== null && price !== undefined && price > 0;
-  const isOutOfStock = stock === 0;
 
   return (
     <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col border border-gray-100">
@@ -110,11 +109,6 @@ export default function ProductCard({
           {featured && (
             <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
               DESTACADO
-            </span>
-          )}
-          {isOutOfStock && (
-            <span className="absolute top-2 left-2 bg-gray-800 text-white px-2 py-1 text-xs font-bold rounded">
-              AGOTADO
             </span>
           )}
           <button
@@ -177,7 +171,7 @@ export default function ProductCard({
       </Link>
       
       <div className="p-4 pt-0">
-        {hasPrice && !isOutOfStock ? (
+        {hasPrice ? (
           <button
             onClick={handleAddToCart}
             disabled={isAdding}

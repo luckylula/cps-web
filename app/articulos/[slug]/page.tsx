@@ -499,7 +499,7 @@ export default function ArticuloPage({ params }: PageProps) {
                         </p>
                       ) : (
                         <p className="text-gray-500 italic">
-                          Stock: Agotado
+                          Stock: Consultar disponibilidad
                         </p>
                       )}
                     </div>
@@ -571,8 +571,8 @@ export default function ArticuloPage({ params }: PageProps) {
                         Stock: <span className="font-medium">{selectedVariant.stock} unidades</span>
                       </p>
                     ) : (
-                      <p className="text-xs text-red-500 italic">
-                        Stock: Agotado
+                      <p className="text-xs text-gray-500 italic">
+                        Stock: Consultar disponibilidad
                       </p>
                     )
                   ) : product.stock > 0 ? (
@@ -622,7 +622,7 @@ export default function ArticuloPage({ params }: PageProps) {
                     />
                   </svg>
                 </button>
-                {hasPrice && (selectedVariant ? selectedVariant.stock > 0 : product.stock > 0) ? (
+                {hasPrice ? (
                   <button
                     onClick={handleAddToCart}
                     disabled={
