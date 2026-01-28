@@ -15,8 +15,9 @@ interface GroupCardProps {
 export default function GroupCard({ grupo, categoriaSlug, subcategorySlug }: GroupCardProps) {
   const href = `/${categoriaSlug}/${subcategorySlug}/${grupo.slug}`;
   
-  // Intentar obtener imagen del grupo desde productos
-  const defaultImage = grupo.image || '/categorias/Gemini_Generated_Image_brwh6gbrwh6gbrwh.png';
+  // Usar imagen local basada en el slug del grupo
+  // Formato: /categorias/{slug}.png (ej: /categorias/futbol.png, /categorias/baloncesto.png, etc.)
+  const defaultImage = `/categorias/${grupo.slug}.png`;
   
   // Desactivar optimización para CDNs externos problemáticos
   const shouldUnoptimize = defaultImage.includes('cdn.jimsports.shop') || 
