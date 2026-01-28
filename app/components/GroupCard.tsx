@@ -16,8 +16,9 @@ export default function GroupCard({ grupo, categoriaSlug, subcategorySlug }: Gro
   const href = `/${categoriaSlug}/${subcategorySlug}/${grupo.slug}`;
   
   // Usar imagen local basada en el slug del grupo
-  // Formato: /categorias/{slug}.png (ej: /categorias/futbol.png, /categorias/baloncesto.png, etc.)
-  const defaultImage = `/categorias/${grupo.slug}.png`;
+  // Convertir guiones a nombre sin guiones (ej: deportes-de-contacto -> deportesdecontacto)
+  const imageName = grupo.slug.replace(/-/g, '');
+  const defaultImage = `/categorias/${imageName}.png`;
   
   // Desactivar optimización para CDNs externos problemáticos
   const shouldUnoptimize = defaultImage.includes('cdn.jimsports.shop') || 
