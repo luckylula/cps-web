@@ -173,6 +173,29 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
         </p>
       </div>
 
+      {/* Filtro por tipo de material (balones, guantes portero, material táctico, etc.) - arriba para mayor visibilidad */}
+      {availableTipos.length > 0 && (
+        <div>
+          <h3 className="text-sm font-medium text-gray-900 mb-1">Tipo de material</h3>
+          <p className="text-xs text-gray-500 mb-3">Balones, guantes, material táctico...</p>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {availableTipos.map((tipo) => (
+              <label key={tipo.tipo_producto} className="flex items-center cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={selectedTipos.includes(tipo.tipo_producto)}
+                  onChange={() => handleTipoToggle(tipo.tipo_producto)}
+                  className="w-4 h-4 text-[#003366] border-gray-300 rounded focus:ring-[#003366] focus:ring-2"
+                />
+                <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                  {tipo.tipo_producto} <span className="text-gray-500">({tipo._count.tipo_producto})</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Ordenar por */}
       <div>
         <h3 className="text-sm font-medium text-gray-900 mb-3">Ordenar por</h3>
@@ -275,28 +298,6 @@ export default function AdvancedFilters({ marcas, minPrice, maxPrice, totalProdu
                 />
                 <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
                   {marca}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Filtro por tipo de producto - Solo para Deportes */}
-      {categoryId === 'deportes' && availableTipos.length > 0 && (
-        <div>
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Tipo de producto</h3>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {availableTipos.map((tipo) => (
-              <label key={tipo.tipo_producto} className="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={selectedTipos.includes(tipo.tipo_producto)}
-                  onChange={() => handleTipoToggle(tipo.tipo_producto)}
-                  className="w-4 h-4 text-[#003366] border-gray-300 rounded focus:ring-[#003366] focus:ring-2"
-                />
-                <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
-                  {tipo.tipo_producto} <span className="text-gray-500">({tipo._count.tipo_producto})</span>
                 </span>
               </label>
             ))}
