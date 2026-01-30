@@ -115,14 +115,6 @@ async function getGroupsForSubcategory(categoriaSlug: string, subcategorySlug: s
   return groupsWithData.filter(g => g.count > 0);
 }
 
-const productListWhereBase = {
-  name: { not: '' as const },
-  OR: [
-    { sku_interno: null },
-    { sku_interno: { not: { endsWith: '-BASE' } } },
-  ],
-} as const;
-
 async function getProductsForSubcategory(categoriaSlug: string, subcategoryName: string) {
   const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategoryForDeportes(
     categoriaSlug,
@@ -136,7 +128,11 @@ async function getProductsForSubcategory(categoriaSlug: string, subcategoryName:
     published: true,
     visible_web: true,
     activo: true,
-    ...productListWhereBase,
+    name: { not: '' },
+    OR: [
+      { sku_interno: null },
+      { sku_interno: { not: { endsWith: '-BASE' } } },
+    ],
   };
   return prisma.product.findMany({
     where,
