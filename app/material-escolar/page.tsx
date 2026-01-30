@@ -96,16 +96,6 @@ export default function MaterialEscolarPage() {
     : null;
   const subcategoryNameFromUrl = subcategoryFromSlug?.name ?? null;
 
-  // Sync selected subcategory and products from URL so "Material Escolar" in nav always shows main view
-  useEffect(() => {
-    setSelectedSubcategory(subcategoryNameFromUrl);
-    if (subcategoryNameFromUrl) {
-      fetchProducts(subcategoryNameFromUrl);
-    } else {
-      setProducts([]);
-    }
-  }, [subcategorySlugFromUrl, subcategoryNameFromUrl, fetchProducts]);
-
   const fetchProducts = useCallback(async (subcategoryName?: string) => {
     try {
       setLoading(true);
@@ -151,6 +141,16 @@ export default function MaterialEscolarPage() {
       setLoading(false);
     }
   }, []);
+
+  // Sync selected subcategory and products from URL so "Material Escolar" in nav always shows main view
+  useEffect(() => {
+    setSelectedSubcategory(subcategoryNameFromUrl);
+    if (subcategoryNameFromUrl) {
+      fetchProducts(subcategoryNameFromUrl);
+    } else {
+      setProducts([]);
+    }
+  }, [subcategorySlugFromUrl, subcategoryNameFromUrl, fetchProducts]);
 
   const handleSubcategoryClick = (subcategoryName: string, subcategorySlug: string) => {
     // Put subcategory in URL so "Material Escolar" in nav always goes back to main view
