@@ -18,6 +18,7 @@
     "clean:descriptions": "node --import tsx prisma/clean-descriptions.ts",
     "debug:subcategories": "node --import tsx prisma/debug-subcategories.ts",
     "verify:subcategories": "node --import tsx prisma/verify-subcategories.ts",
+    "verify:fitness-count": "node --import tsx prisma/verify-fitness-count.ts",
     "fix:hierarchy": "node --import tsx prisma/fix-category-hierarchy.ts",
     "seed:coupons": "node --import tsx prisma/seed-coupons.ts",
     "migrate:addresses": "node --import tsx prisma/migrate-order-addresses.ts"

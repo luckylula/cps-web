@@ -4,7 +4,8 @@ export const dynamic = 'force-dynamic';
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 import ProductCard from "@/app/components/ProductCard";
 import CartButton from "@/app/components/CartButton";
 import SearchBar from "@/app/components/SearchBar";
@@ -79,12 +80,33 @@ const subcategories: Subcategory[] = [
   },
 ];
 
+const SUBCATEGORY_PARAM = "subcategory";
+
 export default function MaterialEscolarPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
 
-  const fetchProducts = async (subcategoryName?: string) => {
+  // Sync selected subcategory from URL so "Material Escolar" in nav always goes back to main view
+  const subcategorySlugFromUrl = searchParams.get(SUBCATEGORY_PARAM);
+  const subcategoryFromSlug = subcategorySlugFromUrl
+    ? subcategories.find((s) => s.slug === subcategorySlugFromUrl)
+    : null;
+  const subcategoryNameFromUrl = subcategoryFromSlug?.name ?? null;
+
+  // Sync selected subcategory and products from URL so "Material Escolar" in nav always shows main view
+  useEffect(() => {
+    setSelectedSubcategory(subcategoryNameFromUrl);
+    if (subcategoryNameFromUrl) {
+      fetchProducts(subcategoryNameFromUrl);
+    } else {
+      setProducts([]);
+    }
+  }, [subcategorySlugFromUrl, subcategoryNameFromUrl, fetchProducts]);
+
+  const fetchProducts = useCallback(async (subcategoryName?: string) => {
     try {
       setLoading(true);
 
@@ -128,21 +150,18 @@ export default function MaterialEscolarPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleSubcategoryClick = (subcategoryName: string, subcategorySlug: string) => {
-    setSelectedSubcategory(subcategoryName);
-    // Pasar el nombre de la subcategoría (no el slug) para filtrar por el campo subcategory
-    fetchProducts(subcategoryName);
-    // Scroll suave a la sección de productos
+    // Put subcategory in URL so "Material Escolar" in nav always goes back to main view
+    router.push(`/material-escolar?${SUBCATEGORY_PARAM}=${encodeURIComponent(subcategorySlug)}`);
     setTimeout(() => {
       document.getElementById('productos-section')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   };
 
   const handleBackToSubcategories = () => {
-    setSelectedSubcategory(null);
-    setProducts([]);
+    router.push('/material-escolar');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

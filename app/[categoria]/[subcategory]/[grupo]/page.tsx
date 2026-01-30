@@ -13,6 +13,22 @@ import { convertProductsToClient } from '@/app/lib/productUtils';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * En la BD (deportes): grupo = nivel 2 (Individual/Colectivos/Raqueta), subcategory = nivel 3 (Fitness/Fútbol/...).
+ * La URL /deportes/individual/fitness tiene subcategorySlug=individual → nombre "Individual", grupoSlug=fitness → nombre "Fitness".
+ * Por tanto para deportes: where.grupo = 'Individual', where.subcategory = 'Fitness'.
+ */
+function getDbGrupoAndSubcategory(
+  categoriaSlug: string,
+  subcategoryName: string | null,
+  grupoName: string | null
+): { dbGrupo: string | null; dbSubcategory: string | null } {
+  if (categoriaSlug === 'deportes' && subcategoryName && grupoName) {
+    return { dbGrupo: subcategoryName, dbSubcategory: grupoName };
+  }
+  return { dbGrupo: grupoName, dbSubcategory: subcategoryName };
+}
+
 interface PageProps {
   params: Promise<{ categoria: string; subcategory: string; grupo: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -40,9 +56,11 @@ async function getProducts(
 ) {
   const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupoSlug);
   const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
-  
+  const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategory(categoriaSlug, subcategoryName, grupoName);
+
   const where: any = {
     categoryId: categoriaSlug,
+    published: true,
     visible_web: true,
     activo: true,
     name: {
@@ -54,12 +72,12 @@ async function getProducts(
     ],
   };
 
-  if (subcategoryName) {
-    where.subcategory = subcategoryName;
+  if (dbSubcategory) {
+    where.subcategory = dbSubcategory;
   }
 
-  if (grupoName) {
-    where.grupo = grupoName;
+  if (dbGrupo) {
+    where.grupo = dbGrupo;
   }
 
   // Filtro por múltiples marcas
@@ -129,20 +147,22 @@ async function getFilterOptions(
 ) {
   const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupoSlug);
   const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
-  
+  const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategory(categoriaSlug, subcategoryName, grupoName);
+
   const where: any = {
     categoryId: categoriaSlug,
+    published: true,
     visible_web: true,
     activo: true,
     marca: { not: null },
   };
 
-  if (subcategoryName) {
-    where.subcategory = subcategoryName;
+  if (dbSubcategory) {
+    where.subcategory = dbSubcategory;
   }
 
-  if (grupoName) {
-    where.grupo = grupoName;
+  if (dbGrupo) {
+    where.grupo = dbGrupo;
   }
 
   const products = await prisma.product.findMany({
@@ -163,17 +183,18 @@ async function getFilterOptions(
   if (categoriaSlug === 'deportes') {
     const tiposWhere: any = {
       categoryId: categoriaSlug,
+      published: true,
       visible_web: true,
       activo: true,
       tipo_producto: { not: null },
     };
-    
-    if (subcategoryName) {
-      tiposWhere.subcategory = subcategoryName;
+
+    if (dbSubcategory) {
+      tiposWhere.subcategory = dbSubcategory;
     }
-    
-    if (grupoName) {
-      tiposWhere.grupo = grupoName;
+
+    if (dbGrupo) {
+      tiposWhere.grupo = dbGrupo;
     }
     
     const tiposData = await prisma.product.groupBy({
@@ -206,13 +227,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const category = await getCategory(categoria);
   const grupoName = getGrupoName(categoria, subcategory, grupo);
   const subcategoryName = getSubcategoryName(categoria, subcategory);
-  
-  // Obtener conteo de productos
+  const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategory(categoria, subcategoryName, grupoName);
+
   const productCount = await prisma.product.count({
     where: {
       categoryId: categoria,
-      subcategory: subcategoryName || undefined,
-      grupo: grupoName || undefined,
+      subcategory: dbSubcategory || undefined,
+      grupo: dbGrupo || undefined,
+      published: true,
       visible_web: true,
       activo: true,
     },

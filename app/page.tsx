@@ -166,7 +166,7 @@ export default function Home() {
 
             {/* Tarjeta Material Escolar */}
             <Link
-              href="/categoria/material-escolar"
+              href="/material-escolar"
               className="group bg-white overflow-hidden cursor-pointer"
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">

@@ -11,6 +11,21 @@ import { navigationStructure } from '@/app/lib/navigationStructure';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Para deportes: en BD grupo = nivel 2 (Individual/Colectivos), subcategory = nivel 3 (Fitness/Fútbol).
+ * Devuelve los valores correctos para filtrar en la BD.
+ */
+function getDbGrupoAndSubcategoryForDeportes(
+  categoriaSlug: string,
+  subcategoryName: string | null,
+  grupoName: string | null
+): { dbGrupo: string | null; dbSubcategory: string | null } {
+  if (categoriaSlug === 'deportes' && subcategoryName && grupoName) {
+    return { dbGrupo: subcategoryName, dbSubcategory: grupoName };
+  }
+  return { dbGrupo: grupoName, dbSubcategory: subcategoryName };
+}
+
 interface PageProps {
   params: Promise<{ categoria: string; subcategory: string }>;
 }
@@ -37,26 +52,28 @@ async function getGroupsForSubcategory(categoriaSlug: string, subcategorySlug: s
   const groupsWithData = await Promise.all(
     subcategoria.grupos.map(async (grupo) => {
       const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupo.slug) || grupo.nombre;
-      
-      // Contar productos en este grupo
+      const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategoryForDeportes(
+        categoriaSlug,
+        subcategoryName,
+        grupoName
+      );
+
+      const productWhere = {
+        categoryId: categoriaSlug,
+        subcategory: dbSubcategory || undefined,
+        grupo: dbGrupo || undefined,
+        published: true,
+        visible_web: true,
+        activo: true,
+      };
+
       const count = await prisma.product.count({
-        where: {
-          categoryId: categoriaSlug,
-          subcategory: subcategoryName || undefined,
-          grupo: grupoName,
-          visible_web: true,
-          activo: true,
-        },
+        where: productWhere,
       });
 
-      // Obtener primera imagen de un producto de este grupo
       const sampleProduct = await prisma.product.findFirst({
         where: {
-          categoryId: categoriaSlug,
-          subcategory: subcategoryName || undefined,
-          grupo: grupoName,
-          visible_web: true,
-          activo: true,
+          ...productWhere,
           images: {
             isEmpty: false,
           },
@@ -91,15 +108,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { categoria, subcategory } = await params;
   const category = await getCategory(categoria);
   const subcategoryName = getSubcategoryName(categoria, subcategory);
-  
-  // Obtener conteo de productos
+
+  // Para deportes, la "subcategoría" nav (Individual/Colectivos/Raqueta) en BD es grupo
+  const countWhere: any = {
+    categoryId: categoria,
+    published: true,
+    visible_web: true,
+    activo: true,
+  };
+  if (categoria === 'deportes' && subcategoryName) {
+    countWhere.grupo = subcategoryName;
+  } else if (subcategoryName) {
+    countWhere.subcategory = subcategoryName;
+  }
+
   const productCount = await prisma.product.count({
-    where: {
-      categoryId: categoria,
-      subcategory: subcategoryName || undefined,
-      visible_web: true,
-      activo: true,
-    },
+    where: countWhere,
   });
 
   return generateCategoryMetadata({
