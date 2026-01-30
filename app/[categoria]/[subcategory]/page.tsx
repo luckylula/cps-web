@@ -1,12 +1,13 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import Navigation from '@/app/components/Navigation';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import GroupCard from '@/app/components/GroupCard';
+import ProductsPageClient from '@/app/components/ProductsPageClient';
 import { getSubcategoryName, getCategoryName, getGrupoName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
+import { convertProductsToClient } from '@/app/lib/productUtils';
 import { navigationStructure } from '@/app/lib/navigationStructure';
 
 export const dynamic = 'force-dynamic';
@@ -30,10 +31,20 @@ interface PageProps {
   params: Promise<{ categoria: string; subcategory: string }>;
 }
 
+const NAV_SLUGS = navigationStructure.map((c) => c.slug);
+
 async function getCategory(slug: string) {
-  const category = await prisma.category.findUnique({
+  let category = await prisma.category.findUnique({
     where: { slug },
   });
+  if (!category && NAV_SLUGS.includes(slug)) {
+    const name = getCategoryName(slug) || slug;
+    category = await prisma.category.upsert({
+      where: { slug },
+      create: { id: slug, name, slug },
+      update: { name },
+    });
+  }
   return category;
 }
 
@@ -104,6 +115,35 @@ async function getGroupsForSubcategory(categoriaSlug: string, subcategorySlug: s
   return groupsWithData.filter(g => g.count > 0);
 }
 
+const productListWhereBase = {
+  name: { not: '' as const },
+  OR: [
+    { sku_interno: null },
+    { sku_interno: { not: { endsWith: '-BASE' } } },
+  ],
+} as const;
+
+async function getProductsForSubcategory(categoriaSlug: string, subcategoryName: string) {
+  const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategoryForDeportes(
+    categoriaSlug,
+    subcategoryName,
+    null
+  );
+  const where = {
+    categoryId: categoriaSlug,
+    subcategory: dbSubcategory || subcategoryName,
+    grupo: dbGrupo || undefined,
+    published: true,
+    visible_web: true,
+    activo: true,
+    ...productListWhereBase,
+  };
+  return prisma.product.findMany({
+    where,
+    orderBy: { name: 'asc' },
+  });
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categoria, subcategory } = await params;
   const category = await getCategory(categoria);
@@ -144,8 +184,12 @@ export default async function SubcategoryPage({ params }: PageProps) {
 
   const categoryName = getCategoryName(categoria) || category.name;
   const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
-  
+
   const groups = await getGroupsForSubcategory(categoria, subcategory);
+  const productsForSubcategory =
+    groups.length === 0
+      ? await getProductsForSubcategory(categoria, subcategoryName)
+      : [];
 
   return (
     <div className="min-h-screen bg-white">
@@ -171,15 +215,21 @@ export default async function SubcategoryPage({ params }: PageProps) {
               {subcategoryName}
             </h1>
             <p className="text-gray-600">{categoryName}</p>
-            <p className="text-sm text-gray-500 mt-2">
-              Selecciona un grupo para ver los productos disponibles
-            </p>
+            {groups.length > 0 && (
+              <p className="text-sm text-gray-500 mt-2">
+                Selecciona un grupo para ver los productos disponibles
+              </p>
+            )}
           </div>
 
           {groups.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No hay grupos disponibles en esta subcategoría</p>
-            </div>
+            productsForSubcategory.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-600 text-lg">No hay grupos ni productos en esta subcategoría</p>
+              </div>
+            ) : (
+              <ProductsPageClient products={convertProductsToClient(productsForSubcategory)} />
+            )
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {groups.map((grupo) => (

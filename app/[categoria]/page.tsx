@@ -20,10 +20,21 @@ interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+const NAV_SLUGS = navigationStructure.map((c) => c.slug);
+
 async function getCategory(slug: string) {
-  const category = await prisma.category.findUnique({
+  let category = await prisma.category.findUnique({
     where: { slug },
   });
+  // Asegurar que categorías del nav (textil, deportes, instalaciones, material-escolar) existan en BD
+  if (!category && NAV_SLUGS.includes(slug)) {
+    const name = getCategoryName(slug) || slug;
+    category = await prisma.category.upsert({
+      where: { slug },
+      create: { id: slug, name, slug },
+      update: { name },
+    });
+  }
   return category;
 }
 
@@ -190,18 +201,22 @@ async function getSubcategoriesForCategory(categoriaSlug: string) {
   // Verificar cuáles subcategorías tienen productos usando el nombre completo
   const subcategoriesWithProducts = await Promise.all(
     categoria.subcategorias.map(async (subcategoria) => {
-      // Obtener el nombre completo de la subcategoría usando el mapping
       const subcategoryName = getSubcategoryName(categoriaSlug, subcategoria.slug) || subcategoria.nombre;
-      
+
       const count = await prisma.product.count({
         where: {
           categoryId: categoriaSlug,
           subcategory: subcategoryName,
+          published: true,
           visible_web: true,
           activo: true,
         },
       });
-      
+
+      if (process.env.NODE_ENV !== 'production' && categoriaSlug === 'textil' && subcategoria.slug === 'ropa-casual') {
+        console.debug('[getSubcategoriesForCategory] textil / Ropa Casual count:', count);
+      }
+
       return {
         ...subcategoria,
         hasProducts: count > 0,
