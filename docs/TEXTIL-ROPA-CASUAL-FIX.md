@@ -1,53 +1,61 @@
 # Fix: Ropa Casual (textil) no aparecía en la web
 
-## 1. Dónde se construye el listado
+## Causa raíz
+
+1. **Menú/subcategorías no venían de Product:** El listado de subcategorías se construía desde `navigationStructure` (estático) y solo se mostraban las que tenían `count > 0` con un count que no usaba `published`. La fuente de verdad debe ser **Product** (categoryId + subcategory con published y visible_web).
+2. **Category "textil" no existía en BD:** El seed crea `equipacion-textil`, no `textil`, por lo que `/textil` devolvía 404.
+3. **Subcategorías sin grupos no listaban productos:** En "Ropa Casual" (grupos: []), la página solo mostraba "No hay grupos disponibles" y no hacía query de productos por subcategoría.
+
+## Dónde Next construye todo
 
 | Qué | Dónde |
 |-----|--------|
-| **Subcategorías visibles en /textil** | `app/[categoria]/page.tsx` → `getSubcategoriesForCategory(categoria)`. Solo se muestran subcategorías con `hasProducts === true` (count > 0). |
-| **Conteo por subcategoría** | Mismo archivo: `prisma.product.count({ where: { categoryId, subcategory, visible_web, activo } })`. No usaba `published`. |
-| **Categoría existe** | `getCategory(categoria)` → `prisma.category.findUnique({ where: { slug } })`. Si no existe → `notFound()` (404). |
-| **Productos en subcategoría sin grupos** | `app/[categoria]/[subcategory]/page.tsx`: si `grupos.length === 0` solo se mostraba el mensaje "No hay grupos disponibles" y no se listaban productos. |
-| **Productos API** | `app/api/products/route.ts`: where con `visible_web`, `activo`, filtro `sku_interno` (OR null / not endsWith '-BASE'). No filtra por `published`. |
-| **Estructura / mega menú** | `app/api/categories/[slug]/structure/route.ts`: agrupa por `grupo`; subcategorías sin grupo quedan en "Sin clasificar". |
+| **Menú / listado de categorías** | `app/components/Navigation.tsx` → `MultiLevelNav` con `navigationStructure`. Las subcategorías visibles en cada categoría vienen de `getSubcategoriesForCategory` (ahora desde `getCategoryTree`). |
+| **Subcategorías por categoría** | `app/[categoria]/page.tsx` → `getSubcategoriesForCategory()` → ahora usa **getCategoryTree(categoria)** (Product con published, visible_web, subcategory no nula). Fallback a nav estático + count. |
+| **Árbol de categorías (fuente de verdad)** | `app/lib/categoryTree.ts` → **getCategoryTree(categoryId?)**. Query: `Product` con `published=true`, `visible_web=true`, `subcategory` no nula/vacía; DISTINCT (categoryId, subcategory); orden alfabético. |
+| **API árbol** | `app/api/categories/tree/route.ts` → GET `?categoryId=textil` devuelve `{ categoryId, subcategories: { name, slug }[] }`. |
+| **Página por categoría** | `app/[categoria]/page.tsx` → getCategory (con getOrCreateCategory para nav), getSubcategoriesForCategory (getCategoryTree + fallback). |
+| **Página por subcategoría** | `app/[categoria]/[subcategory]/page.tsx` → Filtro: `categoryId`, `subcategory` (nombre resuelto desde slug vía mapping o getSubcategoryNameFromSlug), `published`, `visible_web`, `activo`. |
+| **Queries Prisma productos** | `app/api/products/route.ts`, `app/api/categories/[slug]/products/route.ts`, `app/[categoria]/page.tsx` (getProducts), `app/[categoria]/[subcategory]/page.tsx` (getProductsForSubcategory): todos usan **published=true**, **visible_web=true** (y activo, name, sku_interno según ruta). |
 
-## 2. Filtros que excluían textil / Ropa Casual
+## Cambios aplicados
 
-### Causa 1: Category "textil" no existía en BD
-- **Archivo:** `app/[categoria]/page.tsx`
-- **Qué pasa:** `getCategory("textil")` hace `findUnique({ where: { slug: "textil" } })`. El seed solo crea `equipacion-textil`, no `textil`.
-- **Efecto:** `category === null` → `notFound()` → 404 en `/textil`. Nunca se llega a pintar subcategorías ni productos.
+1. **getCategoryTree()** en `app/lib/categoryTree.ts`: árbol desde Product (published, visible_web, subcategory no nula/vacía). `normalizeSubcategorySlug("Ropa Casual")` → `"ropa-casual"`. Logging temporal para textil/Ropa Casual.
+2. **getSubcategoryNameFromSlug(categoryId, slug)** en el mismo archivo: resuelve slug a nombre (mapping estático primero; si no, busca en Product).
+3. **API GET /api/categories/tree?categoryId=textil** en `app/api/categories/tree/route.ts`.
+4. **app/[categoria]/page.tsx**: Subcategorías desde **getCategoryTree(categoria)**; si vacío, fallback a nav + count. Queries getProducts y getFilterOptions y productCount con **published: true**.
+5. **app/[categoria]/[subcategory]/page.tsx**: Nombre de subcategoría con **getSubcategoryNameFromSlug** si el mapping no devuelve nada. Logging temporal para (textil, Ropa Casual) en getProductsForSubcategory.
+6. **app/api/products/route.ts** y **app/api/categories/[slug]/products/route.ts** y **app/api/categories/[slug]/subcategories/route.ts**: añadido **published: true** en el where.
+7. **Script de verificación:** `npm run verify:textil-casual` (prisma/verify-textil-casual.ts).
 
-### Causa 2: Subcategorías solo se muestran si tienen productos (count > 0)
-- **Archivo:** `app/[categoria]/page.tsx`, `getSubcategoriesForCategory`
-- **Filtro usado en el count:**  
-  `where: { categoryId: categoriaSlug, subcategory: subcategoryName, visible_web: true, activo: true }`  
-  No se usaba `published: true` (consistente con otros listados que sí lo usan en [grupo]).
+## Normalización de slugs
 
-### Causa 3: Subcategoría sin grupos (Ropa Casual) no mostraba productos
-- **Archivo:** `app/[categoria]/[subcategory]/page.tsx`
-- **Qué pasa:** Para "Ropa Casual", `navigationStructure` tiene `grupos: []`. `getGroupsForSubcategory` devuelve `[]`.
-- **Efecto:** Se renderiza "No hay grupos disponibles en esta subcategoría" y no se hace ninguna query de productos por subcategoría. Aunque en BD haya productos con `subcategory = "Ropa Casual"`, no se listan.
+- **normalizeSubcategorySlug(name):** "Ropa Casual" → "ropa-casual" (minúsculas, espacios → guiones, sin acentos). No se modifican slugs existentes en Product; solo se usan para URLs y para resolver desde el árbol.
 
-### No era el problema
-- No hay `where: { grupo: { not: null } }` en las rutas que definen subcategorías o listado de categoría/subcategoría.
-- No hay `categoryId: "deportes"` hardcodeado para el listado de categorías.
-- `app/api/products/route.ts` no exige variantes con price/stock; filtra por producto (sku_interno, visible_web, activo).
+## Verificación (2–3 pasos)
 
-## 3. Cambios aplicados (mínimos)
+1. **En local: menú incluye Textil > Ropa Casual**  
+   - Ir a la home, abrir el menú de navegación y pasar por "Textil".  
+   - Debe aparecer "Ropa Casual" (y el resto de subcategorías con productos).  
+   - Opcional: `GET /api/categories/tree?categoryId=textil` debe devolver `subcategories` con `{ name: "Ropa Casual", slug: "ropa-casual" }`.
 
-1. **Asegurar que exista la categoría "textil" (y otras del nav):**  
-   En `app/[categoria]/page.tsx` y `app/[categoria]/[subcategory]/page.tsx`, si `getCategory(slug)` devuelve `null` y el `slug` está en `navigationStructure`, se hace upsert de la categoría (id/slug/name desde `getCategoryName`) para no depender del seed.
-2. **Incluir `published: true` en el count de subcategorías** en `getSubcategoriesForCategory` para alinearlo con [grupo] y metadata.
-3. **Subcategoría sin grupos → listar productos:**  
-   En `app/[categoria]/[subcategory]/page.tsx`, cuando `groups.length === 0`, se obtienen productos con `categoryId`, `subcategory`, `published`, `visible_web`, `activo` y el mismo filtro de `sku_interno` que en [grupo], y se muestran en grid con `ProductCard`.
-4. **Logs temporales:**  
-   `console.debug` en `getSubcategoriesForCategory` para categoria `textil` y subcategoría "Ropa Casual" (count antes/después).
-5. **Script de verificación:**  
-   `prisma/verify-textil-casual.ts` hace count de productos con `categoryId === "textil"`, `subcategory === "Ropa Casual"`, `published && visible_web` y opcionalmente por `ref_proveedor` de ejemplo.
+2. **En local: ruta /textil/ropa-casual muestra productos**  
+   - Ir a `/textil` y hacer clic en "Ropa Casual", o ir directamente a `/textil/ropa-casual`.  
+   - Debe mostrarse el listado de productos con `categoryId='textil'`, `subcategory='Ropa Casual'`, `published=true`, `visible_web=true`.  
+   - En consola del servidor (dev) deberían aparecer logs tipo `[getCategoryTree] textil subcategories: N` y `[getProductsForSubcategory] textil / Ropa Casual products count: N`.
 
-## 4. Cómo comprobar
+3. **Query equivalente en BD**  
+   - Ejecutar (o usar `npm run verify:textil-casual`):  
+     `SELECT COUNT(*) FROM "Product" WHERE proveedor='jim_sports' AND "categoryId"='textil' AND subcategory='Ropa Casual' AND published=true AND visible_web=true;`  
+   - El número debe coincidir con los productos que se ven en `/textil/ropa-casual`.
 
-- Ejecutar: `npm run verify:textil-casual` (o `node --import tsx prisma/verify-textil-casual.ts`).
-- Abrir `/textil`: debe cargar la categoría y verse "Ropa Casual" en el grid de subcategorías.
-- Abrir `/textil/ropa-casual`: debe mostrarse el listado de productos de esa subcategoría.
+## Archivos modificados
+
+- `app/lib/categoryTree.ts` (nuevo)
+- `app/api/categories/tree/route.ts` (nuevo)
+- `app/[categoria]/page.tsx`
+- `app/[categoria]/[subcategory]/page.tsx`
+- `app/api/products/route.ts`
+- `app/api/categories/[slug]/products/route.ts`
+- `app/api/categories/[slug]/subcategories/route.ts`
+- `docs/TEXTIL-ROPA-CASUAL-FIX.md` (este archivo)

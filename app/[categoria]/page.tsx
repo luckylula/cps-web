@@ -12,6 +12,7 @@ import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtil
 import { convertProductsToClient } from '@/app/lib/productUtils';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
 import { navigationStructure } from '@/app/lib/navigationStructure';
+import { getCategoryTree } from '@/app/lib/categoryTree';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,6 +49,7 @@ async function getProducts(categoriaSlug: string, filters: {
 }) {
   const where: any = {
     categoryId: categoriaSlug,
+    published: true,
     visible_web: true,
     activo: true,
     name: {
@@ -123,6 +125,7 @@ async function getFilterOptions(categoriaSlug: string) {
   const products = await prisma.product.findMany({
     where: {
       categoryId: categoriaSlug,
+      published: true,
       visible_web: true,
       activo: true,
       marca: { not: null },
@@ -179,6 +182,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const productCount = await prisma.product.count({
     where: {
       categoryId: categoria,
+      published: true,
       visible_web: true,
       activo: true,
     },
@@ -191,18 +195,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-async function getSubcategoriesForCategory(categoriaSlug: string) {
-  const categoria = navigationStructure.find(c => c.slug === categoriaSlug);
-  
-  if (!categoria || !categoria.subcategorias || categoria.subcategorias.length === 0) {
-    return [];
+/**
+ * Subcategorías para la UI: fuente de verdad desde Product (getCategoryTree).
+ * Si el árbol no tiene subcategorías para esta categoría, fallback a nav estático + count.
+ */
+async function getSubcategoriesForCategory(categoriaSlug: string): Promise<{ nombre: string; slug: string }[]> {
+  const tree = await getCategoryTree(categoriaSlug);
+  const categoryNode = tree.find((n) => n.categoryId === categoriaSlug);
+  if (categoryNode && categoryNode.subcategories.length > 0) {
+    return categoryNode.subcategories.map((s) => ({ nombre: s.name, slug: s.slug }));
   }
-
-  // Verificar cuáles subcategorías tienen productos usando el nombre completo
+  // Fallback: nav estático + count (compatibilidad con categorías que no tengan productos aún)
+  const categoria = navigationStructure.find((c) => c.slug === categoriaSlug);
+  if (!categoria?.subcategorias?.length) return [];
   const subcategoriesWithProducts = await Promise.all(
     categoria.subcategorias.map(async (subcategoria) => {
       const subcategoryName = getSubcategoryName(categoriaSlug, subcategoria.slug) || subcategoria.nombre;
-
       const count = await prisma.product.count({
         where: {
           categoryId: categoriaSlug,
@@ -212,20 +220,10 @@ async function getSubcategoriesForCategory(categoriaSlug: string) {
           activo: true,
         },
       });
-
-      if (process.env.NODE_ENV !== 'production' && categoriaSlug === 'textil' && subcategoria.slug === 'ropa-casual') {
-        console.debug('[getSubcategoriesForCategory] textil / Ropa Casual count:', count);
-      }
-
-      return {
-        ...subcategoria,
-        hasProducts: count > 0,
-      };
+      return { ...subcategoria, hasProducts: count > 0 };
     })
   );
-
-  // Retornar solo las que tienen productos
-  return subcategoriesWithProducts.filter(s => s.hasProducts);
+  return subcategoriesWithProducts.filter((s) => s.hasProducts).map((s) => ({ nombre: s.nombre, slug: s.slug }));
 }
 
 export default async function CategoriaPage({ params, searchParams }: PageProps) {

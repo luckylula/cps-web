@@ -9,6 +9,7 @@ import { getSubcategoryName, getCategoryName, getGrupoName } from '@/app/lib/nav
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
 import { convertProductsToClient } from '@/app/lib/productUtils';
 import { navigationStructure } from '@/app/lib/navigationStructure';
+import { getSubcategoryNameFromSlug } from '@/app/lib/categoryTree';
 
 export const dynamic = 'force-dynamic';
 
@@ -134,6 +135,10 @@ async function getProductsForSubcategory(categoriaSlug: string, subcategoryName:
       { sku_interno: { not: { endsWith: '-BASE' } } },
     ],
   };
+  if (process.env.NODE_ENV !== 'production' && categoriaSlug === 'textil' && (subcategoryName === 'Ropa Casual' || where.subcategory === 'Ropa Casual')) {
+    const count = await prisma.product.count({ where });
+    console.debug('[getProductsForSubcategory] textil / Ropa Casual products count:', count);
+  }
   return prisma.product.findMany({
     where,
     orderBy: { name: 'asc' },
@@ -143,7 +148,8 @@ async function getProductsForSubcategory(categoriaSlug: string, subcategoryName:
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categoria, subcategory } = await params;
   const category = await getCategory(categoria);
-  const subcategoryName = getSubcategoryName(categoria, subcategory);
+  const subcategoryName =
+    getSubcategoryName(categoria, subcategory) || (await getSubcategoryNameFromSlug(categoria, subcategory));
 
   // Para deportes, la "subcategoría" nav (Individual/Colectivos/Raqueta) en BD es grupo
   const countWhere: any = {
@@ -172,14 +178,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SubcategoryPage({ params }: PageProps) {
   const { categoria, subcategory } = await params;
-  
+
   const category = await getCategory(categoria);
   if (!category) {
     notFound();
   }
 
   const categoryName = getCategoryName(categoria) || category.name;
-  const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+  const subcategoryName =
+    getSubcategoryName(categoria, subcategory) || (await getSubcategoryNameFromSlug(categoria, subcategory)) || subcategory;
 
   const groups = await getGroupsForSubcategory(categoria, subcategory);
   const productsForSubcategory =

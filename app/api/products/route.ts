@@ -20,6 +20,7 @@ export async function GET(request: Request) {
     // Excluir productos que son variantes (tienen color/talla pero NO tienen variantes asociadas)
     // Solo mostrar productos padre (sin variantes) o productos que no tienen variantes
     const where: any = {
+      published: true,
       visible_web: true,
       activo: true,
       name: {

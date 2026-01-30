@@ -14,12 +14,11 @@ export async function GET(
     // Obtener todas las subcategorías únicas para esta categoría
     const products = await prisma.product.findMany({
       where: {
-        categoryId: slug, // slug es el categoryId (deportes, textil, etc.)
+        categoryId: slug,
+        published: true,
         visible_web: true,
         activo: true,
-        subcategory: {
-          not: null,
-        },
+        subcategory: { not: null },
       },
       select: {
         subcategory: true,
