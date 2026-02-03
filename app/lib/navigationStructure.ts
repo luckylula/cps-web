@@ -37,13 +37,18 @@ export const navigationStructure: Categoria[] = [
         ],
       },
       {
-        nombre: "Redes y Protecciones",
-        slug: "redes-y-protecciones",
+        nombre: "Mobiliario",
+        slug: "mobiliario",
         grupos: [],
       },
       {
         nombre: "Gimnasio",
         slug: "gimnasio",
+        grupos: [],
+      },
+      {
+        nombre: "Redes y Protecciones",
+        slug: "redes-y-protecciones",
         grupos: [],
       },
       {
@@ -54,11 +59,6 @@ export const navigationStructure: Categoria[] = [
       {
         nombre: "Piscina",
         slug: "piscina",
-        grupos: [],
-      },
-      {
-        nombre: "Mobiliario",
-        slug: "mobiliario",
         grupos: [],
       },
     ],

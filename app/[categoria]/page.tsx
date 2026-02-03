@@ -197,13 +197,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 /**
  * Subcategorías para la UI: fuente de verdad desde Product (getCategoryTree).
+ * Orden según navigationStructure para mantener el orden deseado de las tarjetas.
  * Si el árbol no tiene subcategorías para esta categoría, fallback a nav estático + count.
  */
 async function getSubcategoriesForCategory(categoriaSlug: string): Promise<{ nombre: string; slug: string }[]> {
   const tree = await getCategoryTree(categoriaSlug);
   const categoryNode = tree.find((n) => n.categoryId === categoriaSlug);
+  const navCategoria = navigationStructure.find((c) => c.slug === categoriaSlug);
   if (categoryNode && categoryNode.subcategories.length > 0) {
-    return categoryNode.subcategories.map((s) => ({ nombre: s.name, slug: s.slug }));
+    const fromTree = categoryNode.subcategories.map((s) => ({ nombre: s.name, slug: s.slug }));
+    // Ordenar según el orden definido en navigationStructure
+    if (navCategoria?.subcategorias?.length) {
+      const order = navCategoria.subcategorias.map((s) => s.slug);
+      return fromTree.sort((a, b) => {
+        const ia = order.indexOf(a.slug);
+        const ib = order.indexOf(b.slug);
+        if (ia === -1 && ib === -1) return 0;
+        if (ia === -1) return 1;
+        if (ib === -1) return -1;
+        return ia - ib;
+      });
+    }
+    return fromTree;
   }
   // Fallback: nav estático + count (compatibilidad con categorías que no tengan productos aún)
   const categoria = navigationStructure.find((c) => c.slug === categoriaSlug);
