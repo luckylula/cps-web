@@ -10,7 +10,7 @@ interface SubcategoryCardProps {
 }
 
 // Subcategorías que usan video en lugar de imagen
-const SUBCATEGORIES_WITH_VIDEO = ['mobiliario'];
+const SUBCATEGORIES_WITH_VIDEO = ['mobiliario', 'calzado'];
 
 export default function SubcategoryCard({ subcategory, categoriaSlug }: SubcategoryCardProps) {
   const href = `/${categoriaSlug}/${subcategory.slug}`;

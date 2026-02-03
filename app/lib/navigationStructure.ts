@@ -144,18 +144,18 @@ export const navigationStructure: Categoria[] = [
         grupos: [],
       },
       {
+        nombre: "Calzado",
+        slug: "calzado",
+        grupos: [
+          { nombre: "Casual", slug: "casual" },
+        ],
+      },
+      {
         nombre: "Ropa Deportiva",
         slug: "ropa-deportiva",
         grupos: [
           { nombre: "Equipaciones", slug: "equipaciones" },
           { nombre: "Por deporte - Pádel", slug: "por-deporte-padel" },
-        ],
-      },
-      {
-        nombre: "Calzado",
-        slug: "calzado",
-        grupos: [
-          { nombre: "Casual", slug: "casual" },
         ],
       },
     ],

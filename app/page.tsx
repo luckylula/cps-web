@@ -97,48 +97,6 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1.5">
-            {/* Tarjeta Deportes */}
-            <Link
-              href="/categoria/deportes"
-              className="group bg-white overflow-hidden cursor-pointer"
-            >
-              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="/categorias/deportes.png"
-                  alt="Deportes"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="pt-4">
-                <h3 className="text-gray-900 font-medium text-lg mb-1">Deportes</h3>
-                <p className="text-gray-600 text-sm">
-                  Material y equipamiento deportivo
-                </p>
-              </div>
-            </Link>
-
-            {/* Tarjeta Textil */}
-            <Link
-              href="/categoria/textil"
-              className="group bg-white overflow-hidden cursor-pointer"
-            >
-              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="/categorias/textil.png"
-                  alt="Textil"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="pt-4">
-                <h3 className="text-gray-900 font-medium text-lg mb-1">Textil</h3>
-                <p className="text-gray-600 text-sm">
-                  Ropa y calzado deportivo
-                </p>
-              </div>
-            </Link>
-
             {/* Tarjeta Instalaciones */}
             <Link
               href="/categoria/instalaciones"
@@ -181,6 +139,48 @@ export default function Home() {
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Material Escolar</h3>
                 <p className="text-gray-600 text-sm">
                   Material deportivo escolar
+                </p>
+              </div>
+            </Link>
+
+            {/* Tarjeta Deportes */}
+            <Link
+              href="/categoria/deportes"
+              className="group bg-white overflow-hidden cursor-pointer"
+            >
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
+                <Image
+                  src="/categorias/deportes.png"
+                  alt="Deportes"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Deportes</h3>
+                <p className="text-gray-600 text-sm">
+                  Material y equipamiento deportivo
+                </p>
+              </div>
+            </Link>
+
+            {/* Tarjeta Textil */}
+            <Link
+              href="/categoria/textil"
+              className="group bg-white overflow-hidden cursor-pointer"
+            >
+              <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
+                <Image
+                  src="/categorias/textil.png"
+                  alt="Textil"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="pt-4">
+                <h3 className="text-gray-900 font-medium text-lg mb-1">Textil</h3>
+                <p className="text-gray-600 text-sm">
+                  Ropa y calzado deportivo
                 </p>
               </div>
             </Link>
