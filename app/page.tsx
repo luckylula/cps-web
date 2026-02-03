@@ -401,21 +401,21 @@ export default function Home() {
       </section>
 
       {/* Contact Section - Estilo Minimalista */}
-      <section id="contacto" className="py-20 px-8 bg-black text-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-light mb-4 tracking-tight">
+      <section id="contacto" className="py-10 px-6 bg-black text-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-3xl font-light mb-2 tracking-tight">
               Contacto
             </h2>
-            <p className="text-lg text-gray-400 font-light">
+            <p className="text-sm text-gray-400 font-light">
               ¿Tienes preguntas? Estamos aquí para ayudarte.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid md:grid-cols-[1fr_1fr] gap-6 md:items-stretch">
             {/* Información de contacto */}
             <div>
-              <h3 className="text-xl font-medium mb-6">Información de contacto</h3>
-              <div className="space-y-4 text-gray-300">
+              <h3 className="text-base font-medium mb-3">Información de contacto</h3>
+              <div className="space-y-2 text-gray-300 text-sm">
                 <p className="font-light">
                   <strong className="text-white">Control Play Sports S.L.</strong>
                 </p>
@@ -432,9 +432,9 @@ export default function Home() {
                   pedidos@cpsmaterialdeportivo.com
                 </p>
               </div>
-              <div className="mt-8">
-                <h3 className="text-xl font-medium mb-6">Horarios de oficina</h3>
-                <div className="space-y-2 text-gray-300 font-light">
+              <div className="mt-4">
+                <h3 className="text-base font-medium mb-3">Horarios de oficina</h3>
+                <div className="space-y-1 text-gray-300 text-sm font-light">
                   <p>Lunes - Jueves: 9:00 a 13:00 y 15:00 a 19:00</p>
                   <p>Viernes: 9:00 a 13:00 y 15:00 a 18:00</p>
                 </div>

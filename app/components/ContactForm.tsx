@@ -92,13 +92,13 @@ export default function ContactForm() {
 
   return (
     <div className="w-full">
-      <h3 className="text-2xl md:text-3xl font-bold text-white mb-8 uppercase tracking-wide">
+      <h3 className="text-base font-bold text-white mb-4 uppercase tracking-wide">
         ENVÍANOS TU MENSAJE
       </h3>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-3">
         {/* Nombre */}
         <div className="relative">
-          <label htmlFor="nombre" className="block text-white mb-2 font-medium">
+          <label htmlFor="nombre" className="block text-white mb-1 text-sm font-medium">
             Nombre <span className="text-red-400">*</span>
           </label>
           <input
@@ -107,13 +107,13 @@ export default function ContactForm() {
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className={`w-full px-4 py-3 bg-white text-gray-900 rounded-lg border-2 transition-colors ${
+            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors ${
               errors.nombre ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
           />
           {errors.nombre && (
-            <span className="absolute right-2 top-[42px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[34px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.nombre}
             </span>
           )}
@@ -121,7 +121,7 @@ export default function ContactForm() {
 
         {/* Teléfono */}
         <div>
-          <label htmlFor="telefono" className="block text-white mb-2 font-medium">
+          <label htmlFor="telefono" className="block text-white mb-1 text-sm font-medium">
             Teléfono
           </label>
           <input
@@ -130,14 +130,14 @@ export default function ContactForm() {
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-white text-gray-900 rounded-lg border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-white/50"
+            className="w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border border-transparent focus:outline-none focus:ring-2 focus:ring-white/50"
             placeholder=""
           />
         </div>
 
         {/* Email */}
         <div className="relative">
-          <label htmlFor="email" className="block text-white mb-2 font-medium">
+          <label htmlFor="email" className="block text-white mb-1 text-sm font-medium">
             Email <span className="text-red-400">*</span>
           </label>
           <input
@@ -146,13 +146,13 @@ export default function ContactForm() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-3 bg-white text-gray-900 rounded-lg border-2 transition-colors ${
+            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors ${
               errors.email ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
           />
           {errors.email && (
-            <span className="absolute right-2 top-[42px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[34px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.email}
             </span>
           )}
@@ -160,7 +160,7 @@ export default function ContactForm() {
 
         {/* Asunto */}
         <div className="relative">
-          <label htmlFor="asunto" className="block text-white mb-2 font-medium">
+          <label htmlFor="asunto" className="block text-white mb-1 text-sm font-medium">
             Asunto <span className="text-red-400">*</span>
           </label>
           <input
@@ -169,13 +169,13 @@ export default function ContactForm() {
             name="asunto"
             value={formData.asunto}
             onChange={handleChange}
-            className={`w-full px-4 py-3 bg-white text-gray-900 rounded-lg border-2 transition-colors ${
+            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors ${
               errors.asunto ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
           />
           {errors.asunto && (
-            <span className="absolute right-2 top-[42px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[34px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.asunto}
             </span>
           )}
@@ -183,7 +183,7 @@ export default function ContactForm() {
 
         {/* Mensaje */}
         <div className="relative">
-          <label htmlFor="mensaje" className="block text-white mb-2 font-medium">
+          <label htmlFor="mensaje" className="block text-white mb-1 text-sm font-medium">
             Mensaje <span className="text-red-400">*</span>
           </label>
           <textarea
@@ -191,14 +191,14 @@ export default function ContactForm() {
             name="mensaje"
             value={formData.mensaje}
             onChange={handleChange}
-            rows={6}
-            className={`w-full px-4 py-3 bg-white text-gray-900 rounded-lg border-2 transition-colors resize-y ${
+            rows={4}
+            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors resize-y ${
               errors.mensaje ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
           />
           {errors.mensaje && (
-            <span className="absolute right-2 top-[42px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[88px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.mensaje}
             </span>
           )}
@@ -206,12 +206,12 @@ export default function ContactForm() {
 
         {/* Mensajes de estado */}
         {submitStatus === 'success' && (
-          <div className="bg-green-600 text-white px-4 py-3 rounded-lg">
+          <div className="bg-green-600 text-white px-3 py-2 text-sm rounded">
             ¡Mensaje enviado correctamente! Te responderemos pronto.
           </div>
         )}
         {submitStatus === 'error' && (
-          <div className="bg-red-600 text-white px-4 py-3 rounded-lg">
+          <div className="bg-red-600 text-white px-3 py-2 text-sm rounded">
             Error al enviar el mensaje. Por favor, inténtalo de nuevo.
           </div>
         )}
@@ -220,7 +220,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#003366] hover:bg-[#004080] text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-300 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#003366] hover:bg-[#004080] text-white text-sm font-semibold py-2.5 px-4 rounded transition-colors duration-300 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Enviando...' : 'Enviar'}
         </button>
