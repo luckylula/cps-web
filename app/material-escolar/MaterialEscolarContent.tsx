@@ -49,6 +49,7 @@ const subcategories: Subcategory[] = [
     name: 'Juegos alternativos',
     slug: 'juegos-alternativos',
     image: '/categorias/material-escolar/juegos-alternativos.jpg',
+    video: '/categorias/material-escolar/juegos-alternativos.mp4',
   },
   {
     name: 'Malabares',
@@ -59,6 +60,7 @@ const subcategories: Subcategory[] = [
     name: 'Juegos en Educación infantil',
     slug: 'educacion-infantil',
     image: '/categorias/material-escolar/educacion-infantil.jpg',
+    video: '/categorias/material-escolar/educacion-infantil.mp4',
   },
   {
     name: 'Material foam',
