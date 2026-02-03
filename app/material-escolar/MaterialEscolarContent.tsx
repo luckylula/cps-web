@@ -25,6 +25,7 @@ interface Subcategory {
   name: string;
   slug: string;
   image: string;
+  video?: string;
 }
 
 const subcategories: Subcategory[] = [
@@ -37,6 +38,7 @@ const subcategories: Subcategory[] = [
     name: 'Figuras espuma',
     slug: 'figuras-espuma',
     image: '/categorias/material-escolar/figuras-espuma.jpg',
+    video: '/categorias/material-escolar/figuras-espuma.mp4',
   },
   {
     name: 'Balones de uso escolar',
@@ -167,12 +169,23 @@ export default function MaterialEscolarContent() {
                   className="group bg-white overflow-hidden cursor-pointer text-left"
                 >
                   <div className="relative h-80 bg-gray-100 overflow-hidden">
-                    <Image
-                      src={subcategory.image}
-                      alt={subcategory.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {subcategory.video ? (
+                      <video
+                        src={subcategory.video}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <Image
+                        src={subcategory.image}
+                        alt={subcategory.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    )}
                   </div>
                   <div className="pt-4">
                     <h3 className="text-gray-900 font-medium text-lg mb-1">
