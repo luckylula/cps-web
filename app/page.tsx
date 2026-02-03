@@ -367,35 +367,37 @@ export default function Home() {
 
       {/* About Section - ¿Quiénes somos? */}
       <section className="py-20 px-8 bg-gray-50">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-10 tracking-tight">
             ¿Quiénes somos?
           </h2>
-          <div className="text-gray-600 font-light leading-relaxed space-y-6 mb-12">
-            <p className="text-lg">
-              En Control Play somos, ante todo, amantes del deporte. Vivimos cada proyecto con la misma pasión con la que se practica en la pista o en el campo, y esa implicación se refleja en cada solución que ofrecemos.
-            </p>
-            <p className="text-lg">
-              Nuestra experiencia profesional, unida a un trato cercano y honesto, nos permite acompañar a nuestros clientes en todo el proceso y lograr resultados excelentes. Creemos en el trabajo bien hecho, en el asesoramiento personalizado y en construir relaciones basadas en la confianza.
-            </p>
-            <p className="text-lg">
-              Somos especialistas en la distribución de material deportivo para colectivos y profesionales en toda España: colegios, clubes deportivos, ayuntamientos, instalaciones deportivas, piscinas y gimnasios.
-            </p>
-            <p className="text-lg">
-              Además, trabajamos con una amplia red de proveedores de confianza, lo que nos permite ofrecer soluciones completas y material adaptado a cualquier disciplina o necesidad deportiva.
-            </p>
-            <p className="text-lg font-medium text-gray-900">
-              Todo lo que tu proyecto necesita, con la garantía de un equipo que vive el deporte.
-            </p>
-          </div>
-          <div className="overflow-hidden rounded-lg">
-            <Image
-              src="/somosequipo.png"
-              alt="Equipo Control Play Sports"
-              width={1200}
-              height={800}
-              className="w-full h-auto object-cover"
-            />
+          <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-start">
+            <div className="text-gray-600 font-light leading-relaxed space-y-6">
+              <p className="text-lg">
+                En Control Play somos, ante todo, amantes del deporte. Vivimos cada proyecto con la misma pasión con la que se practica en la pista o en el campo, y esa implicación se refleja en cada solución que ofrecemos.
+              </p>
+              <p className="text-lg">
+                Nuestra experiencia profesional, unida a un trato cercano y honesto, nos permite acompañar a nuestros clientes en todo el proceso y lograr resultados excelentes. Creemos en el trabajo bien hecho, en el asesoramiento personalizado y en construir relaciones basadas en la confianza.
+              </p>
+              <p className="text-lg">
+                Somos especialistas en la distribución de material deportivo para colectivos y profesionales en toda España: colegios, clubes deportivos, ayuntamientos, instalaciones deportivas, piscinas y gimnasios.
+              </p>
+              <p className="text-lg">
+                Además, trabajamos con una amplia red de proveedores de confianza, lo que nos permite ofrecer soluciones completas y material adaptado a cualquier disciplina o necesidad deportiva.
+              </p>
+              <p className="text-lg font-medium text-gray-900">
+                Todo lo que tu proyecto necesita, con la garantía de un equipo que vive el deporte.
+              </p>
+            </div>
+            <div className="overflow-hidden rounded-lg">
+              <Image
+                src="/somosequipo.png"
+                alt="Equipo Control Play Sports"
+                width={1200}
+                height={800}
+                className="w-full h-auto object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>

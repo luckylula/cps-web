@@ -20,6 +20,75 @@ export interface Categoria {
 // Estructura de navegación multinivel según especificaciones
 export const navigationStructure: Categoria[] = [
   {
+    nombre: "Instalaciones",
+    slug: "instalaciones",
+    subcategorias: [
+      {
+        nombre: "Estructuras deportivas",
+        slug: "estructuras-deportivas",
+        grupos: [
+          { nombre: "Baloncesto", slug: "baloncesto" },
+          { nombre: "Fútbol", slug: "futbol" },
+          { nombre: "Fútbol Sala", slug: "futbol-sala" },
+          { nombre: "Voleibol", slug: "voleibol" },
+          { nombre: "Tenis", slug: "tenis" },
+          { nombre: "Pádel", slug: "padel" },
+          { nombre: "Varios", slug: "varios" },
+        ],
+      },
+      {
+        nombre: "Redes y Protecciones",
+        slug: "redes-y-protecciones",
+        grupos: [],
+      },
+      {
+        nombre: "Gimnasio",
+        slug: "gimnasio",
+        grupos: [],
+      },
+      {
+        nombre: "Vestuarios",
+        slug: "vestuarios",
+        grupos: [],
+      },
+      {
+        nombre: "Piscina",
+        slug: "piscina",
+        grupos: [],
+      },
+      {
+        nombre: "Mobiliario",
+        slug: "mobiliario",
+        grupos: [],
+      },
+    ],
+  },
+  {
+    nombre: "Material Escolar",
+    slug: "material-escolar",
+    subcategorias: [
+      {
+        nombre: "Psicomotricidad",
+        slug: "psicomotricidad",
+        grupos: [],
+      },
+      {
+        nombre: "Iniciación Deportiva",
+        slug: "iniciacion-deportiva",
+        grupos: [],
+      },
+      {
+        nombre: "Juegos",
+        slug: "juegos",
+        grupos: [
+          { nombre: "Juegos exterior", slug: "juegos-exterior" },
+          { nombre: "Juegos acuáticos", slug: "juegos-acuaticos" },
+          { nombre: "Juegos mesa", slug: "juegos-mesa" },
+        ],
+      },
+    ],
+  },
+  {
     nombre: "Deportes",
     slug: "deportes",
     subcategorias: [
@@ -87,75 +156,6 @@ export const navigationStructure: Categoria[] = [
         slug: "calzado",
         grupos: [
           { nombre: "Casual", slug: "casual" },
-        ],
-      },
-    ],
-  },
-  {
-    nombre: "Instalaciones",
-    slug: "instalaciones",
-    subcategorias: [
-      {
-        nombre: "Estructuras deportivas",
-        slug: "estructuras-deportivas",
-        grupos: [
-          { nombre: "Baloncesto", slug: "baloncesto" },
-          { nombre: "Fútbol", slug: "futbol" },
-          { nombre: "Fútbol Sala", slug: "futbol-sala" },
-          { nombre: "Voleibol", slug: "voleibol" },
-          { nombre: "Tenis", slug: "tenis" },
-          { nombre: "Pádel", slug: "padel" },
-          { nombre: "Varios", slug: "varios" },
-        ],
-      },
-      {
-        nombre: "Redes y Protecciones",
-        slug: "redes-y-protecciones",
-        grupos: [],
-      },
-      {
-        nombre: "Gimnasio",
-        slug: "gimnasio",
-        grupos: [],
-      },
-      {
-        nombre: "Vestuarios",
-        slug: "vestuarios",
-        grupos: [],
-      },
-      {
-        nombre: "Piscina",
-        slug: "piscina",
-        grupos: [],
-      },
-      {
-        nombre: "Mobiliario",
-        slug: "mobiliario",
-        grupos: [],
-      },
-    ],
-  },
-  {
-    nombre: "Material Escolar",
-    slug: "material-escolar",
-    subcategorias: [
-      {
-        nombre: "Psicomotricidad",
-        slug: "psicomotricidad",
-        grupos: [],
-      },
-      {
-        nombre: "Iniciación Deportiva",
-        slug: "iniciacion-deportiva",
-        grupos: [],
-      },
-      {
-        nombre: "Juegos",
-        slug: "juegos",
-        grupos: [
-          { nombre: "Juegos exterior", slug: "juegos-exterior" },
-          { nombre: "Juegos acuáticos", slug: "juegos-acuaticos" },
-          { nombre: "Juegos mesa", slug: "juegos-mesa" },
         ],
       },
     ],
