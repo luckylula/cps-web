@@ -14,18 +14,14 @@ import { convertProductsToClient } from '@/app/lib/productUtils';
 export const dynamic = 'force-dynamic';
 
 /**
- * En la BD (deportes): grupo = nivel 2 (Individual/Colectivos/Raqueta), subcategory = nivel 3 (Fitness/Fútbol/...).
- * La URL /deportes/individual/fitness tiene subcategorySlug=individual → nombre "Individual", grupoSlug=fitness → nombre "Fitness".
- * Por tanto para deportes: where.grupo = 'Individual', where.subcategory = 'Fitness'.
+ * En la BD (deportes): grupo = deporte (Fútbol, Fitness...), subcategory = Colectivos/Individual/Raqueta.
+ * URL /deportes/colectivos/futbol → where.grupo = 'Fútbol', where.subcategory = 'Colectivos'.
  */
 function getDbGrupoAndSubcategory(
-  categoriaSlug: string,
+  _categoriaSlug: string,
   subcategoryName: string | null,
   grupoName: string | null
 ): { dbGrupo: string | null; dbSubcategory: string | null } {
-  if (categoriaSlug === 'deportes' && subcategoryName && grupoName) {
-    return { dbGrupo: subcategoryName, dbSubcategory: grupoName };
-  }
   return { dbGrupo: grupoName, dbSubcategory: subcategoryName };
 }
 

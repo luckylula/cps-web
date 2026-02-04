@@ -4,6 +4,15 @@ import Image from 'next/image';
 // Grupos que usan video en lugar de imagen (slug -> nombre archivo video si difiere)
 const GROUPS_WITH_VIDEO: Record<string, string | true> = {
   'por-deporte-padel': 'pordeporte-padel', // video: pordeporte-padel.mp4
+  futbol: true,   // futbol.mp4
+  voleibol: true, // voleibol.mp4
+};
+
+// Grupos con imagen personalizada por subcategoría (subcategorySlug -> grupoSlug -> nombre archivo)
+const CUSTOM_GROUP_IMAGES: Record<string, Record<string, string>> = {
+  'estructuras-deportivas': {
+    varios: 'variosestructuras',
+  },
 };
 
 interface GroupCardProps {
@@ -21,7 +30,8 @@ export default function GroupCard({ grupo, categoriaSlug, subcategorySlug }: Gro
   const href = `/${categoriaSlug}/${subcategorySlug}/${grupo.slug}`;
   
   // Usar imagen o video local basado en el slug del grupo
-  const imageName = grupo.slug.replace(/-/g, '');
+  const customImage = CUSTOM_GROUP_IMAGES[subcategorySlug]?.[grupo.slug];
+  const imageName = customImage || grupo.slug.replace(/-/g, '');
   const videoFile = GROUPS_WITH_VIDEO[grupo.slug];
   const useVideo = !!videoFile;
   const mediaSrc = useVideo ? `/categorias/${videoFile === true ? imageName : videoFile}.mp4` : `/categorias/${imageName}.png`;

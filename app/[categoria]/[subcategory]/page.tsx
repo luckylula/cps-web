@@ -14,7 +14,7 @@ import { getSubcategoryNameFromSlug } from '@/app/lib/categoryTree';
 export const dynamic = 'force-dynamic';
 
 /**
- * Para deportes: en BD grupo = nivel 2 (Individual/Colectivos), subcategory = nivel 3 (Fitness/Fútbol).
+ * Para deportes: en BD grupo = deporte (Fútbol, Fitness...), subcategory = Colectivos/Individual/Raqueta.
  * Devuelve los valores correctos para filtrar en la BD.
  */
 function getDbGrupoAndSubcategoryForDeportes(
@@ -22,9 +22,7 @@ function getDbGrupoAndSubcategoryForDeportes(
   subcategoryName: string | null,
   grupoName: string | null
 ): { dbGrupo: string | null; dbSubcategory: string | null } {
-  if (categoriaSlug === 'deportes' && subcategoryName && grupoName) {
-    return { dbGrupo: subcategoryName, dbSubcategory: grupoName };
-  }
+  // En BD: grupo=Fútbol/Baloncesto, subcategory=Colectivos/Individual
   return { dbGrupo: grupoName, dbSubcategory: subcategoryName };
 }
 
@@ -151,16 +149,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const subcategoryName =
     getSubcategoryName(categoria, subcategory) || (await getSubcategoryNameFromSlug(categoria, subcategory));
 
-  // Para deportes, la "subcategoría" nav (Individual/Colectivos/Raqueta) en BD es grupo
+  // En BD deportes: subcategory=Colectivos/Individual/Raqueta, grupo=Fútbol/Fitness...
   const countWhere: any = {
     categoryId: categoria,
     published: true,
     visible_web: true,
     activo: true,
   };
-  if (categoria === 'deportes' && subcategoryName) {
-    countWhere.grupo = subcategoryName;
-  } else if (subcategoryName) {
+  if (subcategoryName) {
     countWhere.subcategory = subcategoryName;
   }
 
