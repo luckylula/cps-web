@@ -19,7 +19,8 @@ export async function POST(request: NextRequest) {
     const redsys = getRedsysAPI();
 
     const notification = redsys.processRestNotification(body);
-    const { order: redsysOrderId, response: responseCode } = notification;
+    const redsysOrderId = notification.Ds_Order;
+    const responseCode = notification.Ds_Response;
 
     if (!isResponseCodeOk(responseCode)) {
       console.error('[Redsys Notification] Payment failed for order', redsysOrderId, 'code:', responseCode);
