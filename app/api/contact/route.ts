@@ -25,6 +25,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Preparar datos para enviar al webhook
+    const isNoSendMode = process.env.CONTACT_TEST_MODE === 'true';
+    const testWebhookUrl = process.env.N8N_WEBHOOK_TEST_URL;
+    const prodWebhookUrl = process.env.N8N_WEBHOOK_URL;
     const messageData = {
       nombre,
       telefono: telefono || null,
@@ -33,10 +36,14 @@ export async function POST(request: NextRequest) {
       mensaje,
       fecha: new Date().toISOString(),
       origen: 'formulario-web',
+      ...(isNoSendMode && { _testMode: true }),
     };
 
-    // Enviar a webhook de N8N si está configurado
-    const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
+    // Webhook: prioridad test URL > prod URL; no enviar si CONTACT_TEST_MODE
+    const n8nWebhookUrl = !isNoSendMode
+      ? (testWebhookUrl || prodWebhookUrl)
+      : undefined;
+    const isTestWebhook = !!testWebhookUrl && !isNoSendMode;
     
     if (n8nWebhookUrl) {
       try {
@@ -62,12 +69,23 @@ export async function POST(request: NextRequest) {
         // Continuamos aunque falle el webhook
       }
     } else {
-      // Si no hay webhook configurado, solo logueamos (modo desarrollo)
-      console.log('Nuevo mensaje de contacto (sin webhook configurado):', messageData);
+      if (isNoSendMode) {
+        console.log('[CONTACT TEST MODE] Mensaje recibido (no enviado a webhook):', JSON.stringify(messageData, null, 2));
+      } else {
+        console.log('Nuevo mensaje de contacto (sin webhook configurado):', messageData);
+      }
     }
 
     return NextResponse.json(
-      { message: 'Mensaje enviado correctamente' },
+      {
+        message: isNoSendMode
+          ? 'Mensaje recibido en modo test (no enviado)'
+          : isTestWebhook
+            ? 'Mensaje enviado al webhook de prueba'
+            : 'Mensaje enviado correctamente',
+        ...(isNoSendMode && { testMode: true }),
+        ...(isTestWebhook && { testWebhook: true }),
+      },
       { status: 200 }
     );
   } catch (error) {

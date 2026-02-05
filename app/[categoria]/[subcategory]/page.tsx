@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import Navigation from '@/app/components/Navigation';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import GroupCard from '@/app/components/GroupCard';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
+import JuegosAlternativosFilter from '@/app/components/JuegosAlternativosFilter';
 import { getSubcategoryName, getCategoryName, getGrupoName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
 import { convertProductsToClient } from '@/app/lib/productUtils';
@@ -28,6 +30,7 @@ function getDbGrupoAndSubcategoryForDeportes(
 
 interface PageProps {
   params: Promise<{ categoria: string; subcategory: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const NAV_SLUGS = navigationStructure.map((c) => c.slug);
@@ -114,16 +117,27 @@ async function getGroupsForSubcategory(categoriaSlug: string, subcategorySlug: s
   return groupsWithData.filter(g => g.count > 0);
 }
 
-async function getProductsForSubcategory(categoriaSlug: string, subcategoryName: string) {
+// Mapeo tipo URL -> grupo en BD para Juegos alternativos
+const JUEGOS_ALTERNATIVOS_GRUPO_MAP: Record<string, string> = {
+  exterior: 'Juegos exterior',
+  mesa: 'Juegos mesa',
+  acuaticos: 'Juegos acuáticos',
+};
+
+async function getProductsForSubcategory(
+  categoriaSlug: string,
+  subcategoryName: string,
+  options?: { grupoFilter?: string }
+) {
   const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategoryForDeportes(
     categoriaSlug,
     subcategoryName,
     null
   );
-  const where = {
+  const where: Record<string, unknown> = {
     categoryId: categoriaSlug,
     subcategory: dbSubcategory || subcategoryName,
-    grupo: dbGrupo || undefined,
+    grupo: options?.grupoFilter ?? dbGrupo ?? undefined,
     published: true,
     visible_web: true,
     activo: true,
@@ -172,8 +186,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export default async function SubcategoryPage({ params }: PageProps) {
+export default async function SubcategoryPage({ params, searchParams }: PageProps) {
   const { categoria, subcategory } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
 
   const category = await getCategory(categoria);
   if (!category) {
@@ -185,9 +200,17 @@ export default async function SubcategoryPage({ params }: PageProps) {
     getSubcategoryName(categoria, subcategory) || (await getSubcategoryNameFromSlug(categoria, subcategory)) || subcategory;
 
   const groups = await getGroupsForSubcategory(categoria, subcategory);
+
+  // Para Juegos alternativos: filtro por tipo (exterior, mesa, acuáticos)
+  const isJuegosAlternativos = categoria === 'material-escolar' && subcategory === 'juegos-alternativos';
+  const tipoParam = Array.isArray(resolvedSearchParams.tipo) ? resolvedSearchParams.tipo[0] : resolvedSearchParams.tipo;
+  const grupoFilter = isJuegosAlternativos && tipoParam && JUEGOS_ALTERNATIVOS_GRUPO_MAP[tipoParam]
+    ? JUEGOS_ALTERNATIVOS_GRUPO_MAP[tipoParam]
+    : undefined;
+
   const productsForSubcategory =
     groups.length === 0
-      ? await getProductsForSubcategory(categoria, subcategoryName)
+      ? await getProductsForSubcategory(categoria, subcategoryName, grupoFilter ? { grupoFilter } : undefined)
       : [];
 
   return (
@@ -227,7 +250,14 @@ export default async function SubcategoryPage({ params }: PageProps) {
                 <p className="text-gray-600 text-lg">No hay grupos ni productos en esta subcategoría</p>
               </div>
             ) : (
-              <ProductsPageClient products={convertProductsToClient(productsForSubcategory)} />
+              <>
+                {isJuegosAlternativos && (
+                  <Suspense fallback={<div className="mb-6 h-12 bg-gray-100 rounded animate-pulse" />}>
+                    <JuegosAlternativosFilter />
+                  </Suspense>
+                )}
+                <ProductsPageClient products={convertProductsToClient(productsForSubcategory)} />
+              </>
             )
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

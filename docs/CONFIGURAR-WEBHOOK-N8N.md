@@ -27,13 +27,39 @@
      http://localhost:5678/webhook/contacto-cps
      ```
 
-## Paso 2: Configurar la Variable de Entorno
+## Paso 2: Configurar las Variables de Entorno
 
 Añade la URL del webhook a tu archivo `.env.local`:
 
 ```env
 N8N_WEBHOOK_URL=https://tu-n8n.com/webhook/contacto-cps
 ```
+
+### Webhook de prueba (para probar antes de producción)
+
+Para enviar los mensajes al webhook de **test** (no al de producción), usa:
+
+```env
+N8N_WEBHOOK_TEST_URL=https://n8n.lulamartinezperez.com/webhook-test/contacto-cps
+NEXT_PUBLIC_N8N_WEBHOOK_TEST=true
+```
+
+- `N8N_WEBHOOK_TEST_URL`: prioridad sobre `N8N_WEBHOOK_URL`; la API hace POST a esta URL de prueba
+- `NEXT_PUBLIC_N8N_WEBHOOK_TEST`: muestra un banner "Usando webhook de prueba" en el formulario
+
+Cuando tengas la URL de producción, configura `N8N_WEBHOOK_URL` y elimina estas variables.
+
+### Modo test (sin enviar nada)
+
+Para probar el formulario **sin enviar** datos a ningún webhook, añade:
+
+```env
+CONTACT_TEST_MODE=true
+NEXT_PUBLIC_CONTACT_TEST_MODE=true
+```
+
+- `CONTACT_TEST_MODE`: la API no hace POST a N8N (solo valida y responde OK)
+- `NEXT_PUBLIC_CONTACT_TEST_MODE`: muestra un banner "Modo test — Los mensajes no se envían al webhook"
 
 **Para producción (Vercel):**
 1. Ve a tu proyecto en Vercel

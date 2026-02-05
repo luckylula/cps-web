@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 
+const useTestWebhook = process.env.NEXT_PUBLIC_N8N_WEBHOOK_TEST === 'true';
+const isNoSendMode = process.env.NEXT_PUBLIC_CONTACT_TEST_MODE === 'true';
+
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -12,6 +15,7 @@ export default function ContactForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [lastResponseType, setLastResponseType] = useState<'normal' | 'testNoSend' | 'testWebhook'>('normal');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = () => {
@@ -69,7 +73,11 @@ export default function ContactForm() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        const type = data.testMode ? 'testNoSend' : data.testWebhook ? 'testWebhook' : 'normal';
+        setLastResponseType(type);
         setSubmitStatus('success');
+        setTimeout(() => setSubmitStatus('idle'), type !== 'normal' ? 8000 : 5000);
         setFormData({
           nombre: '',
           telefono: '',
@@ -77,8 +85,6 @@ export default function ContactForm() {
           asunto: '',
           mensaje: '',
         });
-        // Limpiar mensaje de éxito después de 5 segundos
-        setTimeout(() => setSubmitStatus('idle'), 5000);
       } else {
         setSubmitStatus('error');
       }
@@ -92,6 +98,16 @@ export default function ContactForm() {
 
   return (
     <div className="w-full">
+      {isNoSendMode && (
+        <div className="mb-4 px-3 py-2 bg-amber-500/90 text-black text-sm font-medium rounded">
+          Modo test — Los mensajes no se envían al webhook
+        </div>
+      )}
+      {useTestWebhook && !isNoSendMode && (
+        <div className="mb-4 px-3 py-2 bg-amber-500/90 text-black text-sm font-medium rounded">
+          Usando webhook de prueba — Los mensajes se envían al endpoint de test
+        </div>
+      )}
       <h3 className="text-base font-bold text-white mb-4 uppercase tracking-wide">
         ENVÍANOS TU MENSAJE
       </h3>
@@ -206,8 +222,12 @@ export default function ContactForm() {
 
         {/* Mensajes de estado */}
         {submitStatus === 'success' && (
-          <div className="bg-green-600 text-white px-3 py-2 text-sm rounded">
-            ¡Mensaje enviado correctamente! Te responderemos pronto.
+          <div className={`px-3 py-2 text-sm rounded ${lastResponseType !== 'normal' ? 'bg-amber-600 text-white' : 'bg-green-600 text-white'}`}>
+            {lastResponseType === 'testNoSend'
+              ? 'Modo test: mensaje recibido correctamente (no se ha enviado al webhook).'
+              : lastResponseType === 'testWebhook'
+                ? 'Enviado al webhook de prueba correctamente.'
+                : '¡Mensaje enviado correctamente! Te responderemos pronto.'}
           </div>
         )}
         {submitStatus === 'error' && (

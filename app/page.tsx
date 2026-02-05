@@ -128,12 +128,16 @@ export default function Home() {
               className="group bg-white overflow-hidden cursor-pointer"
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="/categorias/materialescolar.png"
-                  alt="Material escolar"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                <video
+                  src="/categorias/materialescolar.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                >
+                  Tu navegador no soporta el elemento de video.
+                </video>
               </div>
               <div className="pt-4">
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Material Escolar</h3>
@@ -149,12 +153,16 @@ export default function Home() {
               className="group bg-white overflow-hidden cursor-pointer"
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
-                <Image
-                  src="/categorias/deportes.png"
-                  alt="Deportes"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                <video
+                  src="/categorias/deportes.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                >
+                  Tu navegador no soporta el elemento de video.
+                </video>
               </div>
               <div className="pt-4">
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Deportes</h3>
