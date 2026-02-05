@@ -16,7 +16,7 @@ export default function Navigation() {
     >
       <div className="w-full px-4 md:px-6 py-4 md:py-5">
         <div className="flex items-center justify-between gap-4 md:gap-6 w-full">
-          {/* Logo y Nombre - Izquierda. Logo = archivo public/logo.png — más grande */}
+          {/* Logo - Izquierda */}
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
             <span className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 flex items-center justify-center bg-white">
               <Image
@@ -29,22 +29,22 @@ export default function Navigation() {
             </span>
           </Link>
           
-          {/* Menú de Navegación - Centro */}
-          <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 flex-1 justify-center text-base md:text-lg lg:text-xl font-medium">
-            {navigationStructure.map((categoria) => (
-              <li key={categoria.slug}>
-                <MultiLevelNav categoria={categoria} />
-              </li>
-            ))}
-          </ul>
-          
-          {/* Búsqueda, Favoritos y Carrito - Derecha */}
-          <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
-            <div className="hidden md:block">
-              <SearchBar />
+          {/* Menú, Búsqueda, Favoritos y Carrito - Todo alineado a la derecha */}
+          <div className="flex items-center gap-3 md:gap-4 lg:gap-6 flex-1 justify-end">
+            <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 text-base md:text-lg lg:text-xl font-medium">
+              {navigationStructure.map((categoria) => (
+                <li key={categoria.slug}>
+                  <MultiLevelNav categoria={categoria} />
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
+              <div className="hidden md:block">
+                <SearchBar />
+              </div>
+              <FavoritesButton />
+              <CartButton />
             </div>
-            <FavoritesButton />
-            <CartButton />
           </div>
         </div>
       </div>

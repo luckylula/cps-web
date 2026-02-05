@@ -85,14 +85,14 @@ export default function Home() {
       {/* Hero Carousel */}
       <ImageCarousel />
 
-      {/* Sección de Tarjetas de Categorías - Estilo Minimalista */}
+      {/* Sección de Tarjetas de Categorías - Estilo Minimalista - Alineado a la derecha */}
       <section className="py-16 md:py-24 px-4 md:px-6 bg-white">
-        <div className="max-w-[83%] mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-[83%] ml-auto mr-4 md:mr-6">
+          <div className="text-right mb-12">
             <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
               Nuestras Categorías
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-2xl ml-auto">
               Material deportivo de alta calidad para cada necesidad
             </p>
           </div>
@@ -202,14 +202,14 @@ export default function Home() {
 
       {/* Hero Section - Estilo Minimalista */}
       <section className="pt-16 pb-20 px-8 relative overflow-hidden bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center">
+        <div className="max-w-6xl ml-auto mr-8">
+          <div className="text-right">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 tracking-tight">
               Material Deportivo
               <br />
               <span className="font-normal">de Alta Calidad</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-10 font-light max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-600 mb-10 font-light max-w-2xl ml-auto leading-relaxed">
               Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
               instalaciones deportivas, piscinas y gimnasios en toda España.
             </p>
@@ -219,8 +219,8 @@ export default function Home() {
 
       {/* Material Escolar Section - Estilo Minimalista */}
       <section id="material-escolar" className="py-20 px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-7xl ml-auto mr-8">
+          <div className="text-right mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.escolar.title}
             </h2>
@@ -238,11 +238,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-end">
             {categories.escolar.items.map((item, index) => (
               <div
                 key={index}
-                className="text-center"
+                className="text-right"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -253,12 +253,12 @@ export default function Home() {
 
       {/* Deporte Individual Section - Estilo Minimalista */}
       <section id="deporte-individual" className="py-20 px-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-7xl ml-auto mr-8">
+          <div className="text-right mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.individual.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
               {categories.individual.description}
             </p>
           </div>
@@ -272,11 +272,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-end">
             {categories.individual.items.map((item, index) => (
               <div
                 key={index}
-                className="text-center"
+                className="text-right"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -287,12 +287,12 @@ export default function Home() {
 
       {/* Deportes Colectivos Section - Estilo Minimalista */}
       <section id="deportes-colectivos" className="py-20 px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-7xl ml-auto mr-8">
+          <div className="text-right mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.colectivo.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
               {categories.colectivo.description}
             </p>
           </div>
@@ -306,11 +306,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-end">
             {categories.colectivo.items.map((item, index) => (
               <div
                 key={index}
-                className="text-center"
+                className="text-right"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -321,12 +321,12 @@ export default function Home() {
 
       {/* Material Complementario Section - Estilo Minimalista */}
       <section id="material-complementario" className="py-20 px-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-7xl ml-auto mr-8">
+          <div className="text-right mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.complementario.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
               {categories.complementario.description}
             </p>
           </div>
@@ -340,11 +340,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-items-end">
             {categories.complementario.items.map((item, index) => (
               <div
                 key={index}
-                className="text-center"
+                className="text-right"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -355,12 +355,12 @@ export default function Home() {
 
       {/* Equipación Textil Section - Estilo Minimalista */}
       <section id="equipacion-textil" className="py-20 px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-7xl ml-auto mr-8">
+          <div className="text-right mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.textil.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
               {categories.textil.description}
             </p>
           </div>
