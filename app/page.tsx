@@ -99,7 +99,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1.5">
             {/* Tarjeta Instalaciones */}
             <Link
-              href="/categoria/instalaciones"
+              href="/instalaciones"
               className="group bg-white overflow-hidden cursor-pointer"
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
@@ -145,7 +145,7 @@ export default function Home() {
 
             {/* Tarjeta Deportes */}
             <Link
-              href="/categoria/deportes"
+              href="/deportes"
               className="group bg-white overflow-hidden cursor-pointer"
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
@@ -166,7 +166,7 @@ export default function Home() {
 
             {/* Tarjeta Textil */}
             <Link
-              href="/categoria/textil"
+              href="/textil"
               className="group bg-white overflow-hidden cursor-pointer"
             >
               <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">

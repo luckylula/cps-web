@@ -82,8 +82,14 @@ export const subcategorySlugToName: Record<string, Record<string, string>> = {
   },
   'material-escolar': {
     psicomotricidad: 'Psicomotricidad',
-    'iniciacion-deportiva': 'Iniciación Deportiva',
-    juegos: 'Juegos',
+    'figuras-espuma': 'Figuras espuma',
+    'balones-escolares': 'Balones de uso escolar',
+    'juegos-alternativos': 'Juegos alternativos',
+    malabares: 'Malabares',
+    'educacion-infantil': 'Juegos en Educación infantil',
+    'material-foam': 'Material foam',
+    colchonetas: 'Colchonetas',
+    'educacion-musical': 'Educación musical',
   },
 };
 

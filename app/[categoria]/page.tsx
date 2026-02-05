@@ -199,11 +199,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  * Subcategorías para la UI: fuente de verdad desde Product (getCategoryTree).
  * Orden según navigationStructure para mantener el orden deseado de las tarjetas.
  * Si el árbol no tiene subcategorías para esta categoría, fallback a nav estático + count.
+ * Material Escolar: usar siempre las 9 subcategorías del nav.
  */
 async function getSubcategoriesForCategory(categoriaSlug: string): Promise<{ nombre: string; slug: string }[]> {
+  const navCategoria = navigationStructure.find((c) => c.slug === categoriaSlug);
+
+  // Material Escolar: siempre las 9 subcategorías definidas en nav
+  if (categoriaSlug === 'material-escolar' && navCategoria?.subcategorias?.length) {
+    return navCategoria.subcategorias.map((s) => ({ nombre: s.nombre, slug: s.slug }));
+  }
+
+  // Textil: solo Ropa Casual, Calzado, Ropa Deportiva (no Accesorios/Complementos)
+  if (categoriaSlug === 'textil' && navCategoria?.subcategorias?.length) {
+    return navCategoria.subcategorias.map((s) => ({ nombre: s.nombre, slug: s.slug }));
+  }
+
+  // Deportes: solo Colectivos, Individual, Raqueta (Fitness está dentro de Individual)
+  if (categoriaSlug === 'deportes' && navCategoria?.subcategorias?.length) {
+    return navCategoria.subcategorias.map((s) => ({ nombre: s.nombre, slug: s.slug }));
+  }
+
   const tree = await getCategoryTree(categoriaSlug);
   const categoryNode = tree.find((n) => n.categoryId === categoriaSlug);
-  const navCategoria = navigationStructure.find((c) => c.slug === categoriaSlug);
   if (categoryNode && categoryNode.subcategories.length > 0) {
     const fromTree = categoryNode.subcategories.map((s) => ({ nombre: s.name, slug: s.slug }));
     // Ordenar según el orden definido en navigationStructure
