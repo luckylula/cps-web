@@ -241,7 +241,7 @@ export default function MaterialComplementarioPage() {
       {/* Footer */}
       <footer className="py-8 px-8 border-t border-gray-200">
         <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
-          <p>© 2024 Control Play Sports S.L. Todos los derechos reservados.</p>
+          <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

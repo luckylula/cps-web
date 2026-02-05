@@ -19,7 +19,7 @@ export default function Home() {
         "Figuras espuma",
         "Balones de uso escolar",
         "Juegos alternativos",
-        "Malabares",
+        "Sport initiation",
         "Juegos en Educación infantil",
         "Material foam",
         "Colchonetas",
@@ -85,14 +85,14 @@ export default function Home() {
       {/* Hero Carousel */}
       <ImageCarousel />
 
-      {/* Sección de Tarjetas de Categorías - Estilo Minimalista - Alineado a la derecha */}
+      {/* Sección de Tarjetas de Categorías - Estilo Minimalista */}
       <section className="py-16 md:py-24 px-4 md:px-6 bg-white">
-        <div className="max-w-[83%] ml-auto mr-4 md:mr-6">
-          <div className="text-right mb-12">
+        <div className="max-w-[83%] mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
               Nuestras Categorías
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl ml-auto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Material deportivo de alta calidad para cada necesidad
             </p>
           </div>
@@ -202,14 +202,14 @@ export default function Home() {
 
       {/* Hero Section - Estilo Minimalista */}
       <section className="pt-16 pb-20 px-8 relative overflow-hidden bg-white">
-        <div className="max-w-6xl ml-auto mr-8">
-          <div className="text-right">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 tracking-tight">
               Material Deportivo
               <br />
               <span className="font-normal">de Alta Calidad</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-10 font-light max-w-2xl ml-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-600 mb-10 font-light max-w-2xl mx-auto leading-relaxed">
               Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
               instalaciones deportivas, piscinas y gimnasios en toda España.
             </p>
@@ -219,8 +219,8 @@ export default function Home() {
 
       {/* Material Escolar Section - Estilo Minimalista */}
       <section id="material-escolar" className="py-20 px-8 bg-white">
-        <div className="max-w-7xl ml-auto mr-8">
-          <div className="text-right mb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.escolar.title}
             </h2>
@@ -238,11 +238,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-end">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {categories.escolar.items.map((item, index) => (
               <div
                 key={index}
-                className="text-right"
+                className="text-center"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -253,12 +253,12 @@ export default function Home() {
 
       {/* Deporte Individual Section - Estilo Minimalista */}
       <section id="deporte-individual" className="py-20 px-8 bg-gray-50">
-        <div className="max-w-7xl ml-auto mr-8">
-          <div className="text-right mb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.individual.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.individual.description}
             </p>
           </div>
@@ -272,11 +272,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-end">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {categories.individual.items.map((item, index) => (
               <div
                 key={index}
-                className="text-right"
+                className="text-center"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -287,12 +287,12 @@ export default function Home() {
 
       {/* Deportes Colectivos Section - Estilo Minimalista */}
       <section id="deportes-colectivos" className="py-20 px-8 bg-white">
-        <div className="max-w-7xl ml-auto mr-8">
-          <div className="text-right mb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.colectivo.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.colectivo.description}
             </p>
           </div>
@@ -306,11 +306,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-end">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.colectivo.items.map((item, index) => (
               <div
                 key={index}
-                className="text-right"
+                className="text-center"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -321,12 +321,12 @@ export default function Home() {
 
       {/* Material Complementario Section - Estilo Minimalista */}
       <section id="material-complementario" className="py-20 px-8 bg-gray-50">
-        <div className="max-w-7xl ml-auto mr-8">
-          <div className="text-right mb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.complementario.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.complementario.description}
             </p>
           </div>
@@ -340,11 +340,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-items-end">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {categories.complementario.items.map((item, index) => (
               <div
                 key={index}
-                className="text-right"
+                className="text-center"
               >
                 <h3 className="text-base font-medium text-gray-900">{item}</h3>
               </div>
@@ -355,12 +355,12 @@ export default function Home() {
 
       {/* Equipación Textil Section - Estilo Minimalista */}
       <section id="equipacion-textil" className="py-20 px-8 bg-white">
-        <div className="max-w-7xl ml-auto mr-8">
-          <div className="text-right mb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
               {categories.textil.title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl ml-auto font-light">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.textil.description}
             </p>
           </div>
@@ -431,7 +431,7 @@ export default function Home() {
               <h3 className="text-base font-medium mb-3">Información de contacto</h3>
               <div className="space-y-2 text-gray-300 text-sm">
                 <p className="font-light">
-                  <strong className="text-white">Control Play Sports S.L.</strong>
+                  <strong className="text-white">Control Play - Material Deportivo</strong>
                 </p>
                 <p className="font-light">
                   C/ Sant Miquel, 63<br />
@@ -465,7 +465,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-8 px-8 border-t border-gray-200">
         <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
-          <p>© 2024 Control Play Sports S.L. Todos los derechos reservados.</p>
+          <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

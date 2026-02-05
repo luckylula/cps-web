@@ -1,22 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import SafeImage from "@/app/components/SafeImage";
 import { useCart } from "@/app/context/CartContext";
 import CartButton from "@/app/components/CartButton";
 import Navigation from "@/app/components/Navigation";
 import { useRouter } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
-
-// Validar y inicializar Stripe
-const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-if (!stripePublicKey) {
-  console.error('⚠️ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY no está configurada');
-}
-const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
 interface FormData {
   // Información Personal
@@ -51,53 +42,10 @@ interface FormErrors {
   nifCif?: string;
 }
 
-// Componente interno para mostrar el formulario de pago de Stripe
-// Este componente provee acceso a stripe y elements a través de un callback
-function StripePaymentForm({
-  onReady
-}: {
-  onReady: (stripe: any, elements: any) => void
-}) {
-  const stripe = useStripe();
-  const elements = useElements();
-
-  // Notificar al padre cuando stripe y elements estén listos
-  useEffect(() => {
-    if (stripe && elements) {
-      onReady(stripe, elements);
-    }
-  }, [stripe, elements, onReady]);
-
-  return (
-    <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-      <h3 className="text-sm font-medium text-gray-900 mb-4">
-        Información de pago
-      </h3>
-      <div className="p-4 bg-white border border-gray-300 rounded-lg">
-        <PaymentElement
-          options={{
-            layout: 'tabs',
-            fields: {
-              billingDetails: {
-                email: 'auto',
-              }
-            }
-          }}
-        />
-      </div>
-      <p className="text-xs text-gray-500 mt-3">
-        🔒 Tu información de pago está protegida y encriptada
-      </p>
-    </div>
-  );
-}
-
 // Componente principal del checkout que maneja toda la lógica
 function CheckoutForm() {
   const router = useRouter();
   const { items, getTotalPrice, getTotalItems, clearCart } = useCart();
-  const [stripeInstance, setStripeInstance] = useState<any>(null);
-  const [elementsInstance, setElementsInstance] = useState<any>(null);
   const [formData, setFormData] = useState<FormData>({
     // Información Personal
     nombre: "",
@@ -114,7 +62,7 @@ function CheckoutForm() {
     provincia: "",
     // Opciones
     metodoEntrega: "estandar",
-    paymentMethod: "stripe",
+    paymentMethod: "redsys",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,14 +70,7 @@ function CheckoutForm() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null);
   const [couponError, setCouponError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [stripeError, setStripeError] = useState("");
-
-  // Callback para recibir las instancias de Stripe y Elements
-  const handleStripeReady = useCallback((stripe: any, elements: any) => {
-    setStripeInstance(stripe);
-    setElementsInstance(elements);
-  }, []);
+  const [redsysError, setRedsysError] = useState("");
 
   // Calcular totales
   const subtotal = getTotalPrice();
@@ -140,66 +81,6 @@ function CheckoutForm() {
     ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
     : 0;
   const finalTotal = subtotalWithIva + shippingCost - discountAmount;
-
-  // Crear PaymentIntent cuando se selecciona Stripe y hay productos
-  useEffect(() => {
-    // Si cambia el método de pago a no-Stripe, limpiar
-    if (formData.paymentMethod !== "stripe") {
-      setClientSecret(null);
-      setStripeError("");
-      return;
-    }
-
-    // Validar que hay productos y el total es mayor a 0
-    if (formData.paymentMethod === "stripe" && items.length > 0 && finalTotal > 0) {
-      const createPaymentIntent = async () => {
-        try {
-          console.log('[Checkout] Creando PaymentIntent con amount:', finalTotal);
-          
-          const response = await fetch('/api/checkout/create-intent', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              amount: finalTotal,
-              currency: 'eur',
-              email: formData.email || undefined,
-            }),
-          });
-
-          const data = await response.json();
-          
-          if (!response.ok) {
-            console.error('[Checkout] Error en la respuesta:', data);
-            setStripeError(data.error || 'Error al crear el intent de pago');
-            return;
-          }
-
-          if (data.clientSecret) {
-            console.log('[Checkout] PaymentIntent creado exitosamente');
-            setClientSecret(data.clientSecret);
-            setStripeError("");
-          } else if (data.error) {
-            console.error('[Checkout] Error del servidor:', data.error);
-            setStripeError(data.error);
-          }
-        } catch (error: any) {
-          console.error('[Checkout] Error creating PaymentIntent:', error);
-          setStripeError(error.message || 'Error al inicializar el sistema de pago');
-        }
-      };
-
-      // Siempre crear nuevo PaymentIntent cuando cambia el total o el email
-      createPaymentIntent();
-    } else if (formData.paymentMethod === "stripe" && (items.length === 0 || finalTotal <= 0)) {
-      // Si el carrito está vacío o el total es 0, no crear PaymentIntent
-      setClientSecret(null);
-      if (finalTotal <= 0) {
-        setStripeError("El total debe ser mayor a 0 para procesar el pago");
-      }
-    }
-  }, [formData.paymentMethod, finalTotal, items.length, formData.email]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -348,54 +229,73 @@ function CheckoutForm() {
     }
 
     setIsSubmitting(true);
-    setStripeError("");
+    setRedsysError("");
 
     try {
-      // Si el método de pago es Stripe, procesar el pago primero
-      if (formData.paymentMethod === "stripe") {
-        if (!stripeInstance || !elementsInstance) {
-          alert("El sistema de pago no está listo. Por favor, recarga la página.");
-          setIsSubmitting(false);
-          return;
-        }
-
-        console.log('[Checkout] Procesando pago con Stripe...');
-
-        // Validar los campos del formulario de pago
-        const { error: submitError } = await elementsInstance.submit();
-        if (submitError) {
-          console.error('[Checkout] Error al validar el formulario de pago:', submitError);
-          setStripeError(submitError.message || 'Error al validar los datos del pago');
-          setIsSubmitting(false);
-          return;
-        }
-
-        // Confirmar el pago
-        const { error, paymentIntent } = await stripeInstance.confirmPayment({
-          elements: elementsInstance,
-          confirmParams: {
-            return_url: `${window.location.origin}/carrito/checkout`,
+      // Si el método de pago es Redsys, crear pedido y redirigir a la pasarela
+      if (formData.paymentMethod === "redsys") {
+        const orderData = {
+          customer: {
+            nombre: formData.nombre.trim(),
+            apellidos: formData.apellidos.trim(),
+            nifCif: formData.nifCif.trim() || undefined,
+            direccion: formData.direccion.trim(),
+            piso: formData.piso.trim() || undefined,
+            codigoPostal: formData.codigoPostal.trim(),
+            ciudad: formData.ciudad.trim(),
+            provincia: formData.provincia.trim(),
+            nombreCentro: formData.nombreCentro.trim() || undefined,
+            email: formData.email.trim(),
+            telefono: formData.telefono.trim(),
+            metodoEntrega: formData.metodoEntrega,
           },
-          redirect: 'if_required',
+          cart: {
+            items: items.map((item) => ({
+              id: item.id,
+              productId: item.productId,
+              variantId: item.variantId,
+              name: item.name,
+              slug: item.slug,
+              price: item.price,
+              quantity: item.quantity,
+            })),
+            totalPrice: finalTotal,
+          },
+          coupon: appliedCoupon ? { code: appliedCoupon.code, discountAmount: discountAmount } : undefined,
+        };
+
+        const res = await fetch('/api/checkout/redsys', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData),
         });
 
-        if (error) {
-          console.error('[Checkout] Error al procesar el pago:', error);
-          setStripeError(error.message || 'Error al procesar el pago');
+        const data = await res.json();
+        if (!res.ok) {
+          setRedsysError(data.error || 'Error al iniciar el pago');
           setIsSubmitting(false);
           return;
         }
 
-        if (!paymentIntent || paymentIntent.status !== 'succeeded') {
-          console.error('[Checkout] Pago no completado. Estado:', paymentIntent?.status);
-          setStripeError('El pago no se completó correctamente');
-          setIsSubmitting(false);
-          return;
-        }
+        clearCart();
 
-        console.log('[Checkout] Pago procesado exitosamente:', paymentIntent.id);
+        // Crear formulario oculto y redirigir a Redsys
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = data.form.formAction;
+        Object.entries(data.form.formParams).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = String(value);
+          form.appendChild(input);
+        });
+        document.body.appendChild(form);
+        form.submit();
+        return;
       }
 
+      // Transferencia: crear pedido vía /api/orders
       // Preparar datos del pedido (los totales ya están calculados arriba)
       const orderData = {
         customer: {
@@ -944,19 +844,19 @@ function CheckoutForm() {
                       <input
                         type="radio"
                         name="paymentMethod"
-                        value="stripe"
-                        checked={formData.paymentMethod === "stripe"}
+                        value="redsys"
+                        checked={formData.paymentMethod === "redsys"}
                         onChange={handleInputChange}
                         className="mt-1 mr-3 w-4 h-4 text-orange-500 focus:ring-orange-500"
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-gray-900 group-hover:text-orange-600">
-                            Tarjeta / Apple Pay / Google Pay
+                            Tarjeta de crédito / débito
                           </span>
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
-                          Pago seguro con Stripe
+                          Pago seguro con Redsys (BBVA)
                         </p>
                       </div>
                     </label>
@@ -981,76 +881,16 @@ function CheckoutForm() {
                     </label>
                   </div>
 
-                  {/* Stripe Elements Container */}
-                  {formData.paymentMethod === "stripe" && !stripePublicKey && (
-                    <div className="mt-6 p-6 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm text-red-800 text-center">
-                        ⚠️ Error: Sistema de pago no configurado correctamente. Por favor, contacta con soporte.
-                      </p>
-                    </div>
-                  )}
-                  {formData.paymentMethod === "stripe" && stripePublicKey && clientSecret && finalTotal > 0 && stripePromise && (
-                    <Elements
-                      key={clientSecret}
-                      stripe={stripePromise}
-                      options={{
-                        clientSecret,
-                        appearance: {
-                          theme: 'stripe',
-                        },
-                      }}
-                    >
-                      <StripePaymentForm onReady={handleStripeReady} />
-                    </Elements>
-                  )}
-                  {formData.paymentMethod === "stripe" && stripeError && (
-                    <div className="mt-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm text-red-800">
-                        ⚠️ {stripeError}
-                      </p>
-                    </div>
-                  )}
-                  {formData.paymentMethod === "stripe" && stripePublicKey && !clientSecret && finalTotal > 0 && !stripeError && (
+                  {formData.paymentMethod === "redsys" && (
                     <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                      <div className="flex items-center justify-center gap-3 py-4">
-                        <svg
-                          className="animate-spin h-5 w-5 text-gray-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <p className="text-sm text-gray-500">
-                          Cargando formulario de pago...
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {formData.paymentMethod === "stripe" && stripePublicKey && stripeError && (
-                    <div className="mt-6 p-6 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm text-red-800 text-center">
-                        ⚠️ {stripeError}
+                      <p className="text-sm text-gray-600">
+                        Serás redirigido a la pasarela de pago segura de Redsys para introducir los datos de tu tarjeta.
                       </p>
                     </div>
                   )}
-                  {formData.paymentMethod === "stripe" && finalTotal <= 0 && (
-                    <div className="mt-6 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm text-yellow-800 text-center">
-                        ⚠️ El total debe ser mayor a 0 para procesar el pago con tarjeta
-                      </p>
+                  {formData.paymentMethod === "redsys" && redsysError && (
+                    <div className="mt-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-800">⚠️ {redsysError}</p>
                     </div>
                   )}
 
@@ -1123,7 +963,7 @@ function CheckoutForm() {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        {formData.paymentMethod === "stripe" ? "Procesando pago..." : "Procesando..."}
+                        {formData.paymentMethod === "redsys" ? "Redirigiendo al pago..." : "Procesando..."}
                       </>
                     ) : (
                       "Confirmar pedido"
