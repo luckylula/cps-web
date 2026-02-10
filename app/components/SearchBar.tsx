@@ -14,7 +14,11 @@ interface Product {
   categoryId: string;
 }
 
-export default function SearchBar() {
+interface SearchBarProps {
+  compact?: boolean;
+}
+
+export default function SearchBar({ compact = false }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +104,7 @@ export default function SearchBar() {
   };
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-md">
+    <div ref={searchRef} className={`relative w-full ${compact ? 'max-w-[160px] md:max-w-[180px]' : 'max-w-md'}`}>
       {/* Search Input */}
       <div className="relative">
         <input
@@ -112,11 +116,11 @@ export default function SearchBar() {
             if (results.length > 0) setShowResults(true);
           }}
           placeholder="Buscar artículos..."
-          className="w-full px-4 py-2 pl-10 pr-4 bg-gray-50 border border-gray-300 rounded-full text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
+          className={`w-full bg-gray-50 border border-gray-300 rounded-full text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all ${compact ? 'px-3 py-1.5 pl-8 pr-3 text-sm' : 'px-4 py-2 pl-10 pr-4'}`}
         />
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+        <div className={`absolute top-1/2 transform -translate-y-1/2 text-gray-400 ${compact ? 'left-2.5' : 'left-3'}`}>
           <svg
-            className="w-5 h-5 text-gray-400"
+            className={compact ? 'w-4 h-4' : 'w-5 h-5'}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

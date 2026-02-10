@@ -86,10 +86,10 @@ export default function Home() {
       <ImageCarousel />
 
       {/* Sección de Tarjetas de Categorías - Estilo Minimalista */}
-      <section className="py-16 md:py-24 px-4 md:px-6 bg-white">
+      <section className="py-10 md:py-14 px-4 md:px-6 bg-white">
         <div className="max-w-[83%] mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-tight">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-3 tracking-tight">
               Nuestras Categorías
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -114,7 +114,7 @@ export default function Home() {
                   Tu navegador no soporta el elemento de video.
                 </video>
               </div>
-              <div className="pt-4">
+              <div className="pt-3">
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Instalaciones</h3>
                 <p className="text-gray-600 text-sm">
                   Equipamiento para instalaciones deportivas
@@ -139,7 +139,7 @@ export default function Home() {
                   Tu navegador no soporta el elemento de video.
                 </video>
               </div>
-              <div className="pt-4">
+              <div className="pt-3">
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Material Escolar</h3>
                 <p className="text-gray-600 text-sm">
                   Material deportivo escolar
@@ -164,7 +164,7 @@ export default function Home() {
                   Tu navegador no soporta el elemento de video.
                 </video>
               </div>
-              <div className="pt-4">
+              <div className="pt-3">
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Deportes</h3>
                 <p className="text-gray-600 text-sm">
                   Material y equipamiento deportivo
@@ -189,7 +189,7 @@ export default function Home() {
                   Tu navegador no soporta el elemento de video.
                 </video>
               </div>
-              <div className="pt-4">
+              <div className="pt-3">
                 <h3 className="text-gray-900 font-medium text-lg mb-1">Textil</h3>
                 <p className="text-gray-600 text-sm">
                   Ropa y calzado deportivo
@@ -201,16 +201,16 @@ export default function Home() {
       </section>
 
       {/* Hero Section - Estilo Minimalista */}
-      <section className="pt-16 pb-20 px-8 relative overflow-hidden bg-white">
+      <section className="pt-10 pb-12 px-8 relative overflow-hidden bg-white">
         <div className="max-w-6xl mx-auto">
           {/* Título arriba de todo */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-10 md:mb-12 tracking-tight text-center">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 md:mb-8 tracking-tight text-center">
             Material Deportivo
             <br />
             <span className="font-normal">de Alta Calidad</span>
           </h1>
           {/* Imagen izquierda | Párrafo | Imagen derecha */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
             {/* Imagen izquierda */}
             <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-32 lg:h-40 overflow-hidden">
               <Image
@@ -238,7 +238,7 @@ export default function Home() {
             </div>
           </div>
           {/* Imágenes en móvil (debajo del párrafo) */}
-          <div className="flex md:hidden justify-center gap-6 mt-8">
+          <div className="flex md:hidden justify-center gap-6 mt-6">
             <div className="w-48 h-24 overflow-hidden">
               <Image
                 src="/categorias/material1.png"
@@ -262,17 +262,17 @@ export default function Home() {
       </section>
 
       {/* Material Escolar Section - Estilo Minimalista */}
-      <section id="material-escolar" className="py-20 px-8 bg-white">
+      <section id="material-escolar" className="py-12 md:py-14 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
               {categories.escolar.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.escolar.description}
             </p>
           </div>
-          <div className="mb-12 overflow-hidden">
+          <div className="mb-8 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="/categorias/materialescolar1.png"
@@ -282,7 +282,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {categories.escolar.items.map((item, index) => (
               <div
                 key={index}
@@ -296,17 +296,17 @@ export default function Home() {
       </section>
 
       {/* Deporte Individual Section - Estilo Minimalista */}
-      <section id="deporte-individual" className="py-20 px-8 bg-gray-50">
+      <section id="deporte-individual" className="py-12 md:py-14 px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
               {categories.individual.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.individual.description}
             </p>
           </div>
-          <div className="mb-12 overflow-hidden">
+          <div className="mb-8 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="/categorias/deporteindividual.png"
@@ -316,7 +316,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {categories.individual.items.map((item, index) => (
               <div
                 key={index}
@@ -330,17 +330,17 @@ export default function Home() {
       </section>
 
       {/* Deportes Colectivos Section - Estilo Minimalista */}
-      <section id="deportes-colectivos" className="py-20 px-8 bg-white">
+      <section id="deportes-colectivos" className="py-12 md:py-14 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
               {categories.colectivo.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.colectivo.description}
             </p>
           </div>
-          <div className="mb-12 overflow-hidden">
+          <div className="mb-8 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="/categorias/deportescolectivos.png"
@@ -350,7 +350,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {categories.colectivo.items.map((item, index) => (
               <div
                 key={index}
@@ -364,17 +364,17 @@ export default function Home() {
       </section>
 
       {/* Material Complementario Section - Estilo Minimalista */}
-      <section id="material-complementario" className="py-20 px-8 bg-gray-50">
+      <section id="material-complementario" className="py-12 md:py-14 px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
               {categories.complementario.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
               {categories.complementario.description}
             </p>
           </div>
-          <div className="mb-12 overflow-hidden">
+          <div className="mb-8 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
               <Image
                 src="/categorias/materialcomplementario.png"
@@ -384,7 +384,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {categories.complementario.items.map((item, index) => (
               <div
                 key={index}
@@ -398,10 +398,10 @@ export default function Home() {
       </section>
 
       {/* Equipación Textil Section - Estilo Minimalista */}
-      <section id="equipacion-textil" className="py-20 px-8 bg-white">
+      <section id="equipacion-textil" className="py-12 md:py-14 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
               {categories.textil.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
@@ -422,13 +422,13 @@ export default function Home() {
       </section>
 
       {/* About Section - ¿Quiénes somos? */}
-      <section className="py-20 px-8 bg-gray-50">
+      <section className="py-12 md:py-14 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-10 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 tracking-tight">
             ¿Quiénes somos?
           </h2>
-          <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-start">
-            <div className="text-gray-600 font-light leading-relaxed space-y-6">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
+            <div className="text-gray-600 font-light leading-relaxed space-y-4">
               <p className="text-lg">
                 En Control Play somos, ante todo, amantes del deporte. Vivimos cada proyecto con la misma pasión con la que se practica en la pista o en el campo, y esa implicación se refleja en cada solución que ofrecemos.
               </p>
@@ -459,9 +459,9 @@ export default function Home() {
       </section>
 
       {/* Contact Section - Estilo Minimalista */}
-      <section id="contacto" className="py-10 px-6 bg-black text-white">
+      <section id="contacto" className="py-8 px-6 bg-black text-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-6">
+          <div className="text-center mb-5">
             <h2 className="text-2xl md:text-3xl font-light mb-2 tracking-tight">
               Contacto
             </h2>
@@ -469,7 +469,7 @@ export default function Home() {
               ¿Tienes preguntas? Estamos aquí para ayudarte.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 items-start">
             {/* Bloque izquierdo: Contacto - foto (no muy grande) y debajo el texto */}
             <div className="space-y-4">
               <div className="relative w-full max-w-[360px] aspect-[16/10] rounded-lg overflow-hidden bg-gray-800">
@@ -514,7 +514,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-8 border-t border-gray-200">
+      <footer className="py-6 px-8 border-t border-gray-200">
         <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
           <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
         </div>
