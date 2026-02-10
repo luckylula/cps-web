@@ -1,40 +1,58 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 
 interface Slide {
   title: string;
   subtitle: string;
-  image: string;
+  video: string;
 }
 
 const slides: Slide[] = [
   {
     title: "Equipamiento Deportivo de Alto Rendimiento",
     subtitle: "Innovación y seguridad certificada para centros educativos, clubes y colectivos.",
-    image: "/categorias/Gemini_Generated_Image_brwh6gbrwh6gbrwh.png",
+    video: "/categorias/videocarrusel1.mp4",
   },
   {
     title: "Asesoramiento Técnico Especializado",
     subtitle: "No solo vendemos material, diseñamos soluciones integrales para tus espacios deportivos.",
-    image: "/categorias/Gemini_Generated_Image_c5e769c5e769c5e7.png",
+    video: "/categorias/videocarrusel2.mp4",
   },
   {
     title: "Tu Socio Estratégico en el Deporte",
     subtitle: "Explora nuestro catálogo. Material deportivo para cada espacio y cada nivel",
-    image: "/categorias/Gemini_Generated_Image_ca3eqjca3eqjca3e.png",
+    video: "/categorias/videocarrusel3.mp4",
   },
   {
     title: "Soluciones Deportivas Profesionales",
     subtitle: "Equipamos espacios deportivos donde la calidad, la seguridad y el rendimiento van de la mano.",
-    image: "/categorias/Gemini_Generated_Image_d1coetd1coetd1co.png",
+    video: "/categorias/videocarrusel4.mp4",
+  },
+  {
+    title: "Material Deportivo de Calidad",
+    subtitle: "Todo lo que necesitas para tu centro deportivo, colegio o instalación.",
+    video: "/categorias/videocarrusel5.mp4",
   },
 ];
 
 export default function ImageCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    videoRefs.current.forEach((video, i) => {
+      if (video) {
+        if (i === currentIndex) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+          video.currentTime = 0;
+        }
+      }
+    });
+  }, [currentIndex]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,16 +83,16 @@ export default function ImageCarousel() {
             index === currentIndex ? "opacity-100" : "opacity-0"
           }`}
         >
-          {/* Imagen con efecto Ken Burns */}
+          {/* Video de fondo */}
           <div className="absolute inset-0">
-            <Image
-              src={slide.image}
-              alt={slide.title}
-              fill
-              className={`object-cover transition-transform duration-[10000ms] ease-linear ${
-                index === currentIndex ? "scale-110" : "scale-100"
-              }`}
-              priority={index === 0}
+            <video
+              ref={(el) => { videoRefs.current[index] = el; }}
+              src={slide.video}
+              className="absolute inset-0 w-full h-full object-cover"
+              muted
+              loop
+              playsInline
+              preload="auto"
             />
           </div>
           
