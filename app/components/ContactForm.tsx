@@ -129,7 +129,7 @@ export default function ContactForm() {
             placeholder=""
           />
           {errors.nombre && (
-            <span className="absolute right-2 top-[34px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[28px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.nombre}
             </span>
           )}
@@ -168,7 +168,7 @@ export default function ContactForm() {
             placeholder=""
           />
           {errors.email && (
-            <span className="absolute right-2 top-[34px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[28px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.email}
             </span>
           )}
@@ -191,7 +191,7 @@ export default function ContactForm() {
             placeholder=""
           />
           {errors.asunto && (
-            <span className="absolute right-2 top-[34px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[28px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.asunto}
             </span>
           )}
@@ -214,7 +214,7 @@ export default function ContactForm() {
             placeholder=""
           />
           {errors.mensaje && (
-            <span className="absolute right-2 top-[88px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
+            <span className="absolute right-2 top-[72px] text-xs text-gray-400 bg-white px-2 py-1 rounded shadow">
               {errors.mensaje}
             </span>
           )}
