@@ -203,16 +203,60 @@ export default function Home() {
       {/* Hero Section - Estilo Minimalista */}
       <section className="pt-16 pb-20 px-8 relative overflow-hidden bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 tracking-tight">
-              Material Deportivo
-              <br />
-              <span className="font-normal">de Alta Calidad</span>
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-10 font-light max-w-2xl mx-auto leading-relaxed">
+          {/* Título arriba de todo */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-10 md:mb-12 tracking-tight text-center">
+            Material Deportivo
+            <br />
+            <span className="font-normal">de Alta Calidad</span>
+          </h1>
+          {/* Imagen izquierda | Párrafo | Imagen derecha */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+            {/* Imagen izquierda */}
+            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-32 lg:h-40 overflow-hidden">
+              <Image
+                src="/categorias/material1.png"
+                alt="Material deportivo"
+                width={320}
+                height={160}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Párrafo entre las dos imágenes */}
+            <p className="text-lg md:text-xl text-gray-600 font-light max-w-2xl leading-relaxed text-center flex-1 order-first md:order-none">
               Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
               instalaciones deportivas, piscinas y gimnasios en toda España.
             </p>
+            {/* Imagen derecha */}
+            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-32 lg:h-40 overflow-hidden">
+              <Image
+                src="/categorias/material2.jpg"
+                alt="Material deportivo"
+                width={320}
+                height={160}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+          {/* Imágenes en móvil (debajo del párrafo) */}
+          <div className="flex md:hidden justify-center gap-6 mt-8">
+            <div className="w-48 h-24 overflow-hidden">
+              <Image
+                src="/categorias/material1.png"
+                alt="Material deportivo"
+                width={192}
+                height={96}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="w-48 h-24 overflow-hidden">
+              <Image
+                src="/categorias/material2.jpg"
+                alt="Material deportivo"
+                width={192}
+                height={96}
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
