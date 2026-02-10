@@ -85,7 +85,7 @@ export const subcategorySlugToName: Record<string, Record<string, string>> = {
     'figuras-espuma': 'Figuras espuma',
     'balones-escolares': 'Balones de uso escolar',
     'juegos-alternativos': 'Juegos alternativos',
-    malabares: 'Malabares', // BD: Malabares; UI: Iniciación Deportiva
+    malabares: 'Iniciación deportiva',
     'educacion-infantil': 'Juegos en Educación infantil',
     'material-foam': 'Material foam',
     colchonetas: 'Colchonetas',

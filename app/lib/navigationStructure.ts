@@ -71,7 +71,7 @@ export const navigationStructure: Categoria[] = [
       { nombre: "Figuras espuma", slug: "figuras-espuma", grupos: [] },
       { nombre: "Balones de uso escolar", slug: "balones-escolares", grupos: [] },
       { nombre: "Juegos alternativos", slug: "juegos-alternativos", grupos: [] },
-      { nombre: "Sport initiation", slug: "malabares", grupos: [] },
+      { nombre: "Iniciación deportiva", slug: "malabares", grupos: [] },
       { nombre: "Juegos en Educación infantil", slug: "educacion-infantil", grupos: [] },
       { nombre: "Material foam", slug: "material-foam", grupos: [] },
       { nombre: "Colchonetas", slug: "colchonetas", grupos: [] },

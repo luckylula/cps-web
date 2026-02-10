@@ -19,7 +19,7 @@ export default function Home() {
         "Figuras espuma",
         "Balones de uso escolar",
         "Juegos alternativos",
-        "Sport initiation",
+        "Iniciación deportiva",
         "Juegos en Educación infantil",
         "Material foam",
         "Colchonetas",
