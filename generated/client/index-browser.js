@@ -201,7 +201,8 @@ exports.Prisma.OrderScalarFieldEnum = {
   nifCif: 'nifCif',
   nombre: 'nombre',
   piso: 'piso',
-  provincia: 'provincia'
+  provincia: 'provincia',
+  redsysOrderId: 'redsysOrderId'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {

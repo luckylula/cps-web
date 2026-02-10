@@ -5139,6 +5139,7 @@ export namespace Prisma {
     nombre: string | null
     piso: string | null
     provincia: string | null
+    redsysOrderId: string | null
   }
 
   export type OrderMaxAggregateOutputType = {
@@ -5164,6 +5165,7 @@ export namespace Prisma {
     nombre: string | null
     piso: string | null
     provincia: string | null
+    redsysOrderId: string | null
   }
 
   export type OrderCountAggregateOutputType = {
@@ -5189,6 +5191,7 @@ export namespace Prisma {
     nombre: number
     piso: number
     provincia: number
+    redsysOrderId: number
     _all: number
   }
 
@@ -5226,6 +5229,7 @@ export namespace Prisma {
     nombre?: true
     piso?: true
     provincia?: true
+    redsysOrderId?: true
   }
 
   export type OrderMaxAggregateInputType = {
@@ -5251,6 +5255,7 @@ export namespace Prisma {
     nombre?: true
     piso?: true
     provincia?: true
+    redsysOrderId?: true
   }
 
   export type OrderCountAggregateInputType = {
@@ -5276,6 +5281,7 @@ export namespace Prisma {
     nombre?: true
     piso?: true
     provincia?: true
+    redsysOrderId?: true
     _all?: true
   }
 
@@ -5388,6 +5394,7 @@ export namespace Prisma {
     nombre: string | null
     piso: string | null
     provincia: string | null
+    redsysOrderId: string | null
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -5432,6 +5439,7 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    redsysOrderId?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -5459,6 +5467,7 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    redsysOrderId?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5484,6 +5493,7 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    redsysOrderId?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
@@ -5509,9 +5519,10 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    redsysOrderId?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombreCompleto" | "nombreCentro" | "email" | "telefono" | "direccion" | "status" | "total" | "createdAt" | "updatedAt" | "couponCode" | "discountAmount" | "paymentMethod" | "apellidos" | "ciudad" | "codigoPostal" | "direccionCompleta" | "nifCif" | "nombre" | "piso" | "provincia", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombreCompleto" | "nombreCentro" | "email" | "telefono" | "direccion" | "status" | "total" | "createdAt" | "updatedAt" | "couponCode" | "discountAmount" | "paymentMethod" | "apellidos" | "ciudad" | "codigoPostal" | "direccionCompleta" | "nifCif" | "nombre" | "piso" | "provincia" | "redsysOrderId", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -5547,6 +5558,7 @@ export namespace Prisma {
       nombre: string | null
       piso: string | null
       provincia: string | null
+      redsysOrderId: string | null
     }, ExtArgs["result"]["order"]>
     composites: {}
   }
@@ -5993,6 +6005,7 @@ export namespace Prisma {
     readonly nombre: FieldRef<"Order", 'String'>
     readonly piso: FieldRef<"Order", 'String'>
     readonly provincia: FieldRef<"Order", 'String'>
+    readonly redsysOrderId: FieldRef<"Order", 'String'>
   }
     
 
@@ -8763,7 +8776,8 @@ export namespace Prisma {
     nifCif: 'nifCif',
     nombre: 'nombre',
     piso: 'piso',
-    provincia: 'provincia'
+    provincia: 'provincia',
+    redsysOrderId: 'redsysOrderId'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -9291,6 +9305,7 @@ export namespace Prisma {
     nombre?: StringNullableFilter<"Order"> | string | null
     piso?: StringNullableFilter<"Order"> | string | null
     provincia?: StringNullableFilter<"Order"> | string | null
+    redsysOrderId?: StringNullableFilter<"Order"> | string | null
     items?: OrderItemListRelationFilter
   }
 
@@ -9317,12 +9332,14 @@ export namespace Prisma {
     nombre?: SortOrderInput | SortOrder
     piso?: SortOrderInput | SortOrder
     provincia?: SortOrderInput | SortOrder
+    redsysOrderId?: SortOrderInput | SortOrder
     items?: OrderItemOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     orderNumber?: string
+    redsysOrderId?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
@@ -9347,7 +9364,7 @@ export namespace Prisma {
     piso?: StringNullableFilter<"Order"> | string | null
     provincia?: StringNullableFilter<"Order"> | string | null
     items?: OrderItemListRelationFilter
-  }, "id" | "orderNumber">
+  }, "id" | "orderNumber" | "redsysOrderId">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
@@ -9372,6 +9389,7 @@ export namespace Prisma {
     nombre?: SortOrderInput | SortOrder
     piso?: SortOrderInput | SortOrder
     provincia?: SortOrderInput | SortOrder
+    redsysOrderId?: SortOrderInput | SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -9405,6 +9423,7 @@ export namespace Prisma {
     nombre?: StringNullableWithAggregatesFilter<"Order"> | string | null
     piso?: StringNullableWithAggregatesFilter<"Order"> | string | null
     provincia?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    redsysOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
   }
 
   export type OrderItemWhereInput = {
@@ -9993,6 +10012,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    redsysOrderId?: string | null
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -10019,6 +10039,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    redsysOrderId?: string | null
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -10045,6 +10066,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -10071,6 +10093,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -10097,6 +10120,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    redsysOrderId?: string | null
   }
 
   export type OrderUpdateManyMutationInput = {
@@ -10122,6 +10146,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderUncheckedUpdateManyInput = {
@@ -10147,6 +10172,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemCreateInput = {
@@ -10744,6 +10770,7 @@ export namespace Prisma {
     nombre?: SortOrder
     piso?: SortOrder
     provincia?: SortOrder
+    redsysOrderId?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
@@ -10774,6 +10801,7 @@ export namespace Prisma {
     nombre?: SortOrder
     piso?: SortOrder
     provincia?: SortOrder
+    redsysOrderId?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
@@ -10799,6 +10827,7 @@ export namespace Prisma {
     nombre?: SortOrder
     piso?: SortOrder
     provincia?: SortOrder
+    redsysOrderId?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
@@ -11856,6 +11885,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    redsysOrderId?: string | null
   }
 
   export type OrderUncheckedCreateWithoutItemsInput = {
@@ -11881,6 +11911,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    redsysOrderId?: string | null
   }
 
   export type OrderCreateOrConnectWithoutItemsInput = {
@@ -11988,6 +12019,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderUncheckedUpdateWithoutItemsInput = {
@@ -12013,6 +12045,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductUpsertWithoutOrderItemsInput = {

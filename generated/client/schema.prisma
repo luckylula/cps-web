@@ -105,6 +105,7 @@ model Order {
   piso              String?
   provincia         String?
   items             OrderItem[]
+  redsysOrderId     String?     @unique @db.VarChar(12)
 
   @@index([orderNumber])
   @@index([email])

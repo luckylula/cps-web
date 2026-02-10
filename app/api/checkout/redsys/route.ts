@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     const redsys = getRedsysAPI();
     const form = redsys.createRedirectForm({
-      DS_MERCHANT_TRANSACTIONTYPE: TRANSACTION_TYPES.authorisation,
+      DS_MERCHANT_TRANSACTIONTYPE: TRANSACTION_TYPES.AUTHORIZATION,
       DS_MERCHANT_MERCHANTCODE: merchantCode,
       DS_MERCHANT_TERMINAL: terminal,
       DS_MERCHANT_ORDER: redsysOrderId,
