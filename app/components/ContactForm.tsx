@@ -97,7 +97,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-sm">
       {isNoSendMode && (
         <div className="mb-4 px-3 py-2 bg-amber-500/90 text-black text-sm font-medium rounded">
           Modo test — Los mensajes no se envían al webhook
@@ -108,13 +108,13 @@ export default function ContactForm() {
           Usando webhook de prueba — Los mensajes se envían al endpoint de test
         </div>
       )}
-      <h3 className="text-base font-bold text-white mb-4 uppercase tracking-wide">
+      <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wide">
         ENVÍANOS TU MENSAJE
       </h3>
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-2">
         {/* Nombre */}
         <div className="relative">
-          <label htmlFor="nombre" className="block text-white mb-1 text-sm font-medium">
+          <label htmlFor="nombre" className="block text-white mb-0.5 text-xs font-medium">
             Nombre <span className="text-red-400">*</span>
           </label>
           <input
@@ -123,7 +123,7 @@ export default function ContactForm() {
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors ${
+            className={`w-full px-2.5 py-1.5 text-sm bg-white text-gray-900 rounded border transition-colors ${
               errors.nombre ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
@@ -137,7 +137,7 @@ export default function ContactForm() {
 
         {/* Teléfono */}
         <div>
-          <label htmlFor="telefono" className="block text-white mb-1 text-sm font-medium">
+          <label htmlFor="telefono" className="block text-white mb-0.5 text-xs font-medium">
             Teléfono
           </label>
           <input
@@ -146,14 +146,14 @@ export default function ContactForm() {
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}
-            className="w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border border-transparent focus:outline-none focus:ring-2 focus:ring-white/50"
+            className="w-full px-2.5 py-1.5 text-sm bg-white text-gray-900 rounded border border-transparent focus:outline-none focus:ring-2 focus:ring-white/50"
             placeholder=""
           />
         </div>
 
         {/* Email */}
         <div className="relative">
-          <label htmlFor="email" className="block text-white mb-1 text-sm font-medium">
+          <label htmlFor="email" className="block text-white mb-0.5 text-xs font-medium">
             Email <span className="text-red-400">*</span>
           </label>
           <input
@@ -162,7 +162,7 @@ export default function ContactForm() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors ${
+            className={`w-full px-2.5 py-1.5 text-sm bg-white text-gray-900 rounded border transition-colors ${
               errors.email ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
@@ -176,7 +176,7 @@ export default function ContactForm() {
 
         {/* Asunto */}
         <div className="relative">
-          <label htmlFor="asunto" className="block text-white mb-1 text-sm font-medium">
+          <label htmlFor="asunto" className="block text-white mb-0.5 text-xs font-medium">
             Asunto <span className="text-red-400">*</span>
           </label>
           <input
@@ -185,7 +185,7 @@ export default function ContactForm() {
             name="asunto"
             value={formData.asunto}
             onChange={handleChange}
-            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors ${
+            className={`w-full px-2.5 py-1.5 text-sm bg-white text-gray-900 rounded border transition-colors ${
               errors.asunto ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
@@ -199,7 +199,7 @@ export default function ContactForm() {
 
         {/* Mensaje */}
         <div className="relative">
-          <label htmlFor="mensaje" className="block text-white mb-1 text-sm font-medium">
+          <label htmlFor="mensaje" className="block text-white mb-0.5 text-xs font-medium">
             Mensaje <span className="text-red-400">*</span>
           </label>
           <textarea
@@ -207,8 +207,8 @@ export default function ContactForm() {
             name="mensaje"
             value={formData.mensaje}
             onChange={handleChange}
-            rows={4}
-            className={`w-full px-3 py-2 text-sm bg-white text-gray-900 rounded border transition-colors resize-y ${
+            rows={3}
+            className={`w-full px-2.5 py-1.5 text-sm bg-white text-gray-900 rounded border transition-colors resize-y ${
               errors.mensaje ? 'border-red-400' : 'border-transparent'
             } focus:outline-none focus:ring-2 focus:ring-white/50`}
             placeholder=""
@@ -240,7 +240,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#003366] hover:bg-[#004080] text-white text-sm font-semibold py-2.5 px-4 rounded transition-colors duration-300 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#003366] hover:bg-[#004080] text-white text-xs font-semibold py-2 px-3 rounded transition-colors duration-300 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Enviando...' : 'Enviar'}
         </button>

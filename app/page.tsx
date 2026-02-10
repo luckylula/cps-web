@@ -460,7 +460,7 @@ export default function Home() {
 
       {/* Contact Section - Estilo Minimalista */}
       <section id="contacto" className="py-10 px-6 bg-black text-white">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="text-2xl md:text-3xl font-light mb-2 tracking-tight">
               Contacto
@@ -469,10 +469,17 @@ export default function Home() {
               ¿Tienes preguntas? Estamos aquí para ayudarte.
             </p>
           </div>
-          <div className="grid md:grid-cols-[1fr_1fr] gap-6 md:items-stretch">
-            {/* Información de contacto */}
-            <div>
-              <h3 className="text-base font-medium mb-3">Información de contacto</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start">
+            {/* Bloque izquierdo: Contacto - foto (no muy grande) y debajo el texto */}
+            <div className="space-y-4">
+              <div className="relative w-full max-w-[360px] aspect-[16/10] rounded-lg overflow-hidden bg-gray-800">
+                <Image
+                  src="/categorias/contact.png"
+                  alt="Contacto CPS Material Deportivo"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <div className="space-y-2 text-gray-300 text-sm">
                 <p className="font-light">
                   <strong className="text-white">Control Play - Material Deportivo</strong>
@@ -490,15 +497,15 @@ export default function Home() {
                   pedidos@cpsmaterialdeportivo.com
                 </p>
               </div>
-              <div className="mt-4">
-                <h3 className="text-base font-medium mb-3">Horarios de oficina</h3>
+              <div>
+                <h3 className="text-base font-medium mb-2">Horarios de oficina</h3>
                 <div className="space-y-1 text-gray-300 text-sm font-light">
                   <p>Lunes - Jueves: 9:00 a 13:00 y 15:00 a 19:00</p>
                   <p>Viernes: 9:00 a 13:00 y 15:00 a 18:00</p>
                 </div>
               </div>
             </div>
-            {/* Formulario de contacto */}
+            {/* Bloque derecho: Envíanos tu mensaje */}
             <div>
               <ContactForm />
             </div>
