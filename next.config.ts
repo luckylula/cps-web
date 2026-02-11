@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Evitar que los errores de TypeScript en archivos generados internos de Next (.next/dev)
   // rompan el build. Seguimos viendo los errores en el editor/ESLint.
   typescript: {

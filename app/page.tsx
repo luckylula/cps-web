@@ -212,12 +212,12 @@ export default function Home() {
           {/* Imagen izquierda | Párrafo | Imagen derecha */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
             {/* Imagen izquierda */}
-            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-32 lg:h-40 overflow-hidden">
+            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-64 lg:h-80 overflow-hidden">
               <Image
                 src="/categorias/material1.png"
                 alt="Material deportivo"
                 width={320}
-                height={160}
+                height={320}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -227,33 +227,33 @@ export default function Home() {
               instalaciones deportivas, piscinas y gimnasios en toda España.
             </p>
             {/* Imagen derecha */}
-            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-32 lg:h-40 overflow-hidden">
+            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-64 lg:h-80 overflow-hidden">
               <Image
                 src="/categorias/material2.jpg"
                 alt="Material deportivo"
                 width={320}
-                height={160}
+                height={320}
                 className="w-full h-full object-cover"
               />
             </div>
           </div>
           {/* Imágenes en móvil (debajo del párrafo) */}
           <div className="flex md:hidden justify-center gap-6 mt-6">
-            <div className="w-48 h-24 overflow-hidden">
+            <div className="w-48 h-48 overflow-hidden">
               <Image
                 src="/categorias/material1.png"
                 alt="Material deportivo"
                 width={192}
-                height={96}
+                height={192}
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="w-48 h-24 overflow-hidden">
+            <div className="w-48 h-48 overflow-hidden">
               <Image
                 src="/categorias/material2.jpg"
                 alt="Material deportivo"
                 width={192}
-                height={96}
+                height={192}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -490,11 +490,11 @@ export default function Home() {
                   Barcelona, Spain
                 </p>
                 <p className="font-light">
-                  <strong className="text-white">Tel:</strong> 639.36.22.53
+                  <strong className="text-white">Tel:</strong> 622 61 33 93
                 </p>
                 <p className="font-light">
                   <strong className="text-white">Email:</strong><br />
-                  pedidos@cpsmaterialdeportivo.com
+                  pedidos@cpmaterialdeportivo.com
                 </p>
               </div>
               <div>
