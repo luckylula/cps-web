@@ -22,8 +22,8 @@ export const slugToName: Record<string, Record<string, Record<string, string>>> 
       gimnasia: 'Gimnasia',
       'deportes-de-contacto': 'Deportes de contacto',
       outdoor: 'Outdoor',
-      running: 'Running',
       'deportes-de-playa': 'Deportes de playa',
+      running: 'Running',
     },
     raqueta: {
       padel: 'Pádel',

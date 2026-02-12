@@ -9,6 +9,7 @@ const GROUPS_WITH_VIDEO: Record<string, string | true> = {
   rugby: true,    // rugby.mp4
   yoga: true,     // yoga.mp4
   gimnasia: true, // gimnasia.mp4
+  'deportes-de-playa': true, // deportesdeplaya.mp4
 };
 
 // Grupos con imagen personalizada por subcategoría (subcategorySlug -> grupoSlug -> nombre archivo)

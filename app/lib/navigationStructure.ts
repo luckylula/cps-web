@@ -108,8 +108,8 @@ export const navigationStructure: Categoria[] = [
           { nombre: "Gimnasia", slug: "gimnasia" },
           { nombre: "Deportes de contacto", slug: "deportes-de-contacto" },
           { nombre: "Outdoor", slug: "outdoor" },
-          { nombre: "Running", slug: "running" },
           { nombre: "Deportes de playa", slug: "deportes-de-playa" },
+          { nombre: "Running", slug: "running" },
         ],
       },
       {
