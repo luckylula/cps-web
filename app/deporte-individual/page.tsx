@@ -29,9 +29,16 @@ interface Subcategory {
   name: string;
   slug: string;
   image: string;
+  video?: string;
 }
 
 const subcategories: Subcategory[] = [
+  {
+    name: 'Yoga',
+    slug: 'Yoga',
+    image: '/categorias/yogafoto.png',
+    video: '/categorias/yoga.mp4',
+  },
   {
     name: 'Tenis de Mesa',
     slug: 'Tenis de Mesa',
@@ -66,11 +73,6 @@ const subcategories: Subcategory[] = [
     name: 'Piscina',
     slug: 'Piscina',
     image: '/categorias/deporte-individual/piscina.jpg',
-  },
-  {
-    name: 'Yoga',
-    slug: 'Yoga',
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
   },
   {
     name: 'Pilates',
@@ -154,12 +156,23 @@ export default function DeporteIndividualPage() {
                   className="group bg-white overflow-hidden cursor-pointer text-left"
                 >
                   <div className="relative h-80 bg-gray-100 overflow-hidden">
-                    <Image
-                      src={subcategory.image}
-                      alt={subcategory.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {subcategory.video ? (
+                      <video
+                        src={subcategory.video}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <Image
+                        src={subcategory.image}
+                        alt={subcategory.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    )}
                   </div>
                   <div className="pt-4">
                     <h3 className="text-gray-900 font-medium text-lg mb-1">

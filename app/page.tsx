@@ -31,6 +31,7 @@ export default function Home() {
       subtitle: "Logra tus propios méritos",
       description: "Material técnico para el rendimiento personal.",
       items: [
+        "Yoga",
         "Tenis de Mesa",
         "Tenis",
         "Padel",
@@ -38,7 +39,6 @@ export default function Home() {
         "Atletismo",
         "Gimnasia rítmica",
         "Piscina",
-        "Yoga",
         "Pilates"
       ]
     },
@@ -308,12 +308,16 @@ export default function Home() {
           </div>
           <div className="mb-8 overflow-hidden">
             <div className="relative h-[500px] bg-gray-100">
-              <Image
-                src="/categorias/deporteindividual.png"
-                alt="Deporte Individual"
-                fill
-                className="object-cover"
-              />
+              <video
+                src="/categorias/yoga.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              >
+                Tu navegador no soporta el elemento de video.
+              </video>
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
