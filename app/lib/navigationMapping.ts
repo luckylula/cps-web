@@ -16,6 +16,7 @@ export const slugToName: Record<string, Record<string, Record<string, string>>> 
     },
     individual: {
       fitness: 'Fitness',
+      yoga: 'Yoga',
       natacion: 'Natación',
       atletismo: 'Atletismo',
       gimnasia: 'Gimnasia',
@@ -119,4 +120,24 @@ export function getSubcategoryName(categoriaSlug: string, subcategorySlug: strin
  */
 export function getCategoryName(categoriaSlug: string): string | null {
   return categorySlugToName[categoriaSlug] || null;
+}
+
+/**
+ * Convierte un nombre de subcategoría (BD) a slug para URLs
+ */
+export function getSubcategorySlug(categoriaSlug: string, subcategoryName: string): string | null {
+  const subMap = subcategorySlugToName[categoriaSlug];
+  if (!subMap) return null;
+  const entry = Object.entries(subMap).find(([, name]) => name === subcategoryName);
+  return entry ? entry[0] : null;
+}
+
+/**
+ * Convierte un nombre de grupo (BD) a slug para URLs
+ */
+export function getGrupoSlug(categoriaSlug: string, subcategorySlug: string, grupoName: string): string | null {
+  const grupoMap = slugToName[categoriaSlug]?.[subcategorySlug];
+  if (!grupoMap) return null;
+  const entry = Object.entries(grupoMap).find(([, name]) => name === grupoName);
+  return entry ? entry[0] : null;
 }

@@ -102,6 +102,7 @@ export const navigationStructure: Categoria[] = [
         slug: "individual",
         grupos: [
           { nombre: "Fitness", slug: "fitness" },
+          { nombre: "Yoga", slug: "yoga" },
           { nombre: "Natación", slug: "natacion" },
           { nombre: "Atletismo", slug: "atletismo" },
           { nombre: "Gimnasia", slug: "gimnasia" },

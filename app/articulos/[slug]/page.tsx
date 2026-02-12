@@ -12,6 +12,7 @@ import FavoritesButton from "@/app/components/FavoritesButton";
 import SearchBar from "@/app/components/SearchBar";
 import ImageGallery from "@/app/components/ImageGallery";
 import Navigation from "@/app/components/Navigation";
+import { getSubcategorySlug, getGrupoSlug } from "@/app/lib/navigationMapping";
 
 interface ProductVariant {
   id: number;
@@ -36,6 +37,7 @@ interface Product {
     slug: string;
   };
   subcategory?: string | null;
+  grupo?: string | null;
   sku_interno?: string | null;
   marca?: string | null;
   proveedor?: string | null;
@@ -335,12 +337,9 @@ export default function ArticuloPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
-          <nav className="flex items-center gap-2 text-sm md:text-base text-gray-600">
-            <Link
-              href="/"
-              className="hover:text-gray-900 transition-colors"
-            >
-              Home
+          <nav className="flex items-center gap-2 text-sm md:text-base text-gray-600" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-gray-900 transition-colors">
+              Inicio
             </Link>
             <span>/</span>
             <Link
@@ -349,8 +348,39 @@ export default function ArticuloPage({ params }: PageProps) {
             >
               {product.category.name}
             </Link>
+            {product.subcategory && (() => {
+              const subSlug = getSubcategorySlug(product.category.slug, product.subcategory);
+              if (!subSlug) return null;
+              return (
+                <>
+                  <span>/</span>
+                  <Link
+                    href={`/${product.category.slug}/${subSlug}`}
+                    className="hover:text-gray-900 transition-colors"
+                  >
+                    {product.subcategory}
+                  </Link>
+                </>
+              );
+            })()}
+            {product.grupo && product.subcategory && (() => {
+              const subSlug = getSubcategorySlug(product.category.slug, product.subcategory);
+              const grupoSlug = subSlug && getGrupoSlug(product.category.slug, subSlug, product.grupo);
+              if (!subSlug || !grupoSlug) return null;
+              return (
+                <>
+                  <span>/</span>
+                  <Link
+                    href={`/${product.category.slug}/${subSlug}/${grupoSlug}`}
+                    className="hover:text-gray-900 transition-colors"
+                  >
+                    {product.grupo}
+                  </Link>
+                </>
+              );
+            })()}
             <span>/</span>
-            <span className="text-gray-900 font-medium">{product.name}</span>
+            <span className="text-gray-900 font-medium" aria-current="page">{product.name}</span>
           </nav>
         </div>
       </div>
@@ -629,7 +659,7 @@ export default function ArticuloPage({ params }: PageProps) {
                       isAdding || 
                       (product.variants && product.variants.length > 0 && !selectedVariant)
                     }
-                    className="bg-[#003366] hover:bg-[#004080] text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                    className="bg-black hover:bg-gray-900 text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                   >
                     {isAdding ? (
                       <>

@@ -127,7 +127,7 @@ export default function FavoritosPage() {
                   <button
                     onClick={() => handleAddToCart(item)}
                     disabled={!!addingId}
-                    className="w-full bg-[#003366] hover:bg-[#004080] text-white font-medium py-2 px-3 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+                    className="w-full bg-black hover:bg-gray-900 text-white font-medium py-2 px-3 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
                   >
                     {addingId === item.id ? (
                       <>
