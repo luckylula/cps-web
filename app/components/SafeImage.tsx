@@ -128,6 +128,7 @@ export default function SafeImage({
 
   // Determinar si desactivar optimización (para CDNs externos problemáticos)
   const shouldUnoptimize = imgSrc.includes('cdn.jimsports.shop') || 
+                          imgSrc.includes('cdn.b2b.grupojimsports.com') ||
                           imgSrc.includes('jimsports.shop') ||
                           imgSrc.includes('madeforsport.eu');
 

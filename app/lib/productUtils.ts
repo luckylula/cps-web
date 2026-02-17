@@ -1,4 +1,5 @@
 import { Prisma } from '@/generated/client';
+import { normalizeImages } from './imageUtils';
 
 interface PrismaProduct {
   id: number;
@@ -33,5 +34,6 @@ export function convertProductsToClient(products: PrismaProduct[]): ClientProduc
   return products.map(product => ({
     ...product,
     price: product.price ? Number(product.price) : null,
+    images: normalizeImages(product.images),
   }));
 }

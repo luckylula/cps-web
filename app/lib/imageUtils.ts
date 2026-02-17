@@ -54,6 +54,7 @@ export function generateBlurDataURL(width: number = 10, height: number = 10): st
 export function shouldUnoptimizeImage(src: string): boolean {
   return (
     src.includes('cdn.jimsports.shop') ||
+    src.includes('cdn.b2b.grupojimsports.com') ||
     src.includes('jimsports.shop') ||
     src.includes('madeforsport.eu') ||
     src.includes('www.madeforsport.eu')
@@ -61,14 +62,66 @@ export function shouldUnoptimizeImage(src: string): boolean {
 }
 
 /**
- * Obtiene la primera imagen válida de un array de imágenes
+ * Normaliza el campo images que puede venir en distintos formatos desde la BD:
+ * - string[] (correcto, Prisma)
+ * - string tipo PostgreSQL array: "{url1,url2}" o "{url}"
+ * - string JSON: ["url1","url2"]
+ * - string URL única
  */
-export function getFirstValidImage(images: string[] | null | undefined): string | null {
-  if (!images || !Array.isArray(images) || images.length === 0) {
+export function normalizeImages(images: unknown): string[] {
+  if (Array.isArray(images)) {
+    return images
+      .filter((img): img is string => typeof img === 'string' && img.trim() !== '')
+      .map((img) => img.trim());
+  }
+
+  if (typeof images === 'string') {
+    const trimmed = images.trim();
+    if (!trimmed) return [];
+
+    // Formato PostgreSQL array: {url1,url2} o {url}
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      const inner = trimmed.slice(1, -1);
+      return inner
+        .split(',')
+        .map((s) => s.trim().replace(/^"|"$/g, ''))
+        .filter((s) => s.length > 0);
+    }
+
+    // Formato JSON array
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(trimmed) as unknown;
+        if (Array.isArray(parsed)) {
+          return parsed
+            .filter((img): img is string => typeof img === 'string' && img.trim() !== '')
+            .map((img) => img.trim());
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // URL única
+    if (trimmed.startsWith('http') || trimmed.startsWith('/')) {
+      return [trimmed];
+    }
+  }
+
+  return [];
+}
+
+/**
+ * Obtiene la primera imagen válida de un array de imágenes
+ * Acepta también formatos raw de BD (string, objeto) y los normaliza
+ */
+export function getFirstValidImage(images: unknown): string | null {
+  const normalized = normalizeImages(images);
+  if (normalized.length === 0) {
     return null;
   }
 
-  for (const img of images) {
+  for (const img of normalized) {
     const validUrl = validateImageUrl(img);
     if (validUrl) {
       return validUrl;

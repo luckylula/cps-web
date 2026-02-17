@@ -2,18 +2,18 @@
 
 import { useState } from 'react';
 import ImageLoader from './ImageLoader';
-import { getFirstValidImage, validateImageUrl } from '@/app/lib/imageUtils';
+import { normalizeImages, validateImageUrl } from '@/app/lib/imageUtils';
 
 interface ImageGalleryProps {
-  images: string[];
+  images: string[] | unknown;
   productName: string;
 }
 
 export default function ImageGallery({ images, productName }: ImageGalleryProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Filtrar solo imágenes válidas
-  const validImages = images ? images.filter(img => validateImageUrl(img) !== null) : [];
+  // Normalizar y filtrar solo imágenes válidas (soporta formatos de BD)
+  const validImages = normalizeImages(images).filter(img => validateImageUrl(img) !== null);
 
   if (!validImages || validImages.length === 0) {
     return (
