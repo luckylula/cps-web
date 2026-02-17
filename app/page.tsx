@@ -7,74 +7,49 @@ import Link from "next/link";
 import ImageCarousel from "./components/ImageCarousel";
 import Navigation from "@/app/components/Navigation";
 import ContactForm from "./components/ContactForm";
+import { navigationStructure } from "@/app/lib/navigationStructure";
 
 export default function Home() {
+  const catEscolar = navigationStructure.find((c) => c.slug === "material-escolar");
+  const catDeportes = navigationStructure.find((c) => c.slug === "deportes");
+  const catInstalaciones = navigationStructure.find((c) => c.slug === "instalaciones");
+  const catTextil = navigationStructure.find((c) => c.slug === "textil");
+
+  const individualGrupos = catDeportes?.subcategorias.find((s) => s.slug === "individual")?.grupos ?? [];
+  const colectivosGrupos = catDeportes?.subcategorias.find((s) => s.slug === "colectivos")?.grupos ?? [];
+  const instalacionesSubcategorias = catInstalaciones?.subcategorias ?? [];
+
   const categories = {
     escolar: {
       title: "Material Escolar",
-      subtitle: "Para aprender",
       description: "Equipamiento seguro y resistente para centros educativos.",
-      items: [
-        "Psicomotricidad",
-        "Figuras espuma",
-        "Balones de uso escolar",
-        "Juegos alternativos",
-        "Iniciación deportiva",
-        "Juegos en Educación infantil",
-        "Material foam",
-        "Colchonetas",
-        "Educación musical"
-      ]
+      items: catEscolar?.subcategorias ?? [],
+      basePath: "/material-escolar",
     },
     individual: {
       title: "Deporte Individual",
-      subtitle: "Logra tus propios méritos",
       description: "Material técnico para el rendimiento personal.",
-      items: [
-        "Yoga",
-        "Tenis de Mesa",
-        "Tenis",
-        "Padel",
-        "Badminton",
-        "Atletismo",
-        "Gimnasia rítmica",
-        "Piscina",
-        "Pilates"
-      ]
+      items: individualGrupos,
+      basePath: "/deportes/individual",
     },
     colectivo: {
       title: "Deportes Colectivos",
-      subtitle: "Rinde en equipo",
       description: "Soluciones completas para el juego en equipo.",
-      items: [
-        "Fútbol / F. Sala",
-        "Baloncesto",
-        "Balonmano",
-        "Voleibol / Voley Playa",
-        "Waterpolo",
-        "Rugby",
-        "Hockey",
-        "Béisbol"
-      ]
+      items: colectivosGrupos,
+      basePath: "/deportes/colectivos",
     },
     complementario: {
       title: "Material Complementario",
-      subtitle: "Entrénate",
       description: "Todo lo que completa tu espacio deportivo.",
-      items: [
-        "Material Entrenamiento",
-        "Complemento de balones",
-        "Preparación física",
-        "Equipamiento gimnasio",
-        "Balones medicinales"
-      ]
+      items: instalacionesSubcategorias,
+      basePath: "/instalaciones",
     },
     textil: {
       title: "Equipación Textil",
-      subtitle: "Viste tu equipo",
       description: "Ropa deportiva cómoda, funcional y duradera.",
-      items: []
-    }
+      items: catTextil?.subcategorias ?? [],
+      basePath: "/textil",
+    },
   };
 
   return (
@@ -201,60 +176,39 @@ export default function Home() {
       </section>
 
       {/* Hero Section - Estilo Minimalista */}
-      <section className="pt-10 pb-12 px-8 relative overflow-hidden bg-white">
-        <div className="max-w-6xl mx-auto">
+      <section className="pt-10 pb-12 px-4 md:px-6 relative overflow-hidden bg-white">
+        <div className="max-w-[83%] mx-auto">
           {/* Título arriba de todo */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 md:mb-8 tracking-tight text-center">
             Material Deportivo
             <br />
             <span className="font-normal">de Alta Calidad</span>
           </h1>
-          {/* Imagen izquierda | Párrafo | Imagen derecha */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
-            {/* Imagen izquierda */}
-            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-64 lg:h-80 overflow-hidden">
+          {/* Misma cuadrícula que las categorías: 4 columnas, imágenes del mismo tamaño */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-1.5">
+            {/* Imagen izquierda - mismo tamaño que las tarjetas de categoría */}
+            <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
               <Image
                 src="/categorias/material1.png"
                 alt="Material deportivo"
-                width={320}
-                height={320}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
             </div>
-            {/* Párrafo entre las dos imágenes */}
-            <p className="text-lg md:text-xl text-gray-600 font-light max-w-2xl leading-relaxed text-center flex-1 order-first md:order-none">
-              Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
-              instalaciones deportivas, piscinas y gimnasios en toda España.
-            </p>
-            {/* Imagen derecha */}
-            <div className="hidden md:block flex-shrink-0 w-64 lg:w-80 h-64 lg:h-80 overflow-hidden">
+            {/* Párrafo centrado - ocupa 2 columnas en desktop */}
+            <div className="md:col-span-2 flex items-center justify-center order-first md:order-none py-6 md:py-0">
+              <p className="text-lg md:text-xl text-gray-600 font-light max-w-2xl leading-relaxed text-center">
+                Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
+                instalaciones deportivas, piscinas y gimnasios en toda España.
+              </p>
+            </div>
+            {/* Imagen derecha - mismo tamaño que las tarjetas de categoría */}
+            <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
               <Image
                 src="/categorias/material2.jpg"
                 alt="Material deportivo"
-                width={320}
-                height={320}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          {/* Imágenes en móvil (debajo del párrafo) */}
-          <div className="flex md:hidden justify-center gap-6 mt-6">
-            <div className="w-48 h-48 overflow-hidden">
-              <Image
-                src="/categorias/material1.png"
-                alt="Material deportivo"
-                width={192}
-                height={192}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="w-48 h-48 overflow-hidden">
-              <Image
-                src="/categorias/material2.jpg"
-                alt="Material deportivo"
-                width={192}
-                height={192}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
             </div>
           </div>
@@ -264,32 +218,35 @@ export default function Home() {
       {/* Material Escolar Section - Estilo Minimalista */}
       <section id="material-escolar" className="py-12 md:py-14 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
-              {categories.escolar.title}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              {categories.escolar.description}
-            </p>
-          </div>
-          <div className="mb-8 overflow-hidden">
-            <div className="relative h-[500px] bg-gray-100">
-              <Image
-                src="/categorias/materialescolar1.png"
-                alt="Material escolar"
-                fill
-                className="object-cover"
-              />
+          <Link href="/material-escolar" className="block group">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight group-hover:text-gray-700 transition-colors">
+                {categories.escolar.title}
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+                {categories.escolar.description}
+              </p>
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.escolar.items.map((item, index) => (
-              <div
-                key={index}
-                className="text-center"
-              >
-                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+            <div className="mb-8 overflow-hidden rounded-lg">
+              <div className="relative h-[500px] bg-gray-100 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden">
+                <Image
+                  src="/categorias/materialescolar1.png"
+                  alt="Material escolar"
+                  fill
+                  className="object-cover"
+                />
               </div>
+            </div>
+          </Link>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.escolar.items.map((item) => (
+              <Link
+                key={item.slug}
+                href={`${categories.escolar.basePath}/${item.slug}`}
+                className="text-center hover:text-gray-600 transition-colors"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item.nombre}</h3>
+              </Link>
             ))}
           </div>
         </div>
@@ -298,36 +255,39 @@ export default function Home() {
       {/* Deporte Individual Section - Estilo Minimalista */}
       <section id="deporte-individual" className="py-12 md:py-14 px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
-              {categories.individual.title}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              {categories.individual.description}
-            </p>
-          </div>
-          <div className="mb-8 overflow-hidden">
-            <div className="relative h-[500px] bg-gray-100">
-              <video
-                src="/categorias/yoga.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              >
-                Tu navegador no soporta el elemento de video.
-              </video>
+          <Link href="/deportes/individual" className="block group">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight group-hover:text-gray-700 transition-colors">
+                {categories.individual.title}
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+                {categories.individual.description}
+              </p>
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.individual.items.map((item, index) => (
-              <div
-                key={index}
-                className="text-center"
-              >
-                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+            <div className="mb-8 overflow-hidden rounded-lg">
+              <div className="relative h-[500px] bg-gray-100 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden">
+                <video
+                  src="/categorias/yoga.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  Tu navegador no soporta el elemento de video.
+                </video>
               </div>
+            </div>
+          </Link>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.individual.items.map((item) => (
+              <Link
+                key={item.slug}
+                href={`${categories.individual.basePath}/${item.slug}`}
+                className="text-center hover:text-gray-600 transition-colors"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item.nombre}</h3>
+              </Link>
             ))}
           </div>
         </div>
@@ -336,32 +296,35 @@ export default function Home() {
       {/* Deportes Colectivos Section - Estilo Minimalista */}
       <section id="deportes-colectivos" className="py-12 md:py-14 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
-              {categories.colectivo.title}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              {categories.colectivo.description}
-            </p>
-          </div>
-          <div className="mb-8 overflow-hidden">
-            <div className="relative h-[500px] bg-gray-100">
-              <Image
-                src="/categorias/deportescolectivos.png"
-                alt="Deportes Colectivos"
-                fill
-                className="object-cover"
-              />
+          <Link href="/deportes/colectivos" className="block group">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight group-hover:text-gray-700 transition-colors">
+                {categories.colectivo.title}
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+                {categories.colectivo.description}
+              </p>
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.colectivo.items.map((item, index) => (
-              <div
-                key={index}
-                className="text-center"
-              >
-                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+            <div className="mb-8 overflow-hidden rounded-lg">
+              <div className="relative h-[500px] bg-gray-100 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden">
+                <Image
+                  src="/categorias/deportescolectivos.png"
+                  alt="Deportes Colectivos"
+                  fill
+                  className="object-cover"
+                />
               </div>
+            </div>
+          </Link>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {categories.colectivo.items.map((item) => (
+              <Link
+                key={item.slug}
+                href={`${categories.colectivo.basePath}/${item.slug}`}
+                className="text-center hover:text-gray-600 transition-colors"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item.nombre}</h3>
+              </Link>
             ))}
           </div>
         </div>
@@ -370,32 +333,35 @@ export default function Home() {
       {/* Material Complementario Section - Estilo Minimalista */}
       <section id="material-complementario" className="py-12 md:py-14 px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
-              {categories.complementario.title}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              {categories.complementario.description}
-            </p>
-          </div>
-          <div className="mb-8 overflow-hidden">
-            <div className="relative h-[500px] bg-gray-100">
-              <Image
-                src="/categorias/materialcomplementario.png"
-                alt="Material Complementario"
-                fill
-                className="object-cover"
-              />
+          <Link href="/instalaciones" className="block group">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight group-hover:text-gray-700 transition-colors">
+                {categories.complementario.title}
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+                {categories.complementario.description}
+              </p>
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {categories.complementario.items.map((item, index) => (
-              <div
-                key={index}
-                className="text-center"
-              >
-                <h3 className="text-base font-medium text-gray-900">{item}</h3>
+            <div className="mb-8 overflow-hidden rounded-lg">
+              <div className="relative h-[500px] bg-gray-100 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden">
+                <Image
+                  src="/categorias/materialcomplementario.png"
+                  alt="Material Complementario"
+                  fill
+                  className="object-cover"
+                />
               </div>
+            </div>
+          </Link>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {categories.complementario.items.map((item) => (
+              <Link
+                key={item.slug}
+                href={`${categories.complementario.basePath}/${item.slug}`}
+                className="text-center hover:text-gray-600 transition-colors"
+              >
+                <h3 className="text-base font-medium text-gray-900">{item.nombre}</h3>
+              </Link>
             ))}
           </div>
         </div>
@@ -404,24 +370,43 @@ export default function Home() {
       {/* Equipación Textil Section - Estilo Minimalista */}
       <section id="equipacion-textil" className="py-12 md:py-14 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight">
-              {categories.textil.title}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              {categories.textil.description}
-            </p>
-          </div>
-          <div className="overflow-hidden">
-            <div className="relative h-[500px] bg-gray-100">
-              <Image
-                src="/categorias/equipaciontextil.png"
-                alt="Equipación Textil"
-                fill
-                className="object-cover"
-              />
+          <Link href="/textil" className="block group">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-3 tracking-tight group-hover:text-gray-700 transition-colors">
+                {categories.textil.title}
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+                {categories.textil.description}
+              </p>
             </div>
-          </div>
+            <div className="overflow-hidden rounded-lg">
+              <div className="relative h-[500px] bg-gray-100 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden">
+                <video
+                  src="/categorias/equipaciontextil.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  Tu navegador no soporta el elemento de video.
+                </video>
+              </div>
+            </div>
+          </Link>
+          {categories.textil.items.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+              {categories.textil.items.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`${categories.textil.basePath}/${item.slug}`}
+                  className="text-center hover:text-gray-600 transition-colors"
+                >
+                  <h3 className="text-base font-medium text-gray-900">{item.nombre}</h3>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
