@@ -8,6 +8,9 @@ interface Slide {
   video: string;
 }
 
+/** Display duration per slide in ms. Carousel 2 (index 1) lasts longer. */
+const slideDurationsMs = [6000, 10000, 6000, 6000, 6000];
+
 const slides: Slide[] = [
   {
     title: "Equipamiento Deportivo de Alto Rendimiento",
@@ -55,16 +58,17 @@ export default function ImageCarousel() {
   }, [currentIndex]);
 
   useEffect(() => {
+    const duration = slideDurationsMs[currentIndex] ?? 6000;
     const interval = setInterval(() => {
       setIsVisible(false);
       setTimeout(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
         setIsVisible(true);
       }, 500);
-    }, 6000); // Cambia cada 6 segundos
+    }, duration);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentIndex]);
 
   const goToSlide = (index: number) => {
     setIsVisible(false);

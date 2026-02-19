@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SafeImage from "./SafeImage";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
 
@@ -19,12 +20,15 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ compact = false }: SearchBarProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const resultsListRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -56,6 +60,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
           const data = await response.json();
           setResults(data);
           setShowResults(data.length > 0);
+          setSelectedIndex(0);
         } else {
           setResults([]);
           setShowResults(false);
@@ -82,6 +87,37 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
     setShowResults(false);
     setResults([]);
   };
+
+  /** Navigate to search results page with current query (all matching products). */
+  const goToSearchResults = () => {
+    const query = searchQuery.trim();
+    if (!query) return;
+    handleResultClick();
+    router.push(`/busqueda?q=${encodeURIComponent(query)}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      goToSearchResults();
+      return;
+    }
+    if (!showResults || results.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((i) => (i < results.length - 1 ? i + 1 : i));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((i) => (i > 0 ? i - 1 : 0));
+    }
+  };
+
+  // Scroll selected result into view when navigating with keyboard
+  useEffect(() => {
+    if (!showResults || results.length === 0) return;
+    const el = resultsListRef.current?.querySelector(`[data-result-index="${selectedIndex}"]`);
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [selectedIndex, showResults, results.length]);
 
   const formatPrice = (price: number | null) => {
     if (price === null || price === undefined) {
@@ -112,6 +148,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
           type="text"
           value={searchQuery}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
           onFocus={() => {
             if (results.length > 0) setShowResults(true);
           }}
@@ -152,13 +189,14 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
               <div className="p-2 text-xs text-gray-500 border-b border-gray-200">
                 {results.length} {results.length === 1 ? "resultado" : "resultados"}
               </div>
-              <div className="max-h-80 overflow-y-auto">
-                {results.map((product) => (
+              <div ref={resultsListRef} className="max-h-80 overflow-y-auto">
+                {results.map((product, index) => (
                   <Link
                     key={product.id}
                     href={`/articulos/${encodeURIComponent(product.slug)}`}
                     onClick={handleResultClick}
-                    className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                    data-result-index={index}
+                    className={`flex items-center gap-3 p-3 transition-colors border-b border-gray-100 last:border-b-0 ${index === selectedIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
                   >
                     <div className="relative w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                       <SafeImage

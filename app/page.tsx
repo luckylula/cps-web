@@ -178,16 +178,10 @@ export default function Home() {
       {/* Hero Section - Estilo Minimalista */}
       <section className="pt-10 pb-12 px-4 md:px-6 relative overflow-hidden bg-white">
         <div className="max-w-[83%] mx-auto">
-          {/* Título arriba de todo */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 md:mb-8 tracking-tight text-center">
-            Material Deportivo
-            <br />
-            <span className="font-normal">de Alta Calidad</span>
-          </h1>
-          {/* Misma cuadrícula que las categorías: 4 columnas, imágenes del mismo tamaño */}
+          {/* Foto izquierda | Título + párrafo (en el centro) | Foto derecha */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-1.5">
-            {/* Imagen izquierda - mismo tamaño que las tarjetas de categoría */}
-            <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
+            {/* Imagen izquierda */}
+            <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100 order-2 md:order-1">
               <Image
                 src="/categorias/material1.png"
                 alt="Material deportivo"
@@ -195,15 +189,20 @@ export default function Home() {
                 className="object-cover"
               />
             </div>
-            {/* Párrafo centrado - ocupa 2 columnas en desktop */}
-            <div className="md:col-span-2 flex items-center justify-center order-first md:order-none py-6 md:py-0">
+            {/* Título y párrafo entre las dos fotos */}
+            <div className="md:col-span-2 flex flex-col items-center justify-center order-1 md:order-2 py-6 md:py-0 px-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-4 md:mb-6 tracking-tight text-center">
+                Material Deportivo
+                <br />
+                <span className="font-normal">de Alta Calidad</span>
+              </h1>
               <p className="text-lg md:text-xl text-gray-600 font-light max-w-2xl leading-relaxed text-center">
                 Distribuimos material deportivo para colegios, clubes deportivos, ayuntamientos, 
                 instalaciones deportivas, piscinas y gimnasios en toda España.
               </p>
             </div>
-            {/* Imagen derecha - mismo tamaño que las tarjetas de categoría */}
-            <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100">
+            {/* Imagen derecha */}
+            <div className="relative h-96 md:h-[450px] lg:h-[500px] overflow-hidden bg-gray-100 order-3">
               <Image
                 src="/categorias/material2.jpg"
                 alt="Material deportivo"
@@ -416,59 +415,57 @@ export default function Home() {
           <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 tracking-tight">
             ¿Quiénes somos?
           </h2>
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
-            <div className="text-gray-600 font-light leading-relaxed space-y-4">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-stretch">
+            <div className="text-gray-600 font-light leading-relaxed space-y-4 flex flex-col justify-center min-h-0">
               <p className="text-lg">
-                En Control Play somos, ante todo, amantes del deporte. Vivimos cada proyecto con la misma pasión con la que se practica en la pista o en el campo, y esa implicación se refleja en cada solución que ofrecemos.
+                En Control Play somos apasionados del deporte y vivimos cada proyecto con la misma energía que se siente en la pista o en el campo.
               </p>
               <p className="text-lg">
-                Nuestra experiencia profesional, unida a un trato cercano y honesto, nos permite acompañar a nuestros clientes en todo el proceso y lograr resultados excelentes. Creemos en el trabajo bien hecho, en el asesoramiento personalizado y en construir relaciones basadas en la confianza.
+                Nuestra experiencia y trato cercano nos permiten acompañar a cada cliente con un asesoramiento personalizado y honesto.
               </p>
               <p className="text-lg">
-                Somos especialistas en la distribución de material deportivo para colectivos y profesionales en toda España: colegios, clubes deportivos, ayuntamientos, instalaciones deportivas, piscinas y gimnasios.
+                Trabajamos con colegios, clubes, ayuntamientos, instalaciones deportivas, piscinas y gimnasios en toda España.
               </p>
               <p className="text-lg">
-                Además, trabajamos con una amplia red de proveedores de confianza, lo que nos permite ofrecer soluciones completas y material adaptado a cualquier disciplina o necesidad deportiva.
+                Somos especialistas en la distribución de material deportivo para colectivos y profesionales. Contamos con una amplia red de proveedores de confianza para ofrecer soluciones completas y adaptadas a cada disciplina.
               </p>
               <p className="text-lg font-medium text-gray-900">
                 Todo lo que tu proyecto necesita, con la garantía de un equipo que vive el deporte.
               </p>
             </div>
-            <div className="overflow-hidden rounded-lg">
+            <div className="relative min-h-[280px] md:min-h-0 md:h-full overflow-hidden rounded-lg bg-gray-100">
               <Image
                 src="/somosequipo.png"
                 alt="Equipo Control Play Sports"
-                width={1200}
-                height={800}
-                className="w-full h-auto object-cover"
+                fill
+                className="object-cover"
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contact Section - Estilo Minimalista */}
+      {/* Contact Section - Tres bloques: imagen | datos contacto | formulario */}
       <section id="contacto" className="py-8 px-6 bg-black text-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-5">
-            <h2 className="text-2xl md:text-3xl font-light mb-2 tracking-tight">
-              Contacto
-            </h2>
-            <p className="text-sm text-gray-400 font-light">
-              ¿Tienes preguntas? Estamos aquí para ayudarte.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 items-start">
-            {/* Bloque izquierdo: Contacto - foto (no muy grande) y debajo el texto */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
+            {/* Bloque 1: Imagen - misma altura que el bloque del formulario */}
+            <div className="relative w-full min-h-[280px] md:min-h-0 md:h-full rounded-lg overflow-hidden bg-gray-800">
+              <Image
+                src="/categorias/contact.png"
+                alt="Contacto CPS Material Deportivo"
+                fill
+                className="object-cover object-[35%_center]"
+              />
+            </div>
+            {/* Bloque 2: Datos de contacto */}
             <div className="space-y-4">
-              <div className="relative w-full max-w-[360px] aspect-[16/10] rounded-lg overflow-hidden bg-gray-800">
-                <Image
-                  src="/categorias/contact.png"
-                  alt="Contacto CPS Material Deportivo"
-                  fill
-                  className="object-cover"
-                />
-              </div>
+              <h2 className="text-2xl md:text-3xl font-light mb-2 tracking-tight">
+                Contacto
+              </h2>
+              <p className="text-sm text-gray-400 font-light mb-4">
+                ¿Tienes preguntas? Estamos aquí para ayudarte.
+              </p>
               <div className="space-y-2 text-gray-300 text-sm">
                 <p className="font-light">
                   <strong className="text-white">Control Play - Material Deportivo</strong>
@@ -494,8 +491,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            {/* Bloque derecho: Envíanos tu mensaje */}
-            <div>
+            {/* Bloque 3: Formulario */}
+            <div className="w-full">
               <ContactForm />
             </div>
           </div>
