@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/client';
-import { redsysApi, redsysMerchantCode, redsysMerchantName, redsysTerminal } from '@/app/lib/redsys';
+import { getRedsysApi, redsysMerchantCode, redsysMerchantName, redsysTerminal } from '@/app/lib/redsys';
 import { randomTransactionId } from 'redsys-easy';
 
 interface OrderItemInput {
@@ -252,6 +252,7 @@ export async function POST(request: NextRequest) {
     });
 
     const baseUrl = getBaseUrl();
+    const redsysApi = getRedsysApi();
     const amountInCents = Math.round(Number(order.total) * 100);
 
     const form = redsysApi.createRedirectForm({

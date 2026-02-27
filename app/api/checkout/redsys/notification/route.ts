@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { redsysApi } from '@/app/lib/redsys';
+import { getRedsysApi } from '@/app/lib/redsys';
 import { isResponseCodeOk, getResponseCodeMessage } from 'redsys-easy';
 
 export async function POST(request: NextRequest) {
@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
 
     let notification;
     try {
+      const redsysApi = getRedsysApi();
       notification = redsysApi.processDirectRestNotification(body);
     } catch (err) {
       console.error('[Redsys Notification] Error verificando firma:', err);
