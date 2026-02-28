@@ -100,10 +100,14 @@ export async function POST(request: NextRequest) {
         !secretKey && 'REDSYS_SECRET_KEY',
         !merchantCode && 'REDSYS_MERCHANT_CODE',
       ].filter(Boolean);
+      const hint =
+        process.env.NODE_ENV === 'production'
+          ? 'Configura REDSYS_SECRET_KEY y REDSYS_MERCHANT_CODE en las variables de entorno de tu servidor (Vercel, Railway, etc.).'
+          : 'Comprueba .env.local y reinicia el servidor (npm run dev).';
       return NextResponse.json(
         {
           error: 'El TPV no está configurado correctamente. Falta configuración de Redsys.',
-          detail: `Variables no definidas o vacías: ${missing.join(', ')}. Comprueba .env.local y reinicia el servidor (npm run dev).`,
+          detail: `Variables no definidas o vacías: ${missing.join(', ')}. ${hint}`,
         },
         { status: 500 },
       );
