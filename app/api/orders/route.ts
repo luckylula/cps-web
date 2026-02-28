@@ -163,9 +163,9 @@ export async function POST(request: NextRequest) {
       where: {
         id: { in: productIds },
       },
+      include: { variants: true },
     });
 
-    // Obtener variantes si existen
     const variants = variantIds.length > 0
       ? await prisma.productVariant.findMany({
           where: {
@@ -181,21 +181,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar stock (de variantes si existen, sino del producto)
+    /** Stock disponible: variantes → suma; si no, product.stock. Nunca negativo. */
+    function getProductAvailableStock(product: { stock: number; variants?: { stock: number }[] }): number {
+      const raw = product.variants?.length
+        ? product.variants.reduce((sum, v) => sum + v.stock, 0)
+        : product.stock;
+      return Math.max(0, raw);
+    }
+
     const stockIssues: string[] = [];
     for (const item of cart.items) {
       if (item.variantId) {
         const variant = variants.find((v) => v.id === item.variantId);
-        if (variant && variant.stock < item.quantity) {
+        const variantStock = variant ? Math.max(0, variant.stock) : 0;
+        if (variant && variantStock < item.quantity) {
           stockIssues.push(
-            `${item.name}: Stock disponible ${variant.stock}, solicitado ${item.quantity}`
+            `${item.name}: Stock disponible ${variantStock}, solicitado ${item.quantity}`
           );
         }
       } else {
         const product = products.find((p) => p.id === (item.productId || parseInt(item.id.replace('product-', ''))));
-        if (product && product.stock < item.quantity) {
+        const available = product ? getProductAvailableStock(product) : 0;
+        if (product && available < item.quantity) {
           stockIssues.push(
-            `${item.name}: Stock disponible ${product.stock}, solicitado ${item.quantity}`
+            `${item.name}: Stock disponible ${available}, solicitado ${item.quantity}`
           );
         }
       }

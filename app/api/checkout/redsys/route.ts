@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
 
     const products = await prisma.product.findMany({
       where: { id: { in: productIds } },
+      include: { variants: true },
     });
 
     const variants =
@@ -146,19 +147,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Uno o más productos no existen' }, { status: 400 });
     }
 
+    /** Stock disponible: si tiene variantes, suma de variantes; si no, product.stock. Nunca negativo. */
+    function getProductAvailableStock(product: { stock: number; variants?: { stock: number }[] }): number {
+      let raw: number;
+      if (product.variants && product.variants.length > 0) {
+        raw = product.variants.reduce((sum, v) => sum + v.stock, 0);
+      } else {
+        raw = product.stock;
+      }
+      return Math.max(0, raw);
+    }
+
     const stockIssues: string[] = [];
     for (const item of cart.items) {
       if (item.variantId) {
         const variant = variants.find((v) => v.id === item.variantId);
-        if (variant && variant.stock < item.quantity) {
-          stockIssues.push(`${item.name}: Stock disponible ${variant.stock}, solicitado ${item.quantity}`);
+        const variantStock = variant ? Math.max(0, variant.stock) : 0;
+        if (variant && variantStock < item.quantity) {
+          stockIssues.push(`${item.name}: Stock disponible ${variantStock}, solicitado ${item.quantity}`);
         }
       } else {
         const product = products.find(
           (p) => p.id === (item.productId || parseInt(item.id.replace('product-', ''))),
         );
-        if (product && product.stock < item.quantity) {
-          stockIssues.push(`${item.name}: Stock disponible ${product.stock}, solicitado ${item.quantity}`);
+        const available = product ? getProductAvailableStock(product) : 0;
+        if (product && available < item.quantity) {
+          stockIssues.push(`${item.name}: Stock disponible ${available}, solicitado ${item.quantity}`);
         }
       }
     }
