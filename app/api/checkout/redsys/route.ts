@@ -4,6 +4,9 @@ import { Prisma } from '@/generated/client';
 import { getRedsysApi, redsysMerchantCode, redsysMerchantName, redsysTerminal } from '@/app/lib/redsys';
 import { randomTransactionId } from 'redsys-easy';
 
+// Forzar runtime Node (las variables de entorno pueden no estar en Edge)
+export const runtime = 'nodejs';
+
 interface OrderItemInput {
   id: string;
   productId?: number;
@@ -104,10 +107,19 @@ export async function POST(request: NextRequest) {
         process.env.NODE_ENV === 'production'
           ? 'Configura REDSYS_SECRET_KEY y REDSYS_MERCHANT_CODE en las variables de entorno de tu servidor (Vercel, Railway, etc.).'
           : 'Comprueba .env.local y reinicia el servidor (npm run dev).';
+      // En producción, incluir debug para ver si el runtime ve las variables (sin mostrar valores)
+      const debug =
+        process.env.NODE_ENV === 'production'
+          ? {
+              REDSYS_SECRET_KEY_visible: !!process.env.REDSYS_SECRET_KEY,
+              REDSYS_MERCHANT_CODE_visible: !!process.env.REDSYS_MERCHANT_CODE,
+            }
+          : undefined;
       return NextResponse.json(
         {
           error: 'El TPV no está configurado correctamente. Falta configuración de Redsys.',
           detail: `Variables no definidas o vacías: ${missing.join(', ')}. ${hint}`,
+          ...(debug && { debug }),
         },
         { status: 500 },
       );
