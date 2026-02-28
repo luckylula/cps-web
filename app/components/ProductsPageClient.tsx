@@ -13,6 +13,7 @@ interface Product {
   sku_interno?: string | null;
   stock: number;
   categoryId: string;
+  hasStock?: boolean;
 }
 
 interface ProductsPageClientProps {
@@ -52,6 +53,7 @@ export default function ProductsPageClient({ products }: ProductsPageClientProps
             sku_interno={product.sku_interno}
             stock={product.stock}
             categoryId={product.categoryId}
+            hasStock={product.hasStock}
           />
         ))}
       </div>

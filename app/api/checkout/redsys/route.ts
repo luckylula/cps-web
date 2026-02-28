@@ -93,9 +93,18 @@ function getBaseUrl() {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.REDSYS_SECRET_KEY || !redsysMerchantCode) {
+    const secretKey = process.env.REDSYS_SECRET_KEY?.trim();
+    const merchantCode = (process.env.REDSYS_MERCHANT_CODE ?? redsysMerchantCode)?.trim();
+    if (!secretKey || !merchantCode) {
+      const missing = [
+        !secretKey && 'REDSYS_SECRET_KEY',
+        !merchantCode && 'REDSYS_MERCHANT_CODE',
+      ].filter(Boolean);
       return NextResponse.json(
-        { error: 'El TPV no está configurado correctamente. Falta configuración de Redsys.' },
+        {
+          error: 'El TPV no está configurado correctamente. Falta configuración de Redsys.',
+          detail: `Variables no definidas o vacías: ${missing.join(', ')}. Comprueba .env.local y reinicia el servidor (npm run dev).`,
+        },
         { status: 500 },
       );
     }
@@ -259,7 +268,7 @@ export async function POST(request: NextRequest) {
       DS_MERCHANT_AMOUNT: String(amountInCents),
       DS_MERCHANT_CURRENCY: '978', // EUR
       DS_MERCHANT_ORDER: redsysOrderId,
-      DS_MERCHANT_MERCHANTCODE: redsysMerchantCode,
+      DS_MERCHANT_MERCHANTCODE: merchantCode,
       DS_MERCHANT_MERCHANTNAME: redsysMerchantName,
       DS_MERCHANT_TERMINAL: redsysTerminal,
       DS_MERCHANT_TRANSACTIONTYPE: '0', // Autorización
@@ -288,8 +297,12 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('[API Checkout Redsys] Error al iniciar pago:', error);
+    const message = error instanceof Error ? error.message : 'Error desconocido';
     return NextResponse.json(
-      { error: 'Error interno al iniciar el pago con tarjeta' },
+      {
+        error: 'Error interno al iniciar el pago con tarjeta',
+        ...(process.env.NODE_ENV === 'development' && { detail: message }),
+      },
       { status: 500 },
     );
   }

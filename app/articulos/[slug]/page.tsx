@@ -57,6 +57,7 @@ interface RelatedProduct {
   sku_interno?: string | null;
   stock: number;
   categoryId: string;
+  hasStock?: boolean;
 }
 
 interface PageProps {
@@ -321,7 +322,13 @@ export default function ArticuloPage({ params }: PageProps) {
   const hasPrice = product.price !== null && product.price !== undefined && product.price > 0;
   const priceWithIVA = hasPrice ? Number(product.price) : 0;
   const priceWithoutIVA = hasPrice ? priceWithIVA / 1.21 : 0;
-  
+
+  // Stock: si tiene variantes, al menos una con stock > 0; si no, product.stock > 0
+  const hasVariantStock =
+    product.variants && product.variants.length > 0
+      ? product.variants.some((v) => v.stock > 0)
+      : product.stock > 0;
+
   // Formatear nombre del proveedor
   const proveedorName = product.proveedor === 'jim_sports' 
     ? 'Jim Sports' 
@@ -415,11 +422,18 @@ export default function ArticuloPage({ params }: PageProps) {
                 </span>
               </div>
 
-              {/* Product Name */}
-              <h1 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">
-                {product.name}
-              </h1>
-              
+              {/* Product Name + Sin stock badge */}
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">
+                  {product.name}
+                </h1>
+                {!hasVariantStock && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-700">
+                    Sin stock
+                  </span>
+                )}
+              </div>
+
               {/* Marca */}
               {product.marca && (
                 <p className="text-sm text-gray-600 uppercase tracking-wide">
@@ -656,7 +670,8 @@ export default function ArticuloPage({ params }: PageProps) {
                   <button
                     onClick={handleAddToCart}
                     disabled={
-                      isAdding || 
+                      isAdding ||
+                      !hasVariantStock ||
                       (product.variants && product.variants.length > 0 && !selectedVariant)
                     }
                     className="bg-black hover:bg-gray-900 text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
@@ -758,6 +773,7 @@ export default function ArticuloPage({ params }: PageProps) {
                   sku_interno={relatedProduct.sku_interno}
                   stock={relatedProduct.stock}
                   categoryId={relatedProduct.categoryId}
+                  hasStock={relatedProduct.hasStock}
                 />
               ))}
             </div>

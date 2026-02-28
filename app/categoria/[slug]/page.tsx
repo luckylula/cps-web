@@ -34,6 +34,7 @@ interface Product {
   stock: number;
   categoryId: string;
   subcategory?: string | null;
+  hasStock?: boolean;
 }
 
 interface Category {
@@ -354,6 +355,7 @@ export default function CategoryPage() {
                       sku_interno={product.sku_interno}
                       stock={product.stock}
                       categoryId={product.categoryId}
+                      hasStock={product.hasStock}
                     />
                   ))}
                 </div>

@@ -118,7 +118,25 @@ async function getProducts(categoriaSlug: string, filters: {
     orderBy,
   });
 
-  return products;
+  const productIds = products.map((p) => p.id);
+  const variantRows =
+    productIds.length > 0
+      ? await prisma.productVariant.findMany({
+          where: { productId: { in: productIds } },
+          select: { productId: true, stock: true },
+        })
+      : [];
+  const productIdsWithVariants = new Set(variantRows.map((r) => r.productId));
+  const productIdsWithVariantStock = new Set(
+    variantRows.filter((r) => r.stock > 0).map((r) => r.productId)
+  );
+
+  return products.map((p) => ({
+    ...p,
+    hasStock: productIdsWithVariants.has(p.id)
+      ? productIdsWithVariantStock.has(p.id)
+      : p.stock > 0,
+  }));
 }
 
 async function getFilterOptions(categoriaSlug: string) {

@@ -23,6 +23,7 @@ interface Product {
   marca?: string | null;
   sku_interno?: string | null;
   stock: number;
+  hasStock?: boolean;
 }
 
 interface Subcategory {
@@ -200,6 +201,7 @@ export default function MaterialComplementarioPage() {
                     marca={product.marca}
                     sku_interno={product.sku_interno}
                     stock={product.stock}
+                    hasStock={product.hasStock}
                   />
                 ))}
               </div>

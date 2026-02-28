@@ -80,7 +80,25 @@ async function getBalones(filters: {
     ],
   });
 
-  return products;
+  const productIds = products.map((p) => p.id);
+  const variantRows =
+    productIds.length > 0
+      ? await prisma.productVariant.findMany({
+          where: { productId: { in: productIds } },
+          select: { productId: true, stock: true },
+        })
+      : [];
+  const productIdsWithVariants = new Set(variantRows.map((r) => r.productId));
+  const productIdsWithVariantStock = new Set(
+    variantRows.filter((r) => r.stock > 0).map((r) => r.productId)
+  );
+
+  return products.map((p) => ({
+    ...p,
+    hasStock: productIdsWithVariants.has(p.id)
+      ? productIdsWithVariantStock.has(p.id)
+      : p.stock > 0,
+  }));
 }
 
 async function getFilterOptions() {
@@ -245,6 +263,7 @@ export default async function BalonesPage({ searchParams }: PageProps) {
                             sku_interno={product.sku_interno}
                             stock={product.stock}
                             categoryId={product.categoryId}
+                            hasStock={(product as { hasStock?: boolean }).hasStock ?? product.stock > 0}
                           />
                         ))}
                       </div>

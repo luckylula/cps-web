@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Fijar la raíz del proyecto (donde está este config y .env.local) para Turbopack
+  turbopack: { root: path.resolve(__dirname) },
   // Evitar que los errores de TypeScript en archivos generados internos de Next (.next/dev)
   // rompan el build. Seguimos viendo los errores en el editor/ESLint.
   typescript: {

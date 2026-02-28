@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
+import { fixUrlProtocol } from '@/app/lib/imageUtils';
 
 interface SafeImageProps {
   src: string;
@@ -26,7 +27,9 @@ export default function SafeImage({
   priority = false,
   objectFit = 'cover',
 }: SafeImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
+  // Corregir URL mal formada (ej. Made for Sport: "https://www.madeforsport.https//www.madeforsport.eu/...")
+  const fixedSrc = useMemo(() => fixUrlProtocol(src), [src]);
+  const [imgSrc, setImgSrc] = useState(fixedSrc);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
@@ -34,41 +37,34 @@ export default function SafeImage({
 
   // Resetear estado cuando cambia la src
   useEffect(() => {
-    // Limpiar timeout anterior
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-
-    setImgSrc(src);
+    setImgSrc(fixedSrc);
     setHasError(false);
     setIsLoading(true);
     setRetryCount(0);
-
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [src]);
+  }, [fixedSrc]);
 
   const handleError = () => {
-    // Limpiar timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-
-    // Intentar retry solo 1 vez antes de mostrar error
     if (retryCount < 1) {
-      console.log(`[SafeImage] Retry ${retryCount + 1} for image: ${src}`);
+      console.log(`[SafeImage] Retry ${retryCount + 1} for image: ${fixedSrc}`);
       setTimeout(() => {
         setRetryCount(prev => prev + 1);
-        // Intentar recargar la misma URL con timestamp para evitar caché
-        const baseUrl = src.split('?')[0];
+        const baseUrl = fixedSrc.split('?')[0];
         setImgSrc(`${baseUrl}?t=${Date.now()}`);
         setIsLoading(true);
-      }, 2000); // Esperar 2 segundos antes de retry
+      }, 2000);
     } else {
-      console.error(`[SafeImage] Failed to load image after retries: ${src}`);
+      console.error(`[SafeImage] Failed to load image after retries: ${fixedSrc}`);
       setHasError(true);
       setIsLoading(false);
     }
@@ -83,12 +79,11 @@ export default function SafeImage({
     setHasError(false);
   };
 
-  // Validar que la URL sea válida
-  const isValidUrl = src && src.trim() !== '' && (
-    src.startsWith('http://') || 
-    src.startsWith('https://') || 
-    src.startsWith('data:') || 
-    src.startsWith('/')
+  const isValidUrl = fixedSrc && fixedSrc.trim() !== '' && (
+    fixedSrc.startsWith('http://') ||
+    fixedSrc.startsWith('https://') ||
+    fixedSrc.startsWith('data:') ||
+    fixedSrc.startsWith('/')
   );
 
   if (!isValidUrl || hasError) {

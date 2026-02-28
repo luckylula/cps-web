@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { resolveProductImageUrl } from '@/app/lib/imageUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,19 +44,17 @@ export async function GET(
       const subcategory = p.subcategory;
 
       if (!estructura[grupoName]) {
-        // Obtener la primera imagen válida de los productos de este grupo
-        const firstImage = p.images && p.images.length > 0 ? p.images[0] : null;
+        const rawFirst = p.images && p.images.length > 0 ? p.images[0] : null;
         estructura[grupoName] = {
           nombre: grupoName,
           count: 0,
-          image: firstImage,
+          image: resolveProductImageUrl(rawFirst) || null,
           deportes: {},
         };
       }
 
-      // Si no tiene imagen aún, intentar obtener una de este producto
       if (!estructura[grupoName].image && p.images && p.images.length > 0) {
-        estructura[grupoName].image = p.images[0];
+        estructura[grupoName].image = resolveProductImageUrl(p.images[0]) || null;
       }
 
       estructura[grupoName].count += 1;

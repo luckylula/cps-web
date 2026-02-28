@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { generateBlurDataURL, shouldUnoptimizeImage } from '@/app/lib/imageUtils';
+import { generateBlurDataURL, shouldUnoptimizeImage, fixUrlProtocol } from '@/app/lib/imageUtils';
 
 interface ImageLoaderProps {
   src: string;
@@ -29,12 +29,12 @@ export default function ImageLoader({
   objectFit = 'contain',
   quality = 80,
 }: ImageLoaderProps) {
+  const fixedSrc = useMemo(() => fixUrlProtocol(src), [src]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  
-  // Generar blurDataURL - funciona en cliente y servidor
+
   const blurDataURL = generateBlurDataURL();
-  const shouldUnoptimize = shouldUnoptimizeImage(src);
+  const shouldUnoptimize = shouldUnoptimizeImage(fixedSrc);
   
   const objectFitClass = 
     objectFit === 'contain' ? 'object-contain' :
@@ -89,7 +89,7 @@ export default function ImageLoader({
           </div>
         )}
         <Image
-          src={src}
+          src={fixedSrc}
           alt={alt}
           fill
           className={`${objectFitClass} transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
@@ -118,7 +118,7 @@ export default function ImageLoader({
         </div>
       )}
       <Image
-        src={src}
+        src={fixedSrc}
         alt={alt}
         width={width}
         height={height}

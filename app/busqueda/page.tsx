@@ -18,6 +18,7 @@ interface Product {
   sku_interno?: string | null;
   stock: number;
   categoryId: string;
+  hasStock?: boolean;
 }
 
 function BusquedaContent() {
@@ -123,6 +124,7 @@ function BusquedaContent() {
                   sku_interno={product.sku_interno}
                   stock={product.stock ?? 0}
                   categoryId={product.categoryId}
+                  hasStock={product.hasStock}
                 />
               ))}
             </div>

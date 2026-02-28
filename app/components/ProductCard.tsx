@@ -19,6 +19,8 @@ interface ProductCardProps {
   sku_interno?: string | null;
   stock: number;
   categoryId: string;
+  /** Si hay stock disponible (producto o al menos una variante). Por defecto true para no romper listados que no lo envían. */
+  hasStock?: boolean;
 }
 
 // Función para sanitizar texto (eliminar caracteres problemáticos)
@@ -55,7 +57,8 @@ export default function ProductCard({
   marca,
   sku_interno,
   stock,
-  categoryId
+  categoryId,
+  hasStock = true,
 }: ProductCardProps) {
   const { addItem } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -70,9 +73,9 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     
+    if (!hasStock) return;
     // Si no hay precio, no permitir añadir al carrito directamente
     if (price === null || price === undefined) {
-      // Podrías mostrar un modal o redirigir a contacto
       return;
     }
     
@@ -90,6 +93,7 @@ export default function ProductCard({
   };
 
   const hasPrice = price !== null && price !== undefined && price > 0;
+  const safeImages = Array.isArray(images) ? images : [];
 
   return (
     <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col border border-gray-100">
@@ -99,7 +103,7 @@ export default function ProductCard({
       >
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <SafeImage
-            src={getFirstValidImage(images) || ''}
+            src={getFirstValidImage(safeImages) || ''}
             alt={name}
             fill
             className="group-hover:scale-105 transition-transform duration-300"
@@ -109,6 +113,11 @@ export default function ProductCard({
           {featured && (
             <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
               DESTACADO
+            </span>
+          )}
+          {!hasStock && (
+            <span className="absolute top-2 left-2 bg-gray-600 text-white px-2 py-1 text-xs font-medium rounded z-10">
+              Sin stock
             </span>
           )}
           <button
@@ -174,7 +183,7 @@ export default function ProductCard({
         {hasPrice ? (
           <button
             onClick={handleAddToCart}
-            disabled={isAdding}
+            disabled={isAdding || !hasStock}
             className="w-full bg-black hover:bg-gray-900 text-white font-medium py-2 px-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
           >
             {isAdding ? (

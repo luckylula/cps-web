@@ -272,7 +272,11 @@ function CheckoutForm() {
 
         const data = await res.json();
         if (!res.ok) {
-          setRedsysError(data.error || 'Error al iniciar el pago');
+          let msg = data.detail ? `${data.error}: ${data.detail}` : (data.error || 'Error al iniciar el pago');
+          if (Array.isArray(data.details) && data.details.length > 0) {
+            msg += '\n' + data.details.join('\n');
+          }
+          setRedsysError(msg);
           setIsSubmitting(false);
           return;
         }
@@ -890,7 +894,7 @@ function CheckoutForm() {
                   )}
                   {formData.paymentMethod === "redsys" && redsysError && (
                     <div className="mt-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm text-red-800">⚠️ {redsysError}</p>
+                      <p className="text-sm text-red-800 whitespace-pre-line">⚠️ {redsysError}</p>
                     </div>
                   )}
 

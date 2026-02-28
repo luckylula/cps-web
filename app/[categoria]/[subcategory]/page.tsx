@@ -12,6 +12,7 @@ import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtil
 import { convertProductsToClient } from '@/app/lib/productUtils';
 import { navigationStructure } from '@/app/lib/navigationStructure';
 import { getSubcategoryNameFromSlug } from '@/app/lib/categoryTree';
+import { resolveProductImageUrl } from '@/app/lib/imageUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,10 +100,10 @@ async function getGroupsForSubcategory(categoriaSlug: string, subcategorySlug: s
         },
       });
 
-      // Usar la primera imagen del producto o null
-      const groupImage = sampleProduct?.images && sampleProduct.images.length > 0 
-        ? sampleProduct.images[0] 
+      const rawGroupImage = sampleProduct?.images && sampleProduct.images.length > 0
+        ? sampleProduct.images[0]
         : null;
+      const groupImage = rawGroupImage ? resolveProductImageUrl(rawGroupImage) || null : null;
 
       return {
         nombre: grupo.nombre,
@@ -151,10 +152,30 @@ async function getProductsForSubcategory(
     const count = await prisma.product.count({ where });
     console.debug('[getProductsForSubcategory] textil / Ropa Casual products count:', count);
   }
-  return prisma.product.findMany({
+  const products = await prisma.product.findMany({
     where,
     orderBy: { name: 'asc' },
   });
+
+  const productIds = products.map((p) => p.id);
+  const variantRows =
+    productIds.length > 0
+      ? await prisma.productVariant.findMany({
+          where: { productId: { in: productIds } },
+          select: { productId: true, stock: true },
+        })
+      : [];
+  const productIdsWithVariants = new Set(variantRows.map((r) => r.productId));
+  const productIdsWithVariantStock = new Set(
+    variantRows.filter((r) => r.stock > 0).map((r) => r.productId)
+  );
+
+  return products.map((p) => ({
+    ...p,
+    hasStock: productIdsWithVariants.has(p.id)
+      ? productIdsWithVariantStock.has(p.id)
+      : p.stock > 0,
+  }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

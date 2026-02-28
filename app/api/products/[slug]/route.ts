@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { normalizeImages } from '@/app/lib/imageUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,9 +58,9 @@ export async function GET(
       },
     });
 
-    // Construir respuesta con información de categoría
     const productWithCategory = {
       ...product,
+      images: normalizeImages(product.images ?? []),
       category: category || {
         id: product.categoryId,
         name: product.categoryId.charAt(0).toUpperCase() + product.categoryId.slice(1),
