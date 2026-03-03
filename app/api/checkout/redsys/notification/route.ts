@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { getRedsysApi } from '@/app/lib/redsys';
 import { isResponseCodeOk, getResponseCodeMessage } from 'redsys-easy';
 
+const N8N_WEBHOOK_URL = 'https://n8n.lulamartinezperez.com/webhook/ee1cb178-8a08-4aaf-a19f-281fbb640d58';
+
 export async function POST(request: NextRequest) {
   try {
     if (!process.env.REDSYS_SECRET_KEY) {
@@ -33,6 +35,7 @@ export async function POST(request: NextRequest) {
 
     const order = await prisma.order.findUnique({
       where: { redsysOrderId },
+      include: { items: true },
     });
 
     if (!order) {
@@ -54,7 +57,61 @@ export async function POST(request: NextRequest) {
       console.log('[Redsys Notification] Código de respuesta:', responseCode, '-', getResponseCodeMessage(responseCode));
     }
 
-    // Respuesta 200 para que Redsys no reintente
+    if (ok) {
+      try {
+        const webhookPayload = {
+          orderNumber: order.orderNumber,
+          customer: {
+            nombre: order.nombre ?? '',
+            apellidos: order.apellidos ?? '',
+            nifCif: order.nifCif ?? null,
+            direccion: {
+              calle: order.direccion ?? '',
+              piso: order.piso ?? null,
+              codigoPostal: order.codigoPostal ?? '',
+              ciudad: order.ciudad ?? '',
+              provincia: order.provincia ?? '',
+              completa: order.direccionCompleta ?? '',
+            },
+            nombreCompleto: order.nombreCompleto ?? `${order.nombre ?? ''} ${order.apellidos ?? ''}`.trim(),
+            direccionLegacy: order.direccionCompleta ?? '',
+            nombreCentro: order.nombreCentro ?? null,
+            email: order.email,
+            telefono: order.telefono,
+            paymentMethod: order.paymentMethod ?? 'redsys',
+          },
+          items: order.items.map((item) => ({
+            name: item.productName,
+            quantity: item.quantity,
+            price: Number(item.price),
+            subtotal: Number(item.subtotal),
+            variantId: item.variantId,
+            color: null,
+            talla: null,
+          })),
+          coupon: order.couponCode
+            ? { code: order.couponCode, discountAmount: order.discountAmount ? Number(order.discountAmount) : 0 }
+            : null,
+          total: Number(order.total),
+        };
+
+        const webhookResponse = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(webhookPayload),
+        });
+
+        if (webhookResponse.ok) {
+          console.log('[Redsys Notification] Webhook n8n enviado correctamente para pedido', order.orderNumber);
+        } else {
+          const responseText = await webhookResponse.text();
+          console.error('[Redsys Notification] Webhook n8n respondió con error:', webhookResponse.status, responseText);
+        }
+      } catch (webhookError: unknown) {
+        console.error('[Redsys Notification] Error al enviar webhook n8n (no se interrumpe el flujo):', webhookError);
+      }
+    }
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('[Redsys Notification] Error procesando notificación:', error);

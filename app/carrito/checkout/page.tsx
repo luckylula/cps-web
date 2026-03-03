@@ -72,11 +72,18 @@ function CheckoutForm() {
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [redsysError, setRedsysError] = useState("");
 
-  // Calcular totales
+  // Envío: gratis si subtotal >= 120€; si no, estándar 10€ y express 15€
+  const FREE_SHIPPING_THRESHOLD = 120;
+  const STANDARD_SHIPPING = 10;
+  const EXPRESS_SHIPPING = 15;
+
   const subtotal = getTotalPrice();
   const iva = subtotal * 0.21;
   const subtotalWithIva = subtotal + iva;
-  const shippingCost = formData.metodoEntrega === "express" ? 15 : 0;
+  const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingCost = hasFreeShipping
+    ? (formData.metodoEntrega === "express" ? EXPRESS_SHIPPING : 0)
+    : (formData.metodoEntrega === "express" ? EXPRESS_SHIPPING : STANDARD_SHIPPING);
   const discountAmount = appliedCoupon 
     ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
     : 0;
@@ -802,10 +809,14 @@ function CheckoutForm() {
                           <span className="font-medium text-gray-900 group-hover:text-orange-600">
                             Envío estándar
                           </span>
-                          <span className="text-sm font-medium text-gray-600">Gratis</span>
+                          <span className="text-sm font-medium text-gray-600">
+                            {subtotal >= FREE_SHIPPING_THRESHOLD ? "Gratis" : "10,00€"}
+                          </span>
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
-                          5-7 días laborables
+                          {subtotal >= FREE_SHIPPING_THRESHOLD
+                            ? "Pedidos +120€ · 5-7 días laborables"
+                            : "5-7 días laborables · Envío gratis desde 120€"}
                         </p>
                       </div>
                     </label>
@@ -824,7 +835,9 @@ function CheckoutForm() {
                           <span className="font-medium text-gray-900 group-hover:text-orange-600">
                             Envío express
                           </span>
-                          <span className="text-sm font-medium text-gray-600">+15€</span>
+                          <span className="text-sm font-medium text-gray-600">
+                            +{EXPRESS_SHIPPING}€
+                          </span>
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
                           2-3 días laborables
@@ -1140,10 +1153,15 @@ function CheckoutForm() {
                   <span>IVA (21%)</span>
                   <span className="font-medium">{iva.toFixed(2)}€</span>
                 </div>
-                {formData.metodoEntrega === "express" && (
+                {shippingCost > 0 ? (
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Envío express</span>
-                    <span className="font-medium">+15.00€</span>
+                    <span>{formData.metodoEntrega === "express" ? "Envío express" : "Envío"}</span>
+                    <span className="font-medium">+{shippingCost.toFixed(2)}€</span>
+                  </div>
+                ) : (
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Envío</span>
+                    <span className="font-medium text-green-600">Gratis (pedido +120€)</span>
                   </div>
                 )}
                 {appliedCoupon && discountAmount > 0 && (
