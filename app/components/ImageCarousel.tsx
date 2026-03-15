@@ -92,7 +92,7 @@ export default function ImageCarousel() {
             <video
               ref={(el) => { videoRefs.current[index] = el; }}
               src={slide.video}
-              className="absolute inset-0 w-full h-full object-cover"
+              className={`absolute inset-0 w-full h-full object-cover ${slide.video.includes('videocarrusel3') ? 'object-top' : ''}`}
               muted
               loop
               playsInline

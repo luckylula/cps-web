@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getRedsysApi } from '@/app/lib/redsys';
 import { isResponseCodeOk, getResponseCodeMessage } from 'redsys-easy';
 
-const N8N_WEBHOOK_URL = 'https://n8n.lulamartinezperez.com/webhook/ee1cb178-8a08-4aaf-a19f-281fbb640d58';
+const N8N_WEBHOOK_URL = 'https://n8n.lulamartinezperez.com/webhook/pedido-confirmado';
 
 export async function POST(request: NextRequest) {
   try {

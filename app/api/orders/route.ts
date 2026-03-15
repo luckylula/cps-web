@@ -331,7 +331,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Enviar notificación a n8n webhook (con await para capturar errores en Vercel)
-    const webhookUrl = 'https://n8n.lulamartinezperez.com/webhook/ee1cb178-8a08-4aaf-a19f-281fbb640d58';
+    const webhookUrl = 'https://n8n.lulamartinezperez.com/webhook/pedido-confirmado';
     
     // Preparar datos para el webhook (estructura nueva + legacy para compatibilidad)
     const webhookPayload = {
