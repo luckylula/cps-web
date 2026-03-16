@@ -92,7 +92,10 @@ export default function ImageCarousel() {
             <video
               ref={(el) => { videoRefs.current[index] = el; }}
               src={slide.video}
-              className={`absolute inset-0 w-full h-full object-cover ${slide.video.includes('videocarrusel3') ? 'object-top' : ''}`}
+              className={`absolute inset-0 w-full h-full object-cover ${
+                // Para videocarrusel3: anclar arriba pero un poco más centrado verticalmente
+                slide.video.includes('videocarrusel3') ? 'object-[50%_20%]' : ''
+              }`}
               muted
               loop
               playsInline
