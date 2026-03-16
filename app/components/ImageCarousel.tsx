@@ -8,9 +8,6 @@ interface Slide {
   video: string;
 }
 
-/** Display duration per slide in ms. Carousel 2 (index 1) lasts longer. */
-const slideDurationsMs = [6000, 10000, 6000, 6000, 6000];
-
 const slides: Slide[] = [
   {
     title: "Equipamiento Deportivo de Alto Rendimiento",
@@ -46,28 +43,15 @@ export default function ImageCarousel() {
 
   useEffect(() => {
     videoRefs.current.forEach((video, i) => {
-      if (video) {
-        if (i === currentIndex) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-          video.currentTime = 0;
-        }
+      if (!video) return;
+      if (i === currentIndex) {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+        video.currentTime = 0;
       }
     });
-  }, [currentIndex]);
-
-  useEffect(() => {
-    const duration = slideDurationsMs[currentIndex] ?? 6000;
-    const interval = setInterval(() => {
-      setIsVisible(false);
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-        setIsVisible(true);
-      }, 500);
-    }, duration);
-
-    return () => clearInterval(interval);
   }, [currentIndex]);
 
   const goToSlide = (index: number) => {
@@ -97,9 +81,16 @@ export default function ImageCarousel() {
                 slide.video.includes('videocarrusel3') ? 'object-[50%_20%]' : ''
               }`}
               muted
-              loop
               playsInline
               preload="auto"
+              onEnded={() => {
+                if (index !== currentIndex) return;
+                setIsVisible(false);
+                setTimeout(() => {
+                  setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+                  setIsVisible(true);
+                }, 300);
+              }}
             />
           </div>
           

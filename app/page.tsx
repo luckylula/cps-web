@@ -386,7 +386,7 @@ export default function Home() {
                   loop
                   muted
                   playsInline
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-[50%_75%]"
                 >
                   Tu navegador no soporta el elemento de video.
                 </video>
