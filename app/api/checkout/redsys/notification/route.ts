@@ -128,6 +128,7 @@ export async function POST(request: NextRequest) {
             ? { code: order.couponCode, discountAmount: order.discountAmount ? Number(order.discountAmount) : 0 }
             : null,
           total: Number(order.total),
+          shippingCost: order.shippingCost != null ? Number(order.shippingCost) : 0,
         };
 
         const webhookResponse = await fetch(N8N_WEBHOOK_URL, {

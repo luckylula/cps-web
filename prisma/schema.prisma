@@ -44,10 +44,12 @@ model Product {
   visible_web     Boolean          @default(true)
   id              Int              @id @default(autoincrement())
   grupo           String?          @db.VarChar(100)
+  precioBase      Decimal?         @db.Decimal(10, 2)
   tipo_producto   String?          @db.VarChar(100)
   orderItems      OrderItem[]
   variants        ProductVariant[]
 
+  @@unique([proveedor, ref_proveedor], map: "product_unique_proveedor_ref")
   @@index([categoryId])
   @@index([slug])
   @@index([sku_interno])
@@ -55,7 +57,7 @@ model Product {
   @@index([visible_web, activo])
   @@index([subcategory])
   @@index([grupo], map: "idx_product_grupo")
-  @@index([tipo_producto])
+  @@index([precioBase], map: "idx_product_precio_base")
 }
 
 model ProductVariant {
@@ -104,8 +106,9 @@ model Order {
   nombre            String?
   piso              String?
   provincia         String?
+  redsysOrderId     String?     @unique @db.VarChar(12)
+  shippingCost      Decimal?    @db.Decimal(10, 2)
   items             OrderItem[]
-  redsysOrderId     String?   @unique @db.VarChar(12)
 
   @@index([orderNumber])
   @@index([email])
@@ -145,6 +148,75 @@ model Coupon {
 
   @@index([code])
   @@index([isActive])
+}
+
+model CategoryMap {
+  id                     Int      @id @default(autoincrement())
+  proveedor              String
+  source_categoryid      String?
+  source_subcategory     String?
+  source_categoria_padre String?
+  source_categoria_texto String?
+  source_grupo           String?
+  source_tipo_producto   String?
+  target_categoryid      String
+  target_subcategory     String?
+  priority               Int      @default(100)
+  enabled                Boolean  @default(true)
+  createdAt              DateTime @default(now()) @db.Timestamp(6)
+  updatedAt              DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([proveedor, enabled, priority], map: "categorymap_lookup_idx")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String
+  telefono  String?
+  asunto    String
+  mensaje   String
+  fecha     DateTime @default(now()) @db.Timestamp(6)
+  origen    String?  @default("formulario-web")
+  leido     Boolean? @default(false)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([fecha(sort: Desc)])
+  @@index([leido])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Product_backup_20260128 {
+  name            String?
+  slug            String?
+  description     String?
+  price           Decimal?  @db.Decimal(10, 2)
+  images          String[]
+  stock           Int?
+  categoryId      String?
+  published       Boolean?
+  featured        Boolean?
+  createdAt       DateTime?
+  updatedAt       DateTime?
+  subcategory     String?
+  proveedor       String?   @db.VarChar(50)
+  ref_proveedor   String?   @db.VarChar(100)
+  ref_variante    String?   @db.VarChar(100)
+  sku_interno     String?   @db.VarChar(100)
+  ean             String?   @db.VarChar(50)
+  marca           String?   @db.VarChar(100)
+  categoria_texto String?   @db.VarChar(200)
+  categoria_padre String?   @db.VarChar(200)
+  color           String?   @db.VarChar(50)
+  talla           String?   @db.VarChar(50)
+  activo          Boolean?
+  visible_web     Boolean?
+  id              Int?
+  grupo           String?   @db.VarChar(100)
+  precioBase      Decimal?  @db.Decimal(10, 2)
+  tipo_producto   String?   @db.VarChar(100)
+
+  @@ignore
 }
 
 enum OrderStatus {

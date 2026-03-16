@@ -195,6 +195,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Calcular coste de envío en servidor a partir del total
+    const itemsSubtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const iva = itemsSubtotal * 0.21;
+    const couponDiscount = body.coupon?.discountAmount ?? 0;
+    const rawShippingCost = cart.totalPrice - (itemsSubtotal + iva) + couponDiscount;
+    const shippingCostNumber = Math.max(0, Number(rawShippingCost.toFixed(2)));
+
     // Crear identificador de pedido para Redsys (12 dígitos máx.)
     const redsysOrderId = randomTransactionId();
 
@@ -228,6 +235,7 @@ export async function POST(request: NextRequest) {
           email: customer.email.trim(),
           telefono: customer.telefono.trim(),
           total: new Prisma.Decimal(cart.totalPrice),
+          shippingCost: shippingCostNumber ? new Prisma.Decimal(shippingCostNumber) : null,
           couponCode: body.coupon?.code || null,
           discountAmount: body.coupon?.discountAmount
             ? new Prisma.Decimal(body.coupon.discountAmount)

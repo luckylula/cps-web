@@ -220,6 +220,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Calcular coste de envío en servidor a partir del total
+    const itemsSubtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const iva = itemsSubtotal * 0.21;
+    const couponDiscount = body.coupon?.discountAmount ?? 0;
+    const rawShippingCost = cart.totalPrice - (itemsSubtotal + iva) + couponDiscount;
+    const shippingCostNumber = Math.max(0, Number(rawShippingCost.toFixed(2)));
+
     // Crear el pedido y sus items en una transacción
     const order = await prisma.$transaction(async (tx) => {
       // Construir direccionCompleta para compatibilidad legacy
@@ -253,6 +260,7 @@ export async function POST(request: NextRequest) {
           telefono: customer.telefono.trim(),
           // Información del pedido
           total: new Prisma.Decimal(cart.totalPrice),
+          shippingCost: shippingCostNumber ? new Prisma.Decimal(shippingCostNumber) : null,
           couponCode: body.coupon?.code || null,
           discountAmount: body.coupon?.discountAmount
             ? new Prisma.Decimal(body.coupon.discountAmount)
