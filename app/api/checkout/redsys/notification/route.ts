@@ -14,7 +14,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    // Redsys envía la notificación como application/x-www-form-urlencoded
+    // Leemos el cuerpo como texto y lo parseamos a objeto antes de pasarlo a redsys-easy.
+    const contentType = request.headers.get('content-type') || '';
+    let body: any;
+
+    if (contentType.includes('application/x-www-form-urlencoded')) {
+      const text = await request.text();
+      const params = new URLSearchParams(text);
+      const parsed: Record<string, string> = {};
+      params.forEach((value, key) => {
+        parsed[key] = value;
+      });
+      body = parsed;
+    } else if (contentType.includes('application/json')) {
+      body = await request.json();
+    } else {
+      // Fallback genérico: intentar formData, luego text
+      try {
+        const formData = await request.formData();
+        const parsed: Record<string, string> = {};
+        for (const [key, value] of formData.entries()) {
+          if (typeof value === 'string') {
+            parsed[key] = value;
+          }
+        }
+        body = parsed;
+      } catch {
+        const text = await request.text();
+        const params = new URLSearchParams(text);
+        const parsed: Record<string, string> = {};
+        params.forEach((value, key) => {
+          parsed[key] = value;
+        });
+        body = parsed;
+      }
+    }
 
     let notification;
     try {
