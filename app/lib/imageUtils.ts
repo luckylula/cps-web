@@ -39,6 +39,12 @@ export function resolveProductImageUrl(url: string | null | undefined): string |
   const trimmed = fixUrlProtocol(url.trim());
   if (trimmed === '') return null;
 
+  // Caso específico Made for Sport: rutas tipo "../upload/archivo.jpg" o "/../upload/archivo.jpg"
+  if (trimmed.startsWith('../upload') || trimmed.startsWith('/../upload')) {
+    const path = trimmed.replace(/^\/?\.\.\//, ''); // -> "upload/archivo.jpg"
+    return `https://${MADEFORSPORT_DOMAIN}/${path}`;
+  }
+
   if (
     trimmed.startsWith('http://') ||
     trimmed.startsWith('https://') ||
