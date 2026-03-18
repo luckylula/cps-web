@@ -54,6 +54,16 @@ export default function Navigation() {
           <div className="hidden md:flex items-center flex-1 justify-end">
             {/* Categorías: Instalaciones, Material Escolar, Deportes, Textil, Contacto */}
             <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 text-base md:text-lg lg:text-xl font-medium">
+              <li>
+                <Link
+                  href="/"
+                  className="text-gray-900 hover:text-gray-600 transition-colors py-2 flex items-center justify-center"
+                  aria-label="Inicio"
+                  title="Inicio"
+                >
+                  Inicio
+                </Link>
+              </li>
               {navigationStructure
                 .filter((c) => c.slug === "instalaciones" || c.slug === "material-escolar")
                 .map((categoria) => (
@@ -134,12 +144,23 @@ export default function Navigation() {
             </div>
             <nav className="p-4">
               {[
+                { slug: "start", nombre: "Inicio", subcategorias: [] },
                 ...navigationStructure.filter((c) => c.slug === "instalaciones" || c.slug === "material-escolar"),
                 ...navigationStructure.filter((c) => c.slug === "deportes"),
                 ...navigationStructure.filter((c) => c.slug === "textil"),
                 { slug: "contacto", nombre: "Contacto", subcategorias: [] },
               ].map((item) =>
-                item.slug === "contacto" ? (
+                item.slug === "start" ? (
+                  <div key="start" className="border-b border-gray-100 py-3">
+                    <Link
+                      href="/"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block font-medium text-gray-900 py-2"
+                    >
+                      Inicio
+                    </Link>
+                  </div>
+                ) : item.slug === "contacto" ? (
                   <div key="contacto" className="border-b border-gray-100 py-3">
                     <Link
                       href="/#contacto"
