@@ -1,0 +1,99 @@
+{
+  "name": "Miniland Sync v4 - HTTP REQUEST",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "manual-trigger-v4"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/miniland-catalogo.csv",
+        "options": {}
+      },
+      "name": "Download CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0],
+      "id": "download-csv-v4"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const csvText = $input.first().json.data || $input.first().binary?.data?.toString('utf-8') || '';\nconst lines = csvText.split(/\\r?\\n/);\n\nfunction slugify(str) { return String(str || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }\nfunction cleanText(str) { if (!str) return ''; return String(str).normalize('NFC').trim(); }\nfunction norm(str) { return cleanText(str).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, ''); }\n\nfunction parseCSVLine(line) {\n  const fields = [];\n  let currentField = '';\n  let inQuotes = false;\n  for (let i = 0; i < line.length; i++) {\n    const char = line[i];\n    if (char === '\"') {\n      if (inQuotes && line[i + 1] === '\"') { currentField += '\"'; i++; }\n      else { inQuotes = !inQuotes; }\n    } else if (char === ',' && !inQuotes) { fields.push(currentField); currentField = ''; }\n    else { currentField += char; }\n  }\n  fields.push(currentField);\n  return fields;\n}\n\nfunction classifyProduct(name, description) {\n  const text = norm(name + ' ' + description);\n  if (text.match(/bebe|lactancia|biberon|chupete|humidificador|termometro.*digital|vigilabebes|cuna|cambiador/)) return { c: 'bebe', s: 'Puericultura', g: null, t: null };\n  if (text.match(/juego|puzzle|construccion|bloques|encajable|apilable|juguete/)) return { c: 'juguetes', s: 'Educativos', g: null, t: null };\n  if (text.match(/figura.*animal|animales.*figura|dinosaurio|insecto|granja/)) return { c: 'juguetes', s: 'Figuras', g: null, t: null };\n  if (text.match(/coche|vehiculo|tractor|camion|minimobil/)) return { c: 'juguetes', s: 'Vehículos', g: null, t: null };\n  if (text.match(/didactico|educativo|matematicas|numeros|letras|aprendizaje/)) return { c: 'material-escolar', s: 'Didáctico', g: null, t: null };\n  if (text.match(/manualidades|pintura|plastilina|modelado|arte/)) return { c: 'material-escolar', s: 'Manualidades', g: null, t: null };\n  return { c: 'sin-clasificar', s: 'Miniland pendiente', g: null, t: null };\n}\n\nconst products = [];\nfor (let i = 2; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n  try {\n    const fields = parseCSVLine(line);\n    const name = cleanText(fields[42]);\n    const price = parseFloat(fields[48]) || 0;\n    const ean = cleanText(fields[51]);\n    const sku = cleanText(fields[60]);\n    const description = cleanText(fields[8]);\n    const image = cleanText(fields[21]);\n    if (!sku || !name) continue;\n    const skuInterno = `M${sku}`;\n    const slug = `${slugify(name)}-${slugify(skuInterno)}`;\n    const cats = classifyProduct(name, description);\n    const imagenes = image ? [`https://minilandgroup.com/pub/media/catalog/product${image}`] : [];\n    products.push({ json: { proveedor: 'miniland', ref_proveedor: sku, sku_interno: skuInterno, name, description, precioBase: price, price: price, ean: ean || null, imagenes, slug, stock: 999, categoryId: cats.c, subcategory: cats.s, grupo: cats.g, tipo_producto: cats.t, published: true, activo: true, visible_web: false, marca: 'Miniland' }});\n  } catch (err) {}\n}\nreturn products;"
+      },
+      "name": "Parse + Classify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0],
+      "id": "parse-classify-v4"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "function roundUp(price) { return Math.ceil(price * 2) / 2; }\nfunction calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  return { precioBase: parseFloat(precio.toFixed(2)), precioFinal: roundUp(precio * multiplicador) };\n}\nconst results = [];\nfor (const item of $input.all()) {\n  const precios = calcularPrecioConMargen(item.json.precioBase);\n  results.push({ json: { ...item.json, precioBase: precios.precioBase, price: precios.precioFinal }});\n}\nreturn results;"
+      },
+      "name": "Apply Margins",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 0],
+      "id": "apply-margins-v4"
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "name": "Loop Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [880, 0],
+      "id": "loop-batches-v4"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"Product\" (name, slug, description, price, \"precioBase\", images, stock, \"categoryId\", subcategory, grupo, tipo_producto, published, featured, \"createdAt\", \"updatedAt\", proveedor, ref_proveedor, ref_variante, ean, marca, categoria_texto, categoria_padre, color, talla, activo, visible_web, sku_interno) VALUES ('{{ String($json.name ?? \"\").replace(/'/g, \"''\") }}', '{{ String($json.slug ?? \"\").replace(/'/g, \"''\") }}', '{{ String($json.description ?? \"\").replace(/'/g, \"''\") }}', {{ Number($json.price ?? 0) }}, {{ Number($json.precioBase ?? 0) }}, {{ Array.isArray($json.imagenes) && $json.imagenes.length > 0 ? \"ARRAY[\" + $json.imagenes.map(img => \"'\" + String(img).replace(/'/g, \"''\") + \"'\").join(\",\") + \"]::text[]\" : \"ARRAY[]::text[]\" }}, {{ Number($json.stock ?? 0) }}, '{{ String($json.categoryId ?? \"sin-clasificar\") }}', '{{ String($json.subcategory ?? \"\").replace(/'/g, \"''\") }}', {{ $json.grupo ? \"'\" + String($json.grupo).replace(/'/g, \"''\") + \"'\" : \"NULL\" }}, {{ $json.tipo_producto ? \"'\" + String($json.tipo_producto).replace(/'/g, \"''\") + \"'\" : \"NULL\" }}, {{ Boolean($json.published ?? true) }}, false, NOW(), NOW(), '{{ String($json.proveedor ?? \"\").replace(/'/g, \"''\") }}', '{{ String($json.ref_proveedor ?? \"\").replace(/'/g, \"''\") }}', NULL, {{ $json.ean ? \"'\" + String($json.ean).replace(/'/g, \"''\") + \"'\" : \"NULL\" }}, '{{ String($json.marca ?? \"Miniland\").replace(/'/g, \"''\") }}', NULL, NULL, NULL, NULL, {{ Boolean($json.activo ?? true) }}, {{ Boolean($json.visible_web ?? false) }}, '{{ String($json.sku_interno ?? \"\").replace(/'/g, \"''\") }}') ON CONFLICT (sku_interno) DO UPDATE SET \"categoryId\" = EXCLUDED.\"categoryId\", subcategory = EXCLUDED.subcategory, grupo = EXCLUDED.grupo, tipo_producto = EXCLUDED.tipo_producto, name = EXCLUDED.name, slug = EXCLUDED.slug, description = EXCLUDED.description, price = EXCLUDED.price, \"precioBase\" = EXCLUDED.\"precioBase\", images = EXCLUDED.images, stock = EXCLUDED.stock, ean = EXCLUDED.ean, marca = EXCLUDED.marca, published = EXCLUDED.published, activo = EXCLUDED.activo, visible_web = EXCLUDED.visible_web, \"updatedAt\" = NOW() RETURNING id;",
+        "options": {}
+      },
+      "name": "Insert to Neon",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1100, 0],
+      "id": "insert-neon-v4",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wum06K40sV6oLIqF",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{"node": "Download CSV", "type": "main", "index": 0}]]
+    },
+    "Download CSV": {
+      "main": [[{"node": "Parse + Classify", "type": "main", "index": 0}]]
+    },
+    "Parse + Classify": {
+      "main": [[{"node": "Apply Margins", "type": "main", "index": 0}]]
+    },
+    "Apply Margins": {
+      "main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]
+    },
+    "Loop Batches": {
+      "main": [[], [{"node": "Insert to Neon", "type": "main", "index": 0}]]
+    },
+    "Insert to Neon": {
+      "main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "id": "miniland-sync-v4"
+}

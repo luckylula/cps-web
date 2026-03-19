@@ -7,7 +7,7 @@ import Breadcrumbs from '@/app/components/Breadcrumbs';
 import GroupCard from '@/app/components/GroupCard';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
 import JuegosAlternativosFilter from '@/app/components/JuegosAlternativosFilter';
-import { getSubcategoryName, getCategoryName, getGrupoName } from '@/app/lib/navigationMapping';
+import { getSubcategoryDisplayName, getSubcategoryName, getCategoryName, getGrupoName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
 import { convertProductsToClient } from '@/app/lib/productUtils';
 import { navigationStructure } from '@/app/lib/navigationStructure';
@@ -148,6 +148,19 @@ async function getProductsForSubcategory(
       { sku_interno: { not: { endsWith: '-BASE' } } },
     ],
   };
+
+  // Compatibilidad (antes del sync completo): algunos productos pueden seguir
+  // etiquetados como "Balones de uso escolar" mientras la web apunta ya a
+  // "Juegos en Educación infantil".
+  if (
+    categoriaSlug === 'material-escolar' &&
+    subcategoryName === 'Juegos en Educación infantil' &&
+    where.subcategory
+  ) {
+    (where as any).subcategory = {
+      in: ['Juegos en Educación infantil', 'Balones de uso escolar'],
+    };
+  }
   if (process.env.NODE_ENV !== 'production' && categoriaSlug === 'textil' && (subcategoryName === 'Ropa Casual' || where.subcategory === 'Ropa Casual')) {
     const count = await prisma.product.count({ where });
     console.debug('[getProductsForSubcategory] textil / Ropa Casual products count:', count);
@@ -217,8 +230,16 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
   }
 
   const categoryName = getCategoryName(categoria) || category.name;
-  const subcategoryName =
-    getSubcategoryName(categoria, subcategory) || (await getSubcategoryNameFromSlug(categoria, subcategory)) || subcategory;
+
+  // Nombre real de BD (se usa para filtrar productos).
+  const subcategoryFilterName =
+    getSubcategoryName(categoria, subcategory) ||
+    (await getSubcategoryNameFromSlug(categoria, subcategory)) ||
+    subcategory;
+
+  // Nombre para UI/SEO.
+  const subcategoryDisplayName =
+    getSubcategoryDisplayName(categoria, subcategory) || subcategoryFilterName || subcategory;
 
   const groups = await getGroupsForSubcategory(categoria, subcategory);
 
@@ -231,7 +252,7 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
 
   const productsForSubcategory =
     groups.length === 0
-      ? await getProductsForSubcategory(categoria, subcategoryName, grupoFilter ? { grupoFilter } : undefined)
+      ? await getProductsForSubcategory(categoria, subcategoryFilterName, grupoFilter ? { grupoFilter } : undefined)
       : [];
 
   return (
@@ -255,7 +276,7 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-2 tracking-tight">
-              {subcategoryName}
+              {subcategoryDisplayName}
             </h1>
             <p className="text-gray-600">{categoryName}</p>
             {groups.length > 0 && (

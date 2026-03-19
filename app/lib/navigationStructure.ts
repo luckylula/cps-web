@@ -69,13 +69,16 @@ export const navigationStructure: Categoria[] = [
     subcategorias: [
       { nombre: "Psicomotricidad", slug: "psicomotricidad", grupos: [] },
       { nombre: "Figuras espuma", slug: "figuras-espuma", grupos: [] },
-      { nombre: "Balones de uso escolar", slug: "balones-escolares", grupos: [] },
       { nombre: "Juegos alternativos", slug: "juegos-alternativos", grupos: [] },
-      { nombre: "Iniciación deportiva", slug: "malabares", grupos: [] },
+      {
+        nombre: "Material Didáctico",
+        slug: "material-didactico",
+        grupos: [],
+      },
       { nombre: "Juegos en Educación infantil", slug: "educacion-infantil", grupos: [] },
       { nombre: "Material foam", slug: "material-foam", grupos: [] },
-      { nombre: "Colchonetas", slug: "colchonetas", grupos: [] },
-      { nombre: "Educación musical", slug: "educacion-musical", grupos: [] },
+      { nombre: "Manualidades", slug: "manualidades", grupos: [] },
+      { nombre: "Juguetes Educativos", slug: "juguetes-educativos", grupos: [] },
     ],
   },
   {

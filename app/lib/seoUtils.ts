@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getCategoryName, getSubcategoryName, getGrupoName } from './navigationMapping';
+import { getCategoryName, getSubcategoryDisplayName, getGrupoName } from './navigationMapping';
 
 interface SEOConfig {
   categoria?: string;
@@ -31,7 +31,7 @@ export function generateCategoryMetadata(config: SEOConfig): Metadata {
   } else if (grupo && subcategory && categoria) {
     // Ejemplo: /deportes/colectivos/futbol
     const grupoName = getGrupoName(categoria, subcategory, grupo) || grupo;
-    const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+    const subcategoryName = getSubcategoryDisplayName(categoria, subcategory) || subcategory;
     const categoryName = getCategoryName(categoria) || categoria;
     // Formato: "Fútbol - Colectivos | CPS Material Deportivo"
     title = `${grupoName} - ${subcategoryName} | CPS Material Deportivo`;
@@ -39,7 +39,7 @@ export function generateCategoryMetadata(config: SEOConfig): Metadata {
     canonical = `/${categoria}/${subcategory}/${grupo}`;
   } else if (subcategory && categoria) {
     // Ejemplo: /deportes/colectivos
-    const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+    const subcategoryName = getSubcategoryDisplayName(categoria, subcategory) || subcategory;
     const categoryName = getCategoryName(categoria) || categoria;
     title = `${subcategoryName} - ${categoryName} | CPS Material Deportivo`;
     description = categoryDescription || `Explora nuestra selección de productos de ${subcategoryName.toLowerCase()} en ${categoryName.toLowerCase()}${productCount ? ` (${productCount} productos disponibles)` : ''}.`;
@@ -98,7 +98,7 @@ export function generateBreadcrumbs(config: SEOConfig): Array<{ label: string; h
   }
 
   if (subcategory && categoria) {
-    const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+    const subcategoryName = getSubcategoryDisplayName(categoria, subcategory) || subcategory;
     items.push({ label: subcategoryName, href: `/${categoria}/${subcategory}` });
   }
 

@@ -7,12 +7,16 @@ export const dynamic = 'force-dynamic';
 const MATERIAL_ESCOLAR_SLUGS = [
   'psicomotricidad',
   'figuras-espuma',
-  'balones-escolares',
   'juegos-alternativos',
   'educacion-infantil',
   'malabares',
   'material-foam',
+  // Nueva URL requerida
+  'manualidades',
   'colchonetas',
+  // Nueva URL requerida
+  'juguetes-educativos',
+  // Legacy slug (por compatibilidad con BD actual)
   'educacion-musical',
 ];
 
@@ -59,20 +63,40 @@ export async function GET() {
     const slugToKey: Record<string, string> = {
       'psicomotricidad': 'psicomotricidad',
       'figuras-espuma': 'figurasEspuma',
-      'balones-escolares': 'balonesEscolares',
       'juegos-alternativos': 'juegosAlternativos',
       'educacion-infantil': 'educacionInfantil',
       'malabares': 'malabares',
       'material-foam': 'materialFoam',
-      'colchonetas': 'colchonetas',
+      // Legacy / nueva (la clave final se resuelve abajo para compatibilidad)
+      'colchonetas': 'manualidades',
+      'manualidades': 'manualidades',
       'educacion-musical': 'educacionMusical',
+      'juguetes-educativos': 'educacionMusical',
     };
 
     categoriesWithProducts.forEach((category) => {
       const key = slugToKey[category.slug];
-      if (key) {
-        categoriesMap[key] = category;
+      if (!key) return;
+
+      if (category.slug === 'colchonetas') {
+        // Alias compatible: la UI nueva usa manualidades, pero mantenemos la clave legacy.
+        categoriesMap.manualidades = category;
+        categoriesMap.colchonetas = category;
+        return;
       }
+
+      if (key === 'educacionMusical') {
+        // Normalizar la respuesta a la nueva URL/label.
+        categoriesMap.educacionMusical = {
+          ...category,
+          slug: 'juguetes-educativos',
+          name: 'Juguetes Educativos',
+        };
+        return;
+      }
+
+      // Normal (incluye slug manualidades -> key manualidades)
+      categoriesMap[key] = category;
     });
 
     return NextResponse.json({

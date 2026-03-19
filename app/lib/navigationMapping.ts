@@ -84,13 +84,38 @@ export const subcategorySlugToName: Record<string, Record<string, string>> = {
   'material-escolar': {
     psicomotricidad: 'Psicomotricidad',
     'figuras-espuma': 'Figuras espuma',
-    'balones-escolares': 'Balones de uso escolar',
+    'balones-escolares': 'Juegos en Educación infantil',
     'juegos-alternativos': 'Juegos alternativos',
+    // Para filtrar en BD: la subcategoría real en Product es "Iniciación deportiva".
+    // Mantenemos alias de slugs anteriores y añadimos el nuevo slug solicitado.
+    'material-didactico': 'Iniciación deportiva',
     malabares: 'Iniciación deportiva',
+    'iniciacion-deportiva': 'Iniciación deportiva',
     'educacion-infantil': 'Juegos en Educación infantil',
     'material-foam': 'Material foam',
+    // Para filtrar en BD: el subcategory real en Product sigue siendo "Colchonetas".
+    // Añadimos el nuevo slug URL ("manualidades") como alias.
+    manualidades: 'Colchonetas',
     colchonetas: 'Colchonetas',
+    // Alias de slug para la UI: la BD puede seguir usando el nombre "Educación musical".
     'educacion-musical': 'Educación musical',
+    'juguetes-educativos': 'Educación musical',
+  },
+};
+
+// Mapeo de slugs a nombres "para mostrar"/SEO en UI.
+// Nota: el valor real de Product para esta subcategoría sigue siendo "Iniciación deportiva".
+export const subcategorySlugToDisplayName: Record<string, Record<string, string>> = {
+  'material-escolar': {
+    'material-didactico': 'Material Didáctico',
+    malabares: 'Material Didáctico',
+    'iniciacion-deportiva': 'Material Didáctico',
+    manualidades: 'Manualidades',
+    colchonetas: 'Manualidades',
+    'educacion-infantil': 'Juegos en Educación infantil',
+    'balones-escolares': 'Juegos en Educación infantil',
+    'educacion-musical': 'Juguetes Educativos',
+    'juguetes-educativos': 'Juguetes Educativos',
   },
 };
 
@@ -113,6 +138,20 @@ export function getGrupoName(categoriaSlug: string, subcategorySlug: string, gru
  */
 export function getSubcategoryName(categoriaSlug: string, subcategorySlug: string): string | null {
   return subcategorySlugToName[categoriaSlug]?.[subcategorySlug] || null;
+}
+
+/**
+ * Convierte un slug de subcategoría a su nombre para mostrar (breadcrumbs/H1/SEO).
+ * Si no existe un mapeo específico de display, fallback al nombre de filtro (BD).
+ */
+export function getSubcategoryDisplayName(
+  categoriaSlug: string,
+  subcategorySlug: string
+): string | null {
+  return (
+    subcategorySlugToDisplayName[categoriaSlug]?.[subcategorySlug] ||
+    getSubcategoryName(categoriaSlug, subcategorySlug)
+  );
 }
 
 /**

@@ -55,6 +55,36 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  async redirects() {
+    return [
+      {
+        source: '/material-escolar/iniciacion-deportiva',
+        destination: '/material-escolar/material-didactico',
+        permanent: true,
+      },
+      {
+        // Actualmente la UI puede haber enlazado a este slug (legacy).
+        source: '/material-escolar/malabares',
+        destination: '/material-escolar/material-didactico',
+        permanent: true,
+      },
+      {
+        source: '/material-escolar/colchonetas',
+        destination: '/material-escolar/manualidades',
+        permanent: true,
+      },
+      {
+        source: '/material-escolar/balones-escolares',
+        destination: '/material-escolar/educacion-infantil',
+        permanent: true,
+      },
+      {
+        source: '/material-escolar/educacion-musical',
+        destination: '/material-escolar/juguetes-educativos',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

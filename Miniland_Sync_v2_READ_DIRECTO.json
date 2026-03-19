@@ -1,0 +1,91 @@
+{
+  "name": "Miniland Sync v2 - READ DIRECTO",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "manual-trigger-miniland-v2"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ============================================\n// MINILAND V2 - LEER + PARSEAR + CLASIFICAR\n// ============================================\n\nconst fs = require('fs');\nconst path = '/home/ubuntu/.n8n-files/miniland-catalogo.csv';\nconst csvText = fs.readFileSync(path, 'utf-8');\nconst lines = csvText.split(/\\r?\\n/);\n\n// ===== UTILIDADES =====\nfunction slugify(str) {\n  return String(str || \"\")\n    .toLowerCase()\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/[^a-z0-9]+/g, \"-\")\n    .replace(/^-|-$/g, \"\");\n}\n\nfunction cleanText(str) {\n  if (!str) return \"\";\n  return String(str).normalize(\"NFC\").trim();\n}\n\nfunction norm(str) {\n  return cleanText(str)\n    .toLowerCase()\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\");\n}\n\nfunction parseCSVLine(line) {\n  const fields = [];\n  let currentField = \"\";\n  let inQuotes = false;\n  \n  for (let i = 0; i < line.length; i++) {\n    const char = line[i];\n    \n    if (char === '\"') {\n      if (inQuotes && line[i + 1] === '\"') {\n        currentField += '\"';\n        i++;\n      } else {\n        inQuotes = !inQuotes;\n      }\n    } else if (char === ',' && !inQuotes) {\n      fields.push(currentField);\n      currentField = \"\";\n    } else {\n      currentField += char;\n    }\n  }\n  fields.push(currentField);\n  return fields;\n}\n\n// ===== CLASIFICADOR =====\nfunction classifyProduct(name, description) {\n  const text = norm(name + \" \" + description);\n\n  // BEBÉ / PUERICULTURA\n  if (text.match(/bebe|lactancia|biberon|chupete|humidificador|termometro.*digital|vigilabebes|cuna|cambiador/)) {\n    return { c: \"bebe\", s: \"Puericultura\", g: null, t: null };\n  }\n\n  // JUGUETES EDUCATIVOS\n  if (text.match(/juego|puzzle|construccion|bloques|encajable|apilable|juguete/)) {\n    return { c: \"juguetes\", s: \"Educativos\", g: null, t: null };\n  }\n\n  // FIGURAS / ANIMALES\n  if (text.match(/figura.*animal|animales.*figura|dinosaurio|insecto|granja/)) {\n    return { c: \"juguetes\", s: \"Figuras\", g: null, t: null };\n  }\n\n  // VEHÍCULOS\n  if (text.match(/coche|vehiculo|tractor|camion|minimobil/)) {\n    return { c: \"juguetes\", s: \"Vehículos\", g: null, t: null };\n  }\n\n  // MATERIAL ESCOLAR / EDUCATIVO\n  if (text.match(/didactico|educativo|matematicas|numeros|letras|aprendizaje/)) {\n    return { c: \"material-escolar\", s: \"Didáctico\", g: null, t: null };\n  }\n\n  // MANUALIDADES / ARTE\n  if (text.match(/manualidades|pintura|plastilina|modelado|arte/)) {\n    return { c: \"material-escolar\", s: \"Manualidades\", g: null, t: null };\n  }\n\n  // DEFAULT: Sin clasificar\n  return { c: \"sin-clasificar\", s: \"Miniland pendiente\", g: null, t: null };\n}\n\n// ===== PROCESAR CSV =====\nconst products = [];\n\n// Saltar header (línea 1)\nfor (let i = 2; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n\n  const fields = parseCSVLine(line);\n  \n  // Mapeo de columnas\n  const name = cleanText(fields[42]);  // name\n  const price = parseFloat(fields[48]) || 0;  // price\n  const ean = cleanText(fields[51]);  // product_ean\n  const sku = cleanText(fields[60]);  // sku\n  const description = cleanText(fields[8]);  // description\n  const image = cleanText(fields[21]);  // image\n  \n  if (!sku || !name) continue;\n\n  const skuInterno = `M${sku}`;\n  const slug = `${slugify(name)}-${slugify(skuInterno)}`;\n  \n  const cats = classifyProduct(name, description);\n  \n  const imagenes = image ? [`https://minilandgroup.com/pub/media/catalog/product${image}`] : [];\n\n  products.push({\n    json: {\n      proveedor: \"miniland\",\n      ref_proveedor: sku,\n      sku_interno: skuInterno,\n      name,\n      description,\n      precioBase: price,\n      price: price,\n      ean: ean || null,\n      imagenes,\n      slug,\n      stock: 999,\n      categoryId: cats.c,\n      subcategory: cats.s,\n      grupo: cats.g,\n      tipo_producto: cats.t,\n      published: true,\n      activo: true,\n      visible_web: false\n    }\n  });\n}\n\nreturn products;"
+      },
+      "name": "Read + Parse + Classify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0],
+      "id": "read-parse-classify-v2",
+      "notes": "Lee CSV con fs.readFileSync, parsea y clasifica en un solo paso"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "function roundUp(price) {\n  return Math.ceil(price * 2) / 2;\n}\n\nfunction calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  \n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  \n  return {\n    precioBase: parseFloat(precio.toFixed(2)),\n    precioFinal: roundUp(precio * multiplicador)\n  };\n}\n\nconst results = [];\nfor (const item of $input.all()) {\n  const precioOriginal = item.json.precioBase;\n  const precios = calcularPrecioConMargen(precioOriginal);\n  \n  results.push({\n    json: {\n      ...item.json,\n      precioBase: precios.precioBase,\n      price: precios.precioFinal\n    }\n  });\n}\n\nreturn results;"
+      },
+      "name": "Apply Margins",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0],
+      "id": "apply-margins-v2"
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "name": "Loop Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [660, 0],
+      "id": "loop-batches-v2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"Product\" (\n  name,\n  slug,\n  description,\n  price,\n  \"precioBase\",\n  images,\n  stock,\n  \"categoryId\",\n  subcategory,\n  grupo,\n  tipo_producto,\n  published,\n  featured,\n  \"createdAt\",\n  \"updatedAt\",\n  proveedor,\n  ref_proveedor,\n  ref_variante,\n  ean,\n  marca,\n  categoria_texto,\n  categoria_padre,\n  color,\n  talla,\n  activo,\n  visible_web,\n  sku_interno\n) VALUES (\n  '{{ String($json.name ?? \"\").replace(/'/g, \"''\") }}',\n  '{{ String($json.slug ?? \"\").replace(/'/g, \"''\") }}',\n  '{{ String($json.description ?? \"\").replace(/'/g, \"''\") }}',\n  {{ Number($json.price ?? 0) }},\n  {{ Number($json.precioBase ?? 0) }},\n  {{ Array.isArray($json.imagenes) && $json.imagenes.length > 0\n    ? \"ARRAY[\" + $json.imagenes.map(img => \"'\" + String(img).replace(/'/g, \"''\") + \"'\").join(\",\") + \"]::text[]\"\n    : \"ARRAY[]::text[]\" }},\n  {{ Number($json.stock ?? 0) }},\n  '{{ String($json.categoryId ?? \"sin-clasificar\") }}',\n  '{{ String($json.subcategory ?? \"\").replace(/'/g, \"''\") }}',\n  {{ $json.grupo ? \"'\" + String($json.grupo).replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  {{ $json.tipo_producto ? \"'\" + String($json.tipo_producto).replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  {{ Boolean($json.published ?? true) }},\n  false,\n  NOW(),\n  NOW(),\n  '{{ String($json.proveedor ?? \"\").replace(/'/g, \"''\") }}',\n  '{{ String($json.ref_proveedor ?? \"\").replace(/'/g, \"''\") }}',\n  NULL,\n  {{ $json.ean ? \"'\" + String($json.ean).replace(/'/g, \"''\") + \"'\" : \"NULL\" }},\n  'Miniland',\n  NULL,\n  NULL,\n  NULL,\n  NULL,\n  {{ Boolean($json.activo ?? true) }},\n  {{ Boolean($json.visible_web ?? false) }},\n  '{{ String($json.sku_interno ?? \"\").replace(/'/g, \"''\") }}'\n)\nON CONFLICT (sku_interno)\nDO UPDATE SET\n  \"categoryId\" = EXCLUDED.\"categoryId\",\n  subcategory = EXCLUDED.subcategory,\n  grupo = EXCLUDED.grupo,\n  tipo_producto = EXCLUDED.tipo_producto,\n  name = EXCLUDED.name,\n  slug = EXCLUDED.slug,\n  description = EXCLUDED.description,\n  price = EXCLUDED.price,\n  \"precioBase\" = EXCLUDED.\"precioBase\",\n  images = EXCLUDED.images,\n  stock = EXCLUDED.stock,\n  ean = EXCLUDED.ean,\n  published = EXCLUDED.published,\n  activo = EXCLUDED.activo,\n  visible_web = EXCLUDED.visible_web,\n  \"updatedAt\" = NOW()\nRETURNING id;",
+        "options": {}
+      },
+      "name": "Insert to Neon",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [880, 0],
+      "id": "insert-neon-v2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wum06K40sV6oLIqF",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{"node": "Read + Parse + Classify", "type": "main", "index": 0}]]
+    },
+    "Read + Parse + Classify": {
+      "main": [[{"node": "Apply Margins", "type": "main", "index": 0}]]
+    },
+    "Apply Margins": {
+      "main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]
+    },
+    "Loop Batches": {
+      "main": [
+        [],
+        [{"node": "Insert to Neon", "type": "main", "index": 0}]
+      ]
+    },
+    "Insert to Neon": {
+      "main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "miniland-sync-v2"
+}

@@ -9,7 +9,7 @@ export async function GET() {
     const categories = await prisma.category.findMany({
       where: {
         slug: {
-          in: ['psicomotricidad', 'figuras-espuma', 'balones-escolares'],
+          in: ['psicomotricidad', 'figuras-espuma', 'educacion-infantil'],
         },
       },
       select: {

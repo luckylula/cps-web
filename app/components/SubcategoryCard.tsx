@@ -16,15 +16,20 @@ const SUBCATEGORIES_WITH_VIDEO = ['mobiliario', 'calzado', 'individual'];
 const MATERIAL_ESCOLAR_MEDIA: Record<string, { type: 'image' | 'video'; file: string }> = {
   psicomotricidad: { type: 'image', file: 'psicomotricidad.png' },
   'figuras-espuma': { type: 'video', file: 'figuras-espuma.mp4' },
-  'balones-escolares': { type: 'image', file: 'balones-escolares.jpg' },
   'juegos-alternativos': { type: 'video', file: 'juegos-alternativos.mp4' },
   malabares: { type: 'image', file: 'iniciaciondeportiva.png' },
+  'material-didactico': { type: 'image', file: 'iniciaciondeportiva.png' },
   'educacion-infantil': { type: 'video', file: 'educacion-infantil.mp4' },
   'material-foam': { type: 'image', file: 'material-foam.jpg' },
-  colchonetas: { type: 'video', file: 'colchonetas.mp4' },
+  manualidades: { type: 'video', file: 'colchonetas.mp4' },
   'educacion-musical': { type: 'image', file: 'educacion-musical.jpg' },
+  // Nuevo slug URL: usa la misma media que el legacy.
+  'juguetes-educativos': { type: 'image', file: 'educacion-musical.jpg' },
   juegos: { type: 'image', file: 'juegos-alternativos.jpg' },
-  'iniciacion-deportiva': { type: 'image', file: 'balones-escolares.jpg' },
+  // Legacy slug
+  colchonetas: { type: 'video', file: 'colchonetas.mp4' },
+  // Legacy slug (mantener por compatibilidad de assets y posibles rutas antiguas)
+  'iniciacion-deportiva': { type: 'image', file: 'iniciaciondeportiva.png' },
 };
 
 export default function SubcategoryCard({ subcategory, categoriaSlug }: SubcategoryCardProps) {

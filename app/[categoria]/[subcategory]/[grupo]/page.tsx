@@ -7,7 +7,7 @@ import ProductCard from '@/app/components/ProductCard';
 import AdvancedFilters from '@/app/components/AdvancedFilters';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
-import { getGrupoName, getSubcategoryName, getCategoryName } from '@/app/lib/navigationMapping';
+import { getGrupoName, getSubcategoryDisplayName, getSubcategoryName, getCategoryName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
 import { convertProductsToClient } from '@/app/lib/productUtils';
 
@@ -273,7 +273,8 @@ export default async function GrupoPage({ params, searchParams }: PageProps) {
   }
 
   const categoryName = getCategoryName(categoria) || category.name;
-  const subcategoryName = getSubcategoryName(categoria, subcategory) || subcategory;
+  // Display/UI: el nombre mostrado puede diferir del nombre real usado en BD para filtrar.
+  const subcategoryName = getSubcategoryDisplayName(categoria, subcategory) || getSubcategoryName(categoria, subcategory) || subcategory;
   const grupoName = getGrupoName(categoria, subcategory, grupo) || grupo;
   
   const marcaParams = Array.isArray(filters.marca) ? filters.marca : filters.marca ? [filters.marca] : [];

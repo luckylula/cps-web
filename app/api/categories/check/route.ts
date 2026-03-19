@@ -9,13 +9,12 @@ export async function GET() {
     const materialEscolarSlugs = [
       'psicomotricidad',
       'figuras-espuma',
-      'balones-escolares',
       'juegos-alternativos',
       'educacion-infantil',
       'malabares',
       'material-foam',
-      'colchonetas',
-      'educacion-musical',
+      'manualidades',
+      'juguetes-educativos',
     ];
 
     const categories = await prisma.category.findMany({
