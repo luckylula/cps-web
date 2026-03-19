@@ -86,20 +86,20 @@ export const subcategorySlugToName: Record<string, Record<string, string>> = {
     'figuras-espuma': 'Figuras espuma',
     'balones-escolares': 'Juegos en Educación infantil',
     'juegos-alternativos': 'Juegos alternativos',
-    // Para filtrar en BD: la subcategoría real en Product es "Iniciación deportiva".
-    // Mantenemos alias de slugs anteriores y añadimos el nuevo slug solicitado.
-    'material-didactico': 'Iniciación deportiva',
-    malabares: 'Iniciación deportiva',
-    'iniciacion-deportiva': 'Iniciación deportiva',
+    // Para filtrar en BD: el valor real en Product debe coincidir EXACTAMENTE.
+    'material-didactico': 'Material Didáctico',
+    // Aliases legacy (para mantener compatibilidad con URLs antiguas).
+    malabares: 'Material Didáctico',
+    'iniciacion-deportiva': 'Material Didáctico',
     'educacion-infantil': 'Juegos en Educación infantil',
     'material-foam': 'Material foam',
-    // Para filtrar en BD: el subcategory real en Product sigue siendo "Colchonetas".
-    // Añadimos el nuevo slug URL ("manualidades") como alias.
-    manualidades: 'Colchonetas',
-    colchonetas: 'Colchonetas',
-    // Alias de slug para la UI: la BD puede seguir usando el nombre "Educación musical".
-    'educacion-musical': 'Educación musical',
-    'juguetes-educativos': 'Educación musical',
+    // Para filtrar en BD: el valor real en Product debe coincidir EXACTAMENTE.
+    manualidades: 'Manualidades',
+    // Alias legacy
+    colchonetas: 'Manualidades',
+    // Para filtrar en BD: el valor real en Product debe coincidir EXACTAMENTE.
+    'educacion-musical': 'Juguetes Educativos',
+    'juguetes-educativos': 'Juguetes Educativos',
   },
 };
 
