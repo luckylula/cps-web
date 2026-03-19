@@ -42,6 +42,11 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'minilandgroup.com',
+        pathname: '/**',
+      },
     ],
     // Configuración para manejar imágenes que fallan
     dangerouslyAllowSVG: true,
