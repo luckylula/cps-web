@@ -13,18 +13,18 @@ interface SubcategoryCardProps {
 const SUBCATEGORIES_WITH_VIDEO = ['mobiliario', 'calzado', 'individual'];
 
 // Material Escolar: imágenes y videos en /categorias/material-escolar/
-const MATERIAL_ESCOLAR_MEDIA: Record<string, { type: 'image' | 'video'; file: string }> = {
+const MATERIAL_ESCOLAR_MEDIA: Record<string, { type: 'image' | 'video'; file: string; objectPosition?: string }> = {
   psicomotricidad: { type: 'image', file: 'psicomotricidad.png' },
   'figuras-espuma': { type: 'video', file: 'figuras-espuma.mp4' },
   'juegos-alternativos': { type: 'video', file: 'juegos-alternativos.mp4' },
-  malabares: { type: 'image', file: 'iniciaciondeportiva.png' },
-  'material-didactico': { type: 'image', file: 'iniciaciondeportiva.png' },
+  // Foco superior ligeramente bajado para evitar cortar cabezas.
+  malabares: { type: 'image', file: 'iniciaciondeportiva.png', objectPosition: 'center 20%' },
+  'material-didactico': { type: 'image', file: 'iniciaciondeportiva.png', objectPosition: 'center 20%' },
   'educacion-infantil': { type: 'video', file: 'educacion-infantil.mp4' },
   'material-foam': { type: 'image', file: 'material-foam.jpg' },
   manualidades: { type: 'image', file: 'manualidades.png' },
   'educacion-musical': { type: 'image', file: 'educacion-musical.jpg' },
-  // Nuevo slug URL: usa la misma media que el legacy.
-  'juguetes-educativos': { type: 'image', file: 'educacion-musical.jpg' },
+  'juguetes-educativos': { type: 'image', file: 'juguetes educativos.png' },
   juegos: { type: 'image', file: 'juegos-alternativos.jpg' },
   // Legacy slug
   colchonetas: { type: 'video', file: 'colchonetas.mp4' },
@@ -37,20 +37,24 @@ export default function SubcategoryCard({ subcategory, categoriaSlug }: Subcateg
   
   let useVideo: boolean;
   let mediaSrc: string;
+  let objectPosition: string | undefined;
 
   if (categoriaSlug === 'material-escolar') {
     const media = MATERIAL_ESCOLAR_MEDIA[subcategory.slug];
     if (media) {
       useVideo = media.type === 'video';
       mediaSrc = `/categorias/material-escolar/${media.file}`;
+      objectPosition = media.objectPosition;
     } else {
       useVideo = false;
       mediaSrc = `/categorias/material-escolar/${subcategory.slug}.png`;
+      objectPosition = undefined;
     }
   } else {
     const imageName = subcategory.slug.replace(/-/g, '');
     useVideo = SUBCATEGORIES_WITH_VIDEO.includes(subcategory.slug);
     mediaSrc = useVideo ? `/categorias/${imageName}.mp4` : `/categorias/${imageName}.png`;
+    objectPosition = undefined;
   }
   
   const shouldUnoptimize = mediaSrc.includes('cdn.jimsports.shop') || 
@@ -78,6 +82,7 @@ export default function SubcategoryCard({ subcategory, categoriaSlug }: Subcateg
             alt={subcategory.nombre}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
+            style={objectPosition ? { objectPosition } : undefined}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             unoptimized={shouldUnoptimize}
           />
