@@ -469,7 +469,7 @@ export default function ArticuloPage({ params }: PageProps) {
                 </>
               ) : (
                 <div>
-                  <p className="text-xl md:text-2xl font-medium text-gray-600">
+                  <p className="text-3xl md:text-4xl font-bold text-gray-900">
                     Consultar precio
                   </p>
                   <p className="text-sm text-gray-500 mt-1">

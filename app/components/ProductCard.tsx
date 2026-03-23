@@ -171,7 +171,7 @@ export default function ProductCard({
                 {Number(price).toFixed(2)}€
               </p>
             ) : (
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-lg font-bold text-gray-900">
                 Consultar precio
               </p>
             )}

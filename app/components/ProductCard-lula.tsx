@@ -21,6 +21,9 @@ export default function ProductCard({
   featured,
   category 
 }: ProductCardProps) {
+  const numericPrice = Number(price);
+  const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
+
   return (
     <Link 
       href={`/productos/${slug}`}
@@ -47,9 +50,15 @@ export default function ProductCard({
         <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
           {name}
         </h3>
-        <p className="text-xl font-bold text-blue-600">
-          {Number(price).toFixed(2)}€  {/* ← CAMBIO AQUÍ */}
-        </p>
+        {hasPrice ? (
+          <p className="text-xl font-bold text-blue-600">
+            {numericPrice.toFixed(2)}€
+          </p>
+        ) : (
+          <p className="text-xl font-bold text-blue-600">
+            Consultar precio
+          </p>
+        )}
       </div>
     </Link>
   );

@@ -117,7 +117,7 @@ export default function FavoritosPage() {
                         {item.price.toFixed(2)} €
                       </p>
                     ) : (
-                      <p className="text-sm text-gray-600">Consultar precio</p>
+                      <p className="text-lg font-semibold text-gray-900">Consultar precio</p>
                     )}
                   </div>
                 </div>
