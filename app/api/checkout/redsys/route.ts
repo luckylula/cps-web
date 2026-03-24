@@ -9,7 +9,8 @@ export const runtime = 'nodejs';
 
 interface OrderItemInput {
   id: string;
-  productId?: number;
+  /** Puede ser numérico o cuid según el catálogo */
+  productId?: number | string;
   variantId?: number;
   name: string;
   slug: string;
@@ -94,6 +95,30 @@ function getBaseUrl() {
   return url.replace(/\/+$/, '');
 }
 
+/**
+ * Id de producto del carrito como string (nunca parseInt: puede ser cuid).
+ * Con `variant-…` el sufijo es la variante; hace falta `productId` en el ítem.
+ */
+function cartProductIdKey(item: OrderItemInput): string {
+  if (item.productId != null && String(item.productId).trim() !== '') {
+    return String(item.productId);
+  }
+  const id = item.id;
+  if (id.toLowerCase().startsWith('product-')) {
+    return id.slice('product-'.length);
+  }
+  return '';
+}
+
+function findProductByCartItem<T extends { id: unknown }>(
+  products: T[],
+  item: OrderItemInput,
+): T | undefined {
+  const key = cartProductIdKey(item);
+  if (!key) return undefined;
+  return products.find((p) => String(p.id) === key);
+}
+
 export async function POST(request: NextRequest) {
   try {
     const secretKey = process.env.REDSYS_SECRET_KEY?.trim();
@@ -133,17 +158,26 @@ export async function POST(request: NextRequest) {
 
     const { customer, cart } = body;
 
-    // Verificar productos y stock (similar a /api/orders)
-    const productIds = cart.items
-      .map((item) => item.productId || parseInt(item.id.replace('product-', '').replace('variant-', '')))
-      .filter((id): id is number => !isNaN(id));
+    const missingProductKey = cart.items.find((item) => cartProductIdKey(item) === '');
+    if (missingProductKey) {
+      return NextResponse.json(
+        { error: 'Falta productId en un artículo del carrito (p. ej. variante sin producto)' },
+        { status: 400 },
+      );
+    }
+
+    const uniqueProductKeys = [...new Set(cart.items.map((item) => cartProductIdKey(item)))];
+    const productWhere: Prisma.ProductWhereInput =
+      uniqueProductKeys.length > 0 && uniqueProductKeys.every((k) => /^\d+$/.test(k))
+        ? { id: { in: uniqueProductKeys.map((k) => parseInt(k, 10)) } }
+        : ({ id: { in: uniqueProductKeys } } as unknown as Prisma.ProductWhereInput);
 
     const variantIds = cart.items
       .map((item) => item.variantId)
       .filter((id): id is number => id !== undefined && !isNaN(id));
 
     const products = await prisma.product.findMany({
-      where: { id: { in: productIds } },
+      where: productWhere,
       include: { variants: true },
     });
 
@@ -154,7 +188,7 @@ export async function POST(request: NextRequest) {
           })
         : [];
 
-    if (products.length !== new Set(productIds).size) {
+    if (products.length !== uniqueProductKeys.length) {
       return NextResponse.json({ error: 'Uno o más productos no existen' }, { status: 400 });
     }
 
@@ -178,9 +212,7 @@ export async function POST(request: NextRequest) {
           stockIssues.push(`${item.name}: Stock disponible ${variantStock}, solicitado ${item.quantity}`);
         }
       } else {
-        const product = products.find(
-          (p) => p.id === (item.productId || parseInt(item.id.replace('product-', ''))),
-        );
+        const product = findProductByCartItem(products, item);
         const available = product ? getProductAvailableStock(product) : 0;
         if (product && available < item.quantity) {
           stockIssues.push(`${item.name}: Stock disponible ${available}, solicitado ${item.quantity}`);
@@ -244,15 +276,13 @@ export async function POST(request: NextRequest) {
           status: 'PENDING',
           items: {
             create: cart.items.map((item) => {
-              const productId =
-                item.productId || parseInt(item.id.replace('product-', '').replace('variant-', ''));
-              const product = products.find((p) => p.id === productId)!;
+              const product = findProductByCartItem(products, item)!;
               console.log('producto encontrado:', product?.id, product?.proveedor);
               const price = new Prisma.Decimal(item.price);
               const subtotal = price.mul(item.quantity);
 
               return {
-                productId,
+                productId: product.id,
                 variantId: item.variantId || null,
                 productName: item.name,
                 productSlug: item.slug,
@@ -280,10 +310,9 @@ export async function POST(request: NextRequest) {
             },
           });
         } else {
-          const productId =
-            item.productId || parseInt(item.id.replace('product-', '').replace('variant-', ''));
+          const product = findProductByCartItem(products, item)!;
           await tx.product.update({
-            where: { id: productId },
+            where: { id: product.id },
             data: {
               stock: {
                 decrement: item.quantity,
