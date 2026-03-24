@@ -181,26 +181,6 @@ export async function POST(request: NextRequest) {
       include: { variants: true },
     });
 
-    const testProduct = products[0];
-    console.log(
-      'FIRST PRODUCT:',
-      JSON.stringify({
-        id: testProduct?.id,
-        type: typeof testProduct?.id,
-        proveedor: testProduct?.proveedor,
-      }),
-    );
-
-    const cartItem = cart.items[0];
-    console.log(
-      'FIRST CART ITEM:',
-      JSON.stringify({
-        id: cartItem?.id,
-        productId: cartItem?.productId,
-        type: typeof cartItem?.productId,
-      }),
-    );
-
     const variants =
       variantIds.length > 0
         ? await prisma.productVariant.findMany({
@@ -295,44 +275,27 @@ export async function POST(request: NextRequest) {
           paymentMethod: 'redsys',
           status: 'PENDING',
           items: {
-            create: (() => {
-              console.log(
-                'DEBUG products ids:',
-                products.map((p) => p.id),
-              );
-              return cart.items.map((item) => {
-                const product = findProductByCartItem(products, item);
-                const price = new Prisma.Decimal(item.price);
-                const subtotal = price.mul(item.quantity);
+            create: cart.items.map((item) => {
+              const product = findProductByCartItem(products, item);
+              const price = new Prisma.Decimal(item.price);
+              const subtotal = price.mul(item.quantity);
 
-                console.log(
-                  'DEBUG item:',
-                  item.id,
-                  item.productId,
-                  'productKey:',
-                  cartProductIdKey(item),
-                  'product encontrado:',
-                  product?.id,
-                  product?.proveedor,
-                );
+              if (!product) {
+                throw new Error(`[Redsys] Producto no encontrado para ítem del carrito: ${item.id}`);
+              }
 
-                if (!product) {
-                  throw new Error(`[Redsys] Producto no encontrado para ítem del carrito: ${item.id}`);
-                }
-
-                return {
-                  productId: product.id,
-                  variantId: item.variantId || null,
-                  productName: item.name,
-                  productSlug: item.slug,
-                  quantity: item.quantity,
-                  price,
-                  subtotal,
-                  proveedor: product.proveedor ?? null,
-                  refProveedor: product.ref_proveedor ?? null,
-                };
-              });
-            })(),
+              return {
+                productId: product.id,
+                variantId: item.variantId || null,
+                productName: item.name,
+                productSlug: item.slug,
+                quantity: item.quantity,
+                price,
+                subtotal,
+                proveedor: product.proveedor ?? null,
+                refProveedor: product.ref_proveedor ?? null,
+              };
+            }),
           },
         },
         include: {
