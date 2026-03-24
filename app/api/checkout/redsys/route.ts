@@ -110,13 +110,13 @@ function cartProductIdKey(item: OrderItemInput): string {
   return '';
 }
 
-function findProductByCartItem<T extends { id: unknown }>(
+function findProductByCartItem<T extends { id: number }>(
   products: T[],
   item: OrderItemInput,
 ): T | undefined {
   const key = cartProductIdKey(item);
   if (!key) return undefined;
-  return products.find((p) => String(p.id) === key);
+  return products.find((p) => p.id === parseInt(key, 10));
 }
 
 export async function POST(request: NextRequest) {
