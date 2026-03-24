@@ -121,6 +121,7 @@ export async function POST(request: NextRequest) {
             price: Number(item.price),
             subtotal: Number(item.subtotal),
             variantId: item.variantId,
+            proveedor: item.proveedor ?? null,
             color: null,
             talla: null,
           })),

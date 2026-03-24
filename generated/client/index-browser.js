@@ -157,6 +157,7 @@ exports.Prisma.ProductScalarFieldEnum = {
   visible_web: 'visible_web',
   id: 'id',
   grupo: 'grupo',
+  precioBase: 'precioBase',
   tipo_producto: 'tipo_producto'
 };
 
@@ -202,7 +203,8 @@ exports.Prisma.OrderScalarFieldEnum = {
   nombre: 'nombre',
   piso: 'piso',
   provincia: 'provincia',
-  redsysOrderId: 'redsysOrderId'
+  redsysOrderId: 'redsysOrderId',
+  shippingCost: 'shippingCost'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {
@@ -215,7 +217,8 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   subtotal: 'subtotal',
   createdAt: 'createdAt',
   productId: 'productId',
-  variantId: 'variantId'
+  variantId: 'variantId',
+  proveedor: 'proveedor'
 };
 
 exports.Prisma.CouponScalarFieldEnum = {
@@ -226,6 +229,36 @@ exports.Prisma.CouponScalarFieldEnum = {
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CategoryMapScalarFieldEnum = {
+  id: 'id',
+  proveedor: 'proveedor',
+  source_categoryid: 'source_categoryid',
+  source_subcategory: 'source_subcategory',
+  source_categoria_padre: 'source_categoria_padre',
+  source_categoria_texto: 'source_categoria_texto',
+  source_grupo: 'source_grupo',
+  source_tipo_producto: 'source_tipo_producto',
+  target_categoryid: 'target_categoryid',
+  target_subcategory: 'target_subcategory',
+  priority: 'priority',
+  enabled: 'enabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ContactMessageScalarFieldEnum = {
+  id: 'id',
+  nombre: 'nombre',
+  email: 'email',
+  telefono: 'telefono',
+  asunto: 'asunto',
+  mensaje: 'mensaje',
+  fecha: 'fecha',
+  origen: 'origen',
+  leido: 'leido',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -257,7 +290,9 @@ exports.Prisma.ModelName = {
   ProductVariant: 'ProductVariant',
   Order: 'Order',
   OrderItem: 'OrderItem',
-  Coupon: 'Coupon'
+  Coupon: 'Coupon',
+  CategoryMap: 'CategoryMap',
+  ContactMessage: 'ContactMessage'
 };
 
 /**

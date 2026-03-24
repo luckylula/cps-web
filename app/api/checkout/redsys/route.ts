@@ -246,6 +246,7 @@ export async function POST(request: NextRequest) {
             create: cart.items.map((item) => {
               const productId =
                 item.productId || parseInt(item.id.replace('product-', '').replace('variant-', ''));
+              const product = products.find((p) => p.id === productId)!;
               const price = new Prisma.Decimal(item.price);
               const subtotal = price.mul(item.quantity);
 
@@ -257,6 +258,7 @@ export async function POST(request: NextRequest) {
                 quantity: item.quantity,
                 price,
                 subtotal,
+                proveedor: product.proveedor ?? null,
               };
             }),
           },

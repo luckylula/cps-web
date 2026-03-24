@@ -282,6 +282,7 @@ export async function POST(request: NextRequest) {
                 quantity: item.quantity,
                 price,
                 subtotal,
+                proveedor: product.proveedor ?? null,
               };
             }),
           },
@@ -297,6 +298,7 @@ export async function POST(request: NextRequest) {
               quantity: true,
               price: true,
               subtotal: true,
+              proveedor: true,
               product: {
                 select: {
                   id: true,
@@ -374,6 +376,7 @@ export async function POST(request: NextRequest) {
           price: Number(item.price),
           subtotal: Number(item.subtotal),
           variantId: item.variantId || null,
+          proveedor: item.proveedor ?? null,
           color: cartItem?.color || null,
           talla: cartItem?.talla || null,
         };
