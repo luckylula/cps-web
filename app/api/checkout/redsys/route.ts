@@ -181,6 +181,26 @@ export async function POST(request: NextRequest) {
       include: { variants: true },
     });
 
+    const testProduct = products[0];
+    console.log(
+      'FIRST PRODUCT:',
+      JSON.stringify({
+        id: testProduct?.id,
+        type: typeof testProduct?.id,
+        proveedor: testProduct?.proveedor,
+      }),
+    );
+
+    const cartItem = cart.items[0];
+    console.log(
+      'FIRST CART ITEM:',
+      JSON.stringify({
+        id: cartItem?.id,
+        productId: cartItem?.productId,
+        type: typeof cartItem?.productId,
+      }),
+    );
+
     const variants =
       variantIds.length > 0
         ? await prisma.productVariant.findMany({
