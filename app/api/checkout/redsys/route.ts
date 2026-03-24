@@ -247,6 +247,7 @@ export async function POST(request: NextRequest) {
               const productId =
                 item.productId || parseInt(item.id.replace('product-', '').replace('variant-', ''));
               const product = products.find((p) => p.id === productId)!;
+              console.log('producto encontrado:', product?.id, product?.proveedor);
               const price = new Prisma.Decimal(item.price);
               const subtotal = price.mul(item.quantity);
 
