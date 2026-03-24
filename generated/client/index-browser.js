@@ -218,7 +218,8 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   createdAt: 'createdAt',
   productId: 'productId',
   variantId: 'variantId',
-  proveedor: 'proveedor'
+  proveedor: 'proveedor',
+  refProveedor: 'refProveedor'
 };
 
 exports.Prisma.CouponScalarFieldEnum = {

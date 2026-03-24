@@ -6692,6 +6692,7 @@ export namespace Prisma {
     productId: number | null
     variantId: number | null
     proveedor: string | null
+    refProveedor: string | null
   }
 
   export type OrderItemMaxAggregateOutputType = {
@@ -6706,6 +6707,7 @@ export namespace Prisma {
     productId: number | null
     variantId: number | null
     proveedor: string | null
+    refProveedor: string | null
   }
 
   export type OrderItemCountAggregateOutputType = {
@@ -6720,6 +6722,7 @@ export namespace Prisma {
     productId: number
     variantId: number
     proveedor: number
+    refProveedor: number
     _all: number
   }
 
@@ -6752,6 +6755,7 @@ export namespace Prisma {
     productId?: true
     variantId?: true
     proveedor?: true
+    refProveedor?: true
   }
 
   export type OrderItemMaxAggregateInputType = {
@@ -6766,6 +6770,7 @@ export namespace Prisma {
     productId?: true
     variantId?: true
     proveedor?: true
+    refProveedor?: true
   }
 
   export type OrderItemCountAggregateInputType = {
@@ -6780,6 +6785,7 @@ export namespace Prisma {
     productId?: true
     variantId?: true
     proveedor?: true
+    refProveedor?: true
     _all?: true
   }
 
@@ -6881,6 +6887,7 @@ export namespace Prisma {
     productId: number
     variantId: number | null
     proveedor: string | null
+    refProveedor: string | null
     _count: OrderItemCountAggregateOutputType | null
     _avg: OrderItemAvgAggregateOutputType | null
     _sum: OrderItemSumAggregateOutputType | null
@@ -6914,6 +6921,7 @@ export namespace Prisma {
     productId?: boolean
     variantId?: boolean
     proveedor?: boolean
+    refProveedor?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
@@ -6930,6 +6938,7 @@ export namespace Prisma {
     productId?: boolean
     variantId?: boolean
     proveedor?: boolean
+    refProveedor?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
@@ -6946,6 +6955,7 @@ export namespace Prisma {
     productId?: boolean
     variantId?: boolean
     proveedor?: boolean
+    refProveedor?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
@@ -6962,9 +6972,10 @@ export namespace Prisma {
     productId?: boolean
     variantId?: boolean
     proveedor?: boolean
+    refProveedor?: boolean
   }
 
-  export type OrderItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "productName" | "productSlug" | "quantity" | "price" | "subtotal" | "createdAt" | "productId" | "variantId" | "proveedor", ExtArgs["result"]["orderItem"]>
+  export type OrderItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "productName" | "productSlug" | "quantity" | "price" | "subtotal" | "createdAt" | "productId" | "variantId" | "proveedor" | "refProveedor", ExtArgs["result"]["orderItem"]>
   export type OrderItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     product?: boolean | ProductDefaultArgs<ExtArgs>
@@ -6996,6 +7007,7 @@ export namespace Prisma {
       productId: number
       variantId: number | null
       proveedor: string | null
+      refProveedor: string | null
     }, ExtArgs["result"]["orderItem"]>
     composites: {}
   }
@@ -7432,6 +7444,7 @@ export namespace Prisma {
     readonly productId: FieldRef<"OrderItem", 'Int'>
     readonly variantId: FieldRef<"OrderItem", 'Int'>
     readonly proveedor: FieldRef<"OrderItem", 'String'>
+    readonly refProveedor: FieldRef<"OrderItem", 'String'>
   }
     
 
@@ -11269,7 +11282,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     productId: 'productId',
     variantId: 'variantId',
-    proveedor: 'proveedor'
+    proveedor: 'proveedor',
+    refProveedor: 'refProveedor'
   };
 
   export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
@@ -11964,6 +11978,7 @@ export namespace Prisma {
     productId?: IntFilter<"OrderItem"> | number
     variantId?: IntNullableFilter<"OrderItem"> | number | null
     proveedor?: StringNullableFilter<"OrderItem"> | string | null
+    refProveedor?: StringNullableFilter<"OrderItem"> | string | null
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
   }
@@ -11980,6 +11995,7 @@ export namespace Prisma {
     productId?: SortOrder
     variantId?: SortOrderInput | SortOrder
     proveedor?: SortOrderInput | SortOrder
+    refProveedor?: SortOrderInput | SortOrder
     order?: OrderOrderByWithRelationInput
     product?: ProductOrderByWithRelationInput
   }
@@ -11999,6 +12015,7 @@ export namespace Prisma {
     productId?: IntFilter<"OrderItem"> | number
     variantId?: IntNullableFilter<"OrderItem"> | number | null
     proveedor?: StringNullableFilter<"OrderItem"> | string | null
+    refProveedor?: StringNullableFilter<"OrderItem"> | string | null
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
   }, "id">
@@ -12015,6 +12032,7 @@ export namespace Prisma {
     productId?: SortOrder
     variantId?: SortOrderInput | SortOrder
     proveedor?: SortOrderInput | SortOrder
+    refProveedor?: SortOrderInput | SortOrder
     _count?: OrderItemCountOrderByAggregateInput
     _avg?: OrderItemAvgOrderByAggregateInput
     _max?: OrderItemMaxOrderByAggregateInput
@@ -12037,6 +12055,7 @@ export namespace Prisma {
     productId?: IntWithAggregatesFilter<"OrderItem"> | number
     variantId?: IntNullableWithAggregatesFilter<"OrderItem"> | number | null
     proveedor?: StringNullableWithAggregatesFilter<"OrderItem"> | string | null
+    refProveedor?: StringNullableWithAggregatesFilter<"OrderItem"> | string | null
   }
 
   export type CouponWhereInput = {
@@ -12905,6 +12924,7 @@ export namespace Prisma {
     createdAt?: Date | string
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
     order: OrderCreateNestedOneWithoutItemsInput
     product: ProductCreateNestedOneWithoutOrderItemsInput
   }
@@ -12921,6 +12941,7 @@ export namespace Prisma {
     productId: number
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
   }
 
   export type OrderItemUpdateInput = {
@@ -12933,6 +12954,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
     product?: ProductUpdateOneRequiredWithoutOrderItemsNestedInput
   }
@@ -12949,6 +12971,7 @@ export namespace Prisma {
     productId?: IntFieldUpdateOperationsInput | number
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemCreateManyInput = {
@@ -12963,6 +12986,7 @@ export namespace Prisma {
     productId: number
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
   }
 
   export type OrderItemUpdateManyMutationInput = {
@@ -12975,6 +12999,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemUncheckedUpdateManyInput = {
@@ -12989,6 +13014,7 @@ export namespace Prisma {
     productId?: IntFieldUpdateOperationsInput | number
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CouponCreateInput = {
@@ -13835,6 +13861,7 @@ export namespace Prisma {
     productId?: SortOrder
     variantId?: SortOrder
     proveedor?: SortOrder
+    refProveedor?: SortOrder
   }
 
   export type OrderItemAvgOrderByAggregateInput = {
@@ -13857,6 +13884,7 @@ export namespace Prisma {
     productId?: SortOrder
     variantId?: SortOrder
     proveedor?: SortOrder
+    refProveedor?: SortOrder
   }
 
   export type OrderItemMinOrderByAggregateInput = {
@@ -13871,6 +13899,7 @@ export namespace Prisma {
     productId?: SortOrder
     variantId?: SortOrder
     proveedor?: SortOrder
+    refProveedor?: SortOrder
   }
 
   export type OrderItemSumOrderByAggregateInput = {
@@ -14622,6 +14651,7 @@ export namespace Prisma {
     createdAt?: Date | string
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
     order: OrderCreateNestedOneWithoutItemsInput
   }
 
@@ -14636,6 +14666,7 @@ export namespace Prisma {
     createdAt?: Date | string
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
   }
 
   export type OrderItemCreateOrConnectWithoutProductInput = {
@@ -14724,6 +14755,7 @@ export namespace Prisma {
     productId?: IntFilter<"OrderItem"> | number
     variantId?: IntNullableFilter<"OrderItem"> | number | null
     proveedor?: StringNullableFilter<"OrderItem"> | string | null
+    refProveedor?: StringNullableFilter<"OrderItem"> | string | null
   }
 
   export type ProductVariantUpsertWithWhereUniqueWithoutProductInput = {
@@ -14916,6 +14948,7 @@ export namespace Prisma {
     createdAt?: Date | string
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
     product: ProductCreateNestedOneWithoutOrderItemsInput
   }
 
@@ -14930,6 +14963,7 @@ export namespace Prisma {
     productId: number
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
   }
 
   export type OrderItemCreateOrConnectWithoutOrderInput = {
@@ -15235,6 +15269,7 @@ export namespace Prisma {
     createdAt?: Date | string
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
   }
 
   export type ProductVariantCreateManyProductInput = {
@@ -15265,6 +15300,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
   }
 
@@ -15279,6 +15315,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemUncheckedUpdateManyWithoutProductInput = {
@@ -15292,6 +15329,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductVariantUpdateWithoutProductInput = {
@@ -15358,6 +15396,7 @@ export namespace Prisma {
     productId: number
     variantId?: number | null
     proveedor?: string | null
+    refProveedor?: string | null
   }
 
   export type OrderItemUpdateWithoutOrderInput = {
@@ -15370,6 +15409,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneRequiredWithoutOrderItemsNestedInput
   }
 
@@ -15384,6 +15424,7 @@ export namespace Prisma {
     productId?: IntFieldUpdateOperationsInput | number
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemUncheckedUpdateManyWithoutOrderInput = {
@@ -15397,6 +15438,7 @@ export namespace Prisma {
     productId?: IntFieldUpdateOperationsInput | number
     variantId?: NullableIntFieldUpdateOperationsInput | number | null
     proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    refProveedor?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

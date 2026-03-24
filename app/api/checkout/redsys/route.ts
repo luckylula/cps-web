@@ -329,6 +329,7 @@ export async function POST(request: NextRequest) {
                   price,
                   subtotal,
                   proveedor: product.proveedor ?? null,
+                  refProveedor: product.ref_proveedor ?? null,
                 };
               });
             })(),

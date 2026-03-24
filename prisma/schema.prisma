@@ -129,7 +129,8 @@ model OrderItem {
   createdAt   DateTime @default(now())
   productId   Int
   variantId   Int?
-  proveedor   String?  @db.VarChar(50)
+  proveedor    String? @db.VarChar(50)
+  refProveedor String? @db.VarChar(100)
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product     Product  @relation(fields: [productId], references: [id])
 
