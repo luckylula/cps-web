@@ -14,8 +14,14 @@ export default function Footer() {
           <Link href="/politica-de-cookies" className="hover:text-gray-700">
             Política de Cookies
           </Link>
+          <Link href="/politica-de-envios" className="hover:text-gray-700">
+            Política de Envíos
+          </Link>
+          <Link href="/politica-de-devoluciones" className="hover:text-gray-700">
+            Política de Devoluciones
+          </Link>
         </div>
-        <p>© 2025 Control Play Sports, S.L. Todos los derechos reservados.</p>
+        <p>© 2025 Control Play Services, S.L. Todos los derechos reservados.</p>
       </div>
     </footer>
   );

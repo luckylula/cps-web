@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Aviso Legal y Condiciones de Uso',
-  description: 'Aviso Legal y Condiciones de Uso de CONTROL PLAY SPORTS, S.L.',
+  description: 'Aviso Legal y Condiciones de Uso de CONTROL PLAY SERVICES, S.L.',
   robots: {
     index: false,
     follow: false,
@@ -25,7 +25,7 @@ export default function AvisoLegalPage() {
             Sociedad de la Informacion y del Comercio Electronico (LSSI-CE), se informa al usuario
             de los datos identificativos del titular:
           </p>
-          <p>- Razon social: CONTROL PLAY SPORTS, S.L.</p>
+          <p>- Razon social: CONTROL PLAY SERVICES, S.L.</p>
           <p>- CIF: G65565228</p>
           <p>
             - Domicilio social: CL SANT MIQUEL 63 - 08620 - SANT VICENC DELS HORTS - BARCELONA
@@ -39,7 +39,7 @@ export default function AvisoLegalPage() {
           <h2 className="text-2xl font-semibold text-gray-900">2. Objeto</h2>
           <p>
             El presente Aviso Legal regula el acceso y utilizacion del sitio web
-            www.cpmaterialdeportivo.com, titularidad de CONTROL PLAY SPORTS, S.L., asi como los
+            www.cpmaterialdeportivo.com, titularidad de CONTROL PLAY SERVICES, S.L., asi como los
             servicios ofrecidos a traves del mismo, principalmente la venta de material deportivo.
           </p>
           <p>
@@ -75,7 +75,7 @@ export default function AvisoLegalPage() {
           <p>
             Todos los contenidos del Sitio Web (textos, fotografias, graficos, imagenes, tecnologia,
             software, logotipos, marcas, nombres comerciales, bases de datos y disenos) son
-            propiedad de CONTROL PLAY SPORTS, S.L. o de terceros que han autorizado su uso, y estan
+            propiedad de CONTROL PLAY SERVICES, S.L. o de terceros que han autorizado su uso, y estan
             protegidos por la legislacion vigente en materia de propiedad intelectual e industrial.
           </p>
           <p>
@@ -87,7 +87,7 @@ export default function AvisoLegalPage() {
         <section className="mt-8 space-y-3">
           <h2 className="text-2xl font-semibold text-gray-900">5. Responsabilidad</h2>
           <p>
-            CONTROL PLAY SPORTS, S.L. no se hace responsable de los danos y perjuicios que pudieran
+            CONTROL PLAY SERVICES, S.L. no se hace responsable de los danos y perjuicios que pudieran
             derivarse de:
           </p>
           <p>- La utilizacion del Sitio Web de forma contraria al presente Aviso Legal.</p>
@@ -123,7 +123,7 @@ export default function AvisoLegalPage() {
         <section className="mt-8 space-y-3">
           <h2 className="text-2xl font-semibold text-gray-900">8. Modificaciones</h2>
           <p>
-            CONTROL PLAY SPORTS, S.L. se reserva el derecho a modificar en cualquier momento el
+            CONTROL PLAY SERVICES, S.L. se reserva el derecho a modificar en cualquier momento el
             presente Aviso Legal. Se recomienda al usuario que lo lea detenidamente cada vez que
             acceda al Sitio Web.
           </p>

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Politica de Cookies',
-  description: 'Politica de Cookies de CONTROL PLAY SPORTS, S.L.',
+  description: 'Politica de Cookies de CONTROL PLAY SERVICES, S.L.',
   robots: {
     index: false,
     follow: false,

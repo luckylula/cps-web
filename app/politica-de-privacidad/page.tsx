@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Politica de Privacidad',
-  description: 'Politica de Privacidad de CONTROL PLAY SPORTS, S.L.',
+  description: 'Politica de Privacidad de CONTROL PLAY SERVICES, S.L.',
   robots: {
     index: false,
     follow: false,
@@ -18,7 +18,7 @@ export default function PoliticaDePrivacidadPage() {
 
         <section className="mt-8 space-y-3">
           <h2 className="text-2xl font-semibold text-gray-900">1. Responsable del tratamiento</h2>
-          <p>- Responsable: CONTROL PLAY SPORTS, S.L.</p>
+          <p>- Responsable: CONTROL PLAY SERVICES, S.L.</p>
           <p>- CIF: G65565228</p>
           <p>- Domicilio: CL SANT MIQUEL 63 - 08620 - SANT VICENC DELS HORTS - BARCELONA</p>
           <p>- Telefono: 930102191</p>
@@ -129,7 +129,7 @@ export default function PoliticaDePrivacidadPage() {
         <section className="mt-8 space-y-3">
           <h2 className="text-2xl font-semibold text-gray-900">8. Seguridad</h2>
           <p>
-            CONTROL PLAY SPORTS, S.L. ha adoptado las medidas tecnicas y organizativas necesarias
+            CONTROL PLAY SERVICES, S.L. ha adoptado las medidas tecnicas y organizativas necesarias
             para garantizar la seguridad de los datos personales conforme a la normativa vigente.
           </p>
         </section>
