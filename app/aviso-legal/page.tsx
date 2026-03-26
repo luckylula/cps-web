@@ -28,6 +28,10 @@ export default function AvisoLegalPage() {
           <p>- Razon social: CONTROL PLAY SERVICES, S.L.</p>
           <p>- CIF: G65565228</p>
           <p>
+            - Registro Mercantil: Inscrita en el Registro Mercantil de Barcelona, Entrada 37022111,
+            Folio 142, Hoja 498792, Seccion General, con fecha 03/02/2017.
+          </p>
+          <p>
             - Domicilio social: CL SANT MIQUEL 63 - 08620 - SANT VICENC DELS HORTS - BARCELONA
           </p>
           <p>- Telefono: 930102191</p>
