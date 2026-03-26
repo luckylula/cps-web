@@ -8,6 +8,7 @@ import ImageCarousel from "./components/ImageCarousel";
 import Navigation from "@/app/components/Navigation";
 import ContactForm from "./components/ContactForm";
 import { navigationStructure } from "@/app/lib/navigationStructure";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const catEscolar = navigationStructure.find((c) => c.slug === "material-escolar");
@@ -500,11 +501,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-6 px-8 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
-          <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

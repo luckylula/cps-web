@@ -13,6 +13,7 @@ import { convertProductsToClient } from '@/app/lib/productUtils';
 import { navigationStructure } from '@/app/lib/navigationStructure';
 import { getSubcategoryNameFromSlug } from '@/app/lib/categoryTree';
 import { resolveProductImageUrl } from '@/app/lib/imageUtils';
+import Footer from '@/components/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -317,11 +318,7 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-8 border-t border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto text-center text-gray-500 text-sm font-light">
-          <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import CartButton from "@/app/components/CartButton";
 import SearchBar from "@/app/components/SearchBar";
 import FavoritesButton from "@/app/components/FavoritesButton";
 import Navigation from "@/app/components/Navigation";
+import Footer from "@/components/Footer";
 
 interface Product {
   id: number;
@@ -254,11 +255,7 @@ export default function EquipacionTextilPage() {
       )}
 
       {/* Footer */}
-      <footer className="py-8 px-8 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm font-light">
-          <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
+import CookieBanner from "@/components/CookieBanner";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -49,6 +50,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  analytics_storage: 'denied',
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied'
+});
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${poppins.variable} antialiased`}
         suppressHydrationWarning
@@ -56,6 +73,7 @@ export default function RootLayout({
         <CartProvider>
           <FavoritesProvider>
             {children}
+            <CookieBanner />
           </FavoritesProvider>
         </CartProvider>
       </body>

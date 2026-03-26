@@ -13,6 +13,7 @@ import SearchBar from "@/app/components/SearchBar";
 import ImageGallery from "@/app/components/ImageGallery";
 import Navigation from "@/app/components/Navigation";
 import { getSubcategorySlug, getGrupoSlug } from "@/app/lib/navigationMapping";
+import Footer from "@/components/Footer";
 
 interface ProductVariant {
   id: number;
@@ -782,11 +783,7 @@ export default function ArticuloPage({ params }: PageProps) {
       )}
 
       {/* Footer */}
-      <footer className="py-8 px-8 border-t border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto text-center text-gray-500 text-sm font-light">
-          <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

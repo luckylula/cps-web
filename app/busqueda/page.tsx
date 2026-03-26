@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Navigation from "@/app/components/Navigation";
 import ProductCard from "@/app/components/ProductCard";
 import SearchBar from "@/app/components/SearchBar";
+import Footer from "@/components/Footer";
 
 interface Product {
   id: number;
@@ -132,11 +133,7 @@ function BusquedaContent() {
         </div>
       </section>
 
-      <footer className="py-8 px-8 border-t border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto text-center text-gray-500 text-sm font-light">
-          <p>© 2024 Control Play Services S.L. Todos los derechos reservados.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
