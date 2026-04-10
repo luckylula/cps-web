@@ -4,7 +4,6 @@ import { useState } from "react";
 import SafeImage from "@/app/components/SafeImage";
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
-import CartButton from "@/app/components/CartButton";
 import Navigation from "@/app/components/Navigation";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
 
@@ -142,7 +141,7 @@ export default function CarritoPage() {
             </div>
             <Link
               href="/"
-              className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors"
+              className="inline-block px-6 py-3 bg-black hover:bg-gray-900 text-white font-semibold rounded-lg transition-colors"
             >
               Volver a la tienda
             </Link>
@@ -174,7 +173,7 @@ export default function CarritoPage() {
             </div>
             <Link
               href="/"
-              className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors"
+              className="inline-block px-6 py-3 bg-black hover:bg-gray-900 text-white font-semibold rounded-lg transition-colors"
             >
               Volver a la tienda
             </Link>
@@ -189,25 +188,7 @@ export default function CarritoPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
-          <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
-            <Link href="/" className="text-white text-lg md:text-xl font-semibold tracking-tight hover:text-orange-300 transition-colors">
-              CPS Material Deportivo
-            </Link>
-            <ul className="flex items-center gap-3 md:gap-6 flex-wrap text-xs md:text-sm">
-              <li>
-                <Link href="/" className="text-white hover:text-orange-300 transition-colors font-medium py-2 px-1">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <CartButton />
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-4xl font-light text-gray-900 mb-8">Mi Carrito</h1>
@@ -340,7 +321,7 @@ export default function CarritoPage() {
               </h2>
               <Link
                 href="/carrito/checkout"
-                className="w-full bg-[#003366] hover:bg-[#004080] text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 Ir a Checkout
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -441,7 +422,7 @@ export default function CarritoPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#003366] hover:bg-[#004080] text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>

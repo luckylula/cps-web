@@ -41,7 +41,7 @@ function SuccessContent() {
         </p>
         <Link
           href="/"
-          className="inline-block bg-[#003366] hover:bg-[#004080] text-white font-semibold py-2.5 px-6 rounded transition-colors"
+          className="inline-block bg-black hover:bg-gray-900 text-white font-semibold py-2.5 px-6 rounded transition-colors"
         >
           Volver a la tienda
         </Link>

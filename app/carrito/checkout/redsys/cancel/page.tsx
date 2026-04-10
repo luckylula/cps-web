@@ -19,13 +19,13 @@ function CancelContent() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/carrito"
-            className="inline-block bg-[#003366] hover:bg-[#004080] text-white font-semibold py-2.5 px-6 rounded transition-colors"
+            className="inline-block bg-black hover:bg-gray-900 text-white font-semibold py-2.5 px-6 rounded transition-colors"
           >
             Volver al carrito
           </Link>
           <Link
             href="/"
-            className="inline-block border border-gray-300 text-gray-700 font-semibold py-2.5 px-6 rounded hover:bg-gray-50 transition-colors"
+            className="inline-block bg-black hover:bg-gray-900 text-white font-semibold py-2.5 px-6 rounded transition-colors"
           >
             Ir a la tienda
           </Link>
