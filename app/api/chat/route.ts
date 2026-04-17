@@ -10,12 +10,15 @@ type ChatMessage = {
 type ChatRequestBody = {
   message?: string;
   conversationHistory?: ChatMessage[];
+  stream?: boolean;
 };
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-3-5-haiku-20241022";
+const MODEL = "claude-3-haiku-20240307";
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
+const SAFE_REPLACEMENT_MESSAGE =
+  "Tenemos una amplia gama de productos. ¿Qué tipo de producto buscas? Por ejemplo: material educativo, balones, colchonetas, puzzles...";
 
 const requestLogByIp = new Map<string, number[]>();
 
@@ -39,6 +42,29 @@ function extractKeywords(input: string): string[] {
     0,
     8,
   );
+}
+
+function filterForbiddenWords(text: string): string {
+  const forbiddenPatterns = [
+    /miniland/i,
+    /jim\s+sports/i,
+    /made\s+for\s+sport/i,
+    /marca[s]?/i,
+    /proveedor(es)?/i,
+    /fabricante[s]?/i,
+    /esa\s+marca/i,
+    /otra[s]?\s+marca[s]?/i,
+    /similar(es)?\s+de\s+otra[s]?\s+marca[s]?/i,
+    /no\s+(tenemos|ofrecemos|disponemos).*marca/i,
+  ];
+
+  for (const pattern of forbiddenPatterns) {
+    if (pattern.test(text)) {
+      return SAFE_REPLACEMENT_MESSAGE;
+    }
+  }
+
+  return text;
 }
 
 async function searchProducts(query: string) {
@@ -110,17 +136,34 @@ function buildSystemPrompt(products: Awaited<ReturnType<typeof searchProducts>>)
           .join("\n")
       : "No se han encontrado productos para esta consulta en este momento.";
 
-  return [
-    "Eres el asistente virtual de CP Material Deportivo.",
-    "Ayudas a buscar productos, precios y presupuestos.",
-    "Responde siempre en espanol, con tono profesional pero cercano.",
-    "Si no encuentras productos exactos, sugiere alternativas por categoria o uso.",
-    "Cuando cites productos, usa solo la informacion proporcionada en CONTEXTO_CATALOGO.",
-    "No inventes precios ni disponibilidad.",
-    "",
-    "CONTEXTO_CATALOGO:",
-    catalogContext,
-  ].join("\n");
+  const systemPrompt = `Eres el asistente de CP Material Deportivo.
+
+REGLAS ABSOLUTAS - NO NEGOCIABLES:
+
+1. NUNCA uses las palabras: "marca", "proveedor", "fabricante", "Miniland", "Jim Sports", "Made for Sport"
+2. Si el usuario menciona cualquier nombre de marca, IGNORALO COMPLETAMENTE
+3. Responde SOLO sobre tipos de productos, categorias y caracteristicas
+
+EJEMPLOS DE RESPUESTAS CORRECTAS:
+
+Usuario: "Que productos de Miniland teneis?"
+Tu: "Tenemos una amplia gama de productos. ¿Que tipo de producto buscas? Por ejemplo: material educativo, balones, colchonetas, puzzles..."
+
+Usuario: "Teneis balones Jim Sports?"
+Tu: "Tenemos una amplia gama de productos. ¿Que tipo de producto buscas? Por ejemplo: material educativo, balones, colchonetas, puzzles..."
+
+Usuario: "Necesito puzzles educativos"
+Tu: [Busca puzzles y muestralos SIN mencionar marca]
+
+NUNCA digas:
+- "No tenemos productos de X marca"
+- "Tenemos productos de X marca"
+- "Productos similares de otras marcas"
+- Cualquier cosa que mencione marcas
+
+Actua como si las marcas no existieran. Solo existen tipos de productos.`;
+
+  return `${systemPrompt}\n\nCONTEXTO_CATALOGO:\n${catalogContext}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -136,6 +179,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as ChatRequestBody;
     const message = body.message?.trim();
     const conversationHistory = Array.isArray(body.conversationHistory) ? body.conversationHistory : [];
+    const stream = !!body.stream;
 
     if (!message) {
       return NextResponse.json({ error: "El mensaje es obligatorio." }, { status: 400 });
@@ -165,6 +209,7 @@ export async function POST(request: NextRequest) {
         temperature: 0.4,
         system,
         messages,
+        stream,
       }),
     });
 
@@ -174,16 +219,113 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No se pudo obtener respuesta del asistente." }, { status: 502 });
     }
 
-    const data = (await anthropicResponse.json()) as {
-      content?: Array<{ type: string; text?: string }>;
-    };
-    const responseText =
-      data.content?.filter((c) => c.type === "text").map((c) => c.text ?? "").join("\n").trim() ||
-      "No he podido generar una respuesta en este momento.";
+    if (!stream) {
+      const data = (await anthropicResponse.json()) as {
+        content?: Array<{ type: string; text?: string }>;
+      };
+      const responseText =
+        data.content?.filter((c) => c.type === "text").map((c) => c.text ?? "").join("\n").trim() ||
+        "No he podido generar una respuesta en este momento.";
+      const safeResponseText = filterForbiddenWords(responseText);
 
-    return NextResponse.json({
-      response: responseText,
-      products,
+      return NextResponse.json({
+        response: safeResponseText,
+        products,
+      });
+    }
+
+    const decoder = new TextDecoder();
+    const encoder = new TextEncoder();
+
+    const streamBody = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        controller.enqueue(encoder.encode(`${JSON.stringify({ type: "products", products })}\n`));
+        let buffer = "";
+        const reader = anthropicResponse.body?.getReader();
+        if (!reader) {
+          controller.enqueue(
+            encoder.encode(`${JSON.stringify({ type: "error", error: "No se pudo leer el stream." })}\n`),
+          );
+          controller.close();
+          return;
+        }
+        let streamBlocked = false;
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+
+            const lines = buffer.split("\n");
+            buffer = lines.pop() ?? "";
+
+            for (const rawLine of lines) {
+              const line = rawLine.trim();
+              if (!line.startsWith("data:")) continue;
+              const dataText = line.replace(/^data:\s*/, "");
+              if (dataText === "[DONE]") {
+                controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done" })}\n`));
+                continue;
+              }
+              try {
+                const event = JSON.parse(dataText) as {
+                  type?: string;
+                  delta?: { text?: string };
+                };
+                if (event.type === "content_block_delta" && event.delta?.text) {
+                  const filteredChunk = filterForbiddenWords(event.delta.text);
+                  if (filteredChunk !== event.delta.text) {
+                    streamBlocked = true;
+                    controller.enqueue(
+                      encoder.encode(`${JSON.stringify({ type: "chunk", text: SAFE_REPLACEMENT_MESSAGE })}\n`),
+                    );
+                    controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done" })}\n`));
+                    try {
+                      await reader.cancel();
+                    } catch {
+                      // noop
+                    }
+                    break;
+                  }
+                  controller.enqueue(
+                    encoder.encode(`${JSON.stringify({ type: "chunk", text: filteredChunk })}\n`),
+                  );
+                }
+              } catch {
+                // ignora lineas no parseables del stream
+              }
+            }
+            if (streamBlocked) {
+              break;
+            }
+          }
+          if (!streamBlocked) {
+            controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done" })}\n`));
+          }
+        } catch (error) {
+          controller.enqueue(
+            encoder.encode(
+              `${JSON.stringify({
+                type: "error",
+                error: error instanceof Error ? error.message : "Error en streaming.",
+              })}\n`,
+            ),
+          );
+        } finally {
+          controller.close();
+          reader.releaseLock();
+        }
+      },
+    });
+
+    return new NextResponse(streamBody, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/x-ndjson; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+      },
     });
   } catch (error) {
     console.error("[API Chat] Error:", error);
