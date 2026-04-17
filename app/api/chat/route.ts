@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
           controller.close();
           return;
         }
-        let streamBlocked = false;
+        let accumulatedResponse = "";
 
         try {
           while (true) {
@@ -274,35 +274,18 @@ export async function POST(request: NextRequest) {
                   delta?: { text?: string };
                 };
                 if (event.type === "content_block_delta" && event.delta?.text) {
-                  const filteredChunk = filterForbiddenWords(event.delta.text);
-                  if (filteredChunk !== event.delta.text) {
-                    streamBlocked = true;
-                    controller.enqueue(
-                      encoder.encode(`${JSON.stringify({ type: "chunk", text: SAFE_REPLACEMENT_MESSAGE })}\n`),
-                    );
-                    controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done" })}\n`));
-                    try {
-                      await reader.cancel();
-                    } catch {
-                      // noop
-                    }
-                    break;
-                  }
-                  controller.enqueue(
-                    encoder.encode(`${JSON.stringify({ type: "chunk", text: filteredChunk })}\n`),
-                  );
+                  accumulatedResponse += event.delta.text;
                 }
               } catch {
                 // ignora lineas no parseables del stream
               }
             }
-            if (streamBlocked) {
-              break;
-            }
           }
-          if (!streamBlocked) {
-            controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done" })}\n`));
+          const finalResponse = filterForbiddenWords(accumulatedResponse);
+          if (finalResponse.trim().length > 0) {
+            controller.enqueue(encoder.encode(`${JSON.stringify({ type: "chunk", text: finalResponse })}\n`));
           }
+          controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done" })}\n`));
         } catch (error) {
           controller.enqueue(
             encoder.encode(
