@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import CookieBanner from "@/components/CookieBanner";
+import Chatbot from "@/app/components/Chatbot";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -74,6 +75,7 @@ gtag('consent', 'default', {
           <FavoritesProvider>
             {children}
             <CookieBanner />
+            <Chatbot />
           </FavoritesProvider>
         </CartProvider>
       </body>
