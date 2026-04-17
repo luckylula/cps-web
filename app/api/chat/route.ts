@@ -44,6 +44,38 @@ function extractKeywords(input: string): string[] {
   );
 }
 
+function normalizeTerm(term: string): string {
+  return term
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function expandWithSynonyms(baseTerms: string[]): string[] {
+  const synonyms: Record<string, string[]> = {
+    futbol: ["futbol", "balon", "porteria", "campo"],
+    baloncesto: ["baloncesto", "basket", "canasta", "aro"],
+    gimnasia: ["gimnasia", "colchoneta", "tatami", "espalderas"],
+  };
+
+  const expanded = new Set<string>();
+  for (const term of baseTerms) {
+    const normalized = normalizeTerm(term);
+    if (!normalized) continue;
+    expanded.add(term);
+    expanded.add(normalized);
+
+    for (const [key, related] of Object.entries(synonyms)) {
+      if (normalized.includes(key) || key.includes(normalized)) {
+        related.forEach((r) => expanded.add(r));
+      }
+    }
+  }
+
+  return [...expanded].filter((t) => t.length >= 3);
+}
+
 function filterForbiddenWords(text: string): string {
   const forbiddenPatterns = [
     /miniland/i,
@@ -68,49 +100,76 @@ function filterForbiddenWords(text: string): string {
 }
 
 async function searchProducts(query: string) {
-  const keywords = extractKeywords(query);
-  const whereOr: Prisma.ProductWhereInput[] = [
-    {
-      name: {
-        contains: query,
-        mode: "insensitive",
-      },
-    },
-    {
-      description: {
-        contains: query,
-        mode: "insensitive",
-      },
-    },
-  ];
+  const LIMIT = 15;
+  const baseKeywords = extractKeywords(query);
+  const normalizedQuery = normalizeTerm(query);
 
-  for (const kw of keywords) {
-    whereOr.push(
-      { name: { contains: kw, mode: "insensitive" } },
-      { description: { contains: kw, mode: "insensitive" } },
-      { subcategory: { contains: kw, mode: "insensitive" } },
-      { categoryId: { contains: kw, mode: "insensitive" } },
-    );
+  const exactTerms = [...new Set([query, normalizedQuery, ...baseKeywords])].filter((t) => t.length >= 3);
+  const broadTerms = expandWithSynonyms(exactTerms);
+
+  const baseWhere: Prisma.ProductWhereInput = {
+    visible_web: true,
+    activo: true,
+  };
+
+  async function findByField(
+    field: "name" | "subcategory" | "categoryId" | "description",
+    terms: string[],
+    excludedIds: number[],
+  ) {
+    if (terms.length === 0) return [];
+    const orFilters = terms.map((term) => ({
+      [field]: {
+        contains: term,
+        mode: "insensitive" as const,
+      },
+    }));
+
+    return prisma.product.findMany({
+      where: {
+        ...baseWhere,
+        ...(excludedIds.length > 0 ? { id: { notIn: excludedIds } } : {}),
+        OR: orFilters,
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        categoryId: true,
+        subcategory: true,
+        description: true,
+      },
+      orderBy: [{ featured: "desc" }, { updatedAt: "desc" }],
+      take: LIMIT,
+    });
   }
 
-  const products = await prisma.product.findMany({
-    where: {
-      visible_web: true,
-      activo: true,
-      OR: whereOr,
-    },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      price: true,
-      categoryId: true,
-      subcategory: true,
-      description: true,
-    },
-    take: 8,
-    orderBy: [{ featured: "desc" }, { updatedAt: "desc" }],
-  });
+  async function runRankedSearch(terms: string[]) {
+    const ranked: Awaited<ReturnType<typeof findByField>> = [];
+    const pushUnique = (items: Awaited<ReturnType<typeof findByField>>) => {
+      for (const item of items) {
+        if (ranked.length >= LIMIT) break;
+        if (!ranked.some((r) => r.id === item.id)) ranked.push(item);
+      }
+    };
+
+    const getExcludedIds = () => ranked.map((r) => r.id);
+
+    // Prioridad de relevancia: name > subcategory > categoryId > description
+    pushUnique(await findByField("name", terms, getExcludedIds()));
+    if (ranked.length < LIMIT) pushUnique(await findByField("subcategory", terms, getExcludedIds()));
+    if (ranked.length < LIMIT) pushUnique(await findByField("categoryId", terms, getExcludedIds()));
+    if (ranked.length < LIMIT) pushUnique(await findByField("description", terms, getExcludedIds()));
+
+    return ranked;
+  }
+
+  let products = await runRankedSearch(exactTerms);
+  if (products.length === 0) {
+    // Si no hay coincidencias exactas, ampliar términos con sinónimos/relacionados
+    products = await runRankedSearch(broadTerms);
+  }
 
   return products.map((p) => ({
     id: p.id,

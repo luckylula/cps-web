@@ -33,6 +33,17 @@ const STORAGE_KEY = "cp_chatbot_history";
 const INITIAL_ASSISTANT_MESSAGE =
   "Hola, soy el asistente de CP Material Deportivo. Te ayudo a encontrar productos, precios y preparar un presupuesto.";
 
+function getStoredHistory(): ChatMessage[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { messages?: ChatMessage[] };
+    return Array.isArray(parsed.messages) ? parsed.messages : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +56,8 @@ export default function Chatbot() {
   ]);
   const [products, setProducts] = useState<ProductMatch[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [avatarError, setAvatarError] = useState(false);
+  const [hasStoredHistory, setHasStoredHistory] = useState(false);
 
   const historyForApi = useMemo(
     () => messages.filter((m) => m.role === "user" || m.role === "assistant").slice(-10),
@@ -52,16 +65,7 @@ export default function Chatbot() {
   );
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { messages?: ChatMessage[] };
-      if (Array.isArray(parsed.messages) && parsed.messages.length > 0) {
-        setMessages(parsed.messages);
-      }
-    } catch {
-      // noop
-    }
+    setHasStoredHistory(getStoredHistory().length > 1);
   }, []);
 
   useEffect(() => {
@@ -78,6 +82,23 @@ export default function Chatbot() {
     setProducts([]);
     setError(null);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ messages: initial }));
+    setHasStoredHistory(false);
+  }
+
+  function openChatFresh() {
+    setIsOpen(true);
+    setInput("");
+    setError(null);
+    setProducts([]);
+    setMessages([{ role: "assistant", content: INITIAL_ASSISTANT_MESSAGE }]);
+  }
+
+  function loadPreviousHistory() {
+    const history = getStoredHistory();
+    if (history.length === 0) return;
+    setMessages(history);
+    setProducts([]);
+    setError(null);
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -175,14 +196,43 @@ export default function Chatbot() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setIsOpen((v) => !v)}
-        className="fixed bottom-5 right-5 z-[70] flex h-14 w-14 items-center justify-center rounded-full bg-[#f4a261] text-2xl shadow-lg hover:brightness-95"
-        aria-label="Abrir chat"
-      >
-        💬
-      </button>
+      <div className="fixed bottom-4 right-4 z-[70] flex items-center gap-3 md:bottom-5 md:right-5">
+        {!isOpen && (
+          <button
+            type="button"
+            onClick={openChatFresh}
+            className="hidden rounded-full bg-[#1a1a2e] px-4 py-2 text-sm font-medium text-white shadow-md transition-transform duration-200 hover:scale-[1.02] md:block"
+            aria-label="Abrir chatbot"
+          >
+            Chatbot · Te ayudamos
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={() => {
+            if (isOpen) {
+              setIsOpen(false);
+              return;
+            }
+            openChatFresh();
+          }}
+          className="h-[78px] w-[78px] overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5 transition-transform duration-200 hover:scale-105 md:h-[92px] md:w-[92px]"
+          aria-label="Abrir chat"
+        >
+          {avatarError ? (
+            <span className="flex h-full w-full items-center justify-center text-2xl">💬</span>
+          ) : (
+            <img
+              src="/categorias/PLAY LOGO.jpeg"
+              alt="Asistente PLAY"
+              className="h-full w-full object-cover"
+              style={{ objectPosition: "center -6px" }}
+              onError={() => setAvatarError(true)}
+            />
+          )}
+        </button>
+      </div>
 
       {isOpen && (
         <div className="fixed bottom-24 right-4 z-[70] h-[70vh] w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl md:right-5">
@@ -192,6 +242,15 @@ export default function Chatbot() {
               <button type="button" onClick={clearConversation} className="text-xs opacity-90 hover:opacity-100">
                 Limpiar conversacion
               </button>
+              {hasStoredHistory && (
+                <button
+                  type="button"
+                  onClick={loadPreviousHistory}
+                  className="text-xs opacity-90 hover:opacity-100"
+                >
+                  Ver historial anterior
+                </button>
+              )}
               <button type="button" onClick={() => setIsOpen(false)} className="text-sm opacity-80 hover:opacity-100">
                 Cerrar
               </button>
