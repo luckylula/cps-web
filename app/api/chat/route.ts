@@ -52,11 +52,67 @@ function normalizeTerm(term: string): string {
     .trim();
 }
 
+function keywordVariants(word: string): string[] {
+  const variants = new Set<string>([word]);
+  if (word.endsWith("es") && word.length > 4) {
+    variants.add(word.slice(0, -2));
+  }
+  if (word.endsWith("s") && word.length > 3) {
+    variants.add(word.slice(0, -1));
+  }
+  return [...variants];
+}
+
+function extractImportantKeywords(input: string): string[] {
+  const stopWords = new Set([
+    "para",
+    "con",
+    "sin",
+    "del",
+    "de",
+    "la",
+    "el",
+    "los",
+    "las",
+    "y",
+    "o",
+    "en",
+    "por",
+    "un",
+    "una",
+    "unos",
+    "unas",
+  ]);
+
+  const baseWords = normalizeTerm(input).split(/[^a-z0-9ñü]+/).filter((w) => w.length >= 3 && !stopWords.has(w));
+  const variants = new Set<string>();
+  for (const word of baseWords) {
+    keywordVariants(word).forEach((v) => variants.add(v));
+  }
+  return [...variants];
+}
+
 function expandWithSynonyms(baseTerms: string[]): string[] {
-  const synonyms: Record<string, string[]> = {
+  const synonymMap: Record<string, string[]> = {
     futbol: ["futbol", "balon", "porteria", "campo"],
     baloncesto: ["baloncesto", "basket", "canasta", "aro"],
     gimnasia: ["gimnasia", "colchoneta", "tatami", "espalderas"],
+    gimnasio: [
+      "gimnasio",
+      "colchoneta",
+      "espaldera",
+      "espalderas",
+      "tatami",
+      "quitamiedo",
+      "plinto",
+      "potro",
+      "banco sueco",
+      "aro",
+      "cuerda",
+      "pica",
+    ],
+    escolar: ["escolar", "educacion", "colegio", "infantil", "primaria"],
+    fitness: ["fitness", "pesas", "mancuerna", "barra", "disco", "banco", "step"],
   };
 
   const expanded = new Set<string>();
@@ -66,7 +122,7 @@ function expandWithSynonyms(baseTerms: string[]): string[] {
     expanded.add(term);
     expanded.add(normalized);
 
-    for (const [key, related] of Object.entries(synonyms)) {
+    for (const [key, related] of Object.entries(synonymMap)) {
       if (normalized.includes(key) || key.includes(normalized)) {
         related.forEach((r) => expanded.add(r));
       }
@@ -81,9 +137,9 @@ function filterForbiddenWords(text: string): string {
     /miniland/i,
     /jim\s+sports/i,
     /made\s+for\s+sport/i,
-    /marca[s]?/i,
-    /proveedor(es)?/i,
-    /fabricante[s]?/i,
+    /\bmarca[s]?\b/i,
+    /\bproveedor(es)?\b/i,
+    /\bfabricante[s]?\b/i,
     /esa\s+marca/i,
     /otra[s]?\s+marca[s]?/i,
     /similar(es)?\s+de\s+otra[s]?\s+marca[s]?/i,
@@ -101,77 +157,116 @@ function filterForbiddenWords(text: string): string {
 
 async function searchProducts(query: string) {
   const LIMIT = 15;
-  const baseKeywords = extractKeywords(query);
-  const normalizedQuery = normalizeTerm(query);
+  const importantKeywords = extractImportantKeywords(query);
+  const expandedTerms = expandWithSynonyms([query, ...importantKeywords]);
+  const searchTerms = [...new Set([...importantKeywords, ...expandedTerms])].filter((t) => t.length >= 3);
 
-  const exactTerms = [...new Set([query, normalizedQuery, ...baseKeywords])].filter((t) => t.length >= 3);
-  const broadTerms = expandWithSynonyms(exactTerms);
+  const orFilters: Prisma.ProductWhereInput[] = [];
+  for (const term of searchTerms) {
+    orFilters.push(
+      { name: { contains: term, mode: "insensitive" } },
+      { subcategory: { contains: term, mode: "insensitive" } },
+      { categoryId: { contains: term, mode: "insensitive" } },
+      { description: { contains: term, mode: "insensitive" } },
+    );
+  }
 
-  const baseWhere: Prisma.ProductWhereInput = {
-    visible_web: true,
-    activo: true,
-  };
-
-  async function findByField(
-    field: "name" | "subcategory" | "categoryId" | "description",
-    terms: string[],
-    excludedIds: number[],
-  ) {
-    if (terms.length === 0) return [];
-    const orFilters = terms.map((term) => ({
-      [field]: {
-        contains: term,
-        mode: "insensitive" as const,
-      },
-    }));
-
-    return prisma.product.findMany({
-      where: {
-        ...baseWhere,
-        ...(excludedIds.length > 0 ? { id: { notIn: excludedIds } } : {}),
-        OR: orFilters,
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        price: true,
-        categoryId: true,
-        subcategory: true,
-        description: true,
-      },
-      orderBy: [{ featured: "desc" }, { updatedAt: "desc" }],
-      take: LIMIT,
+  // Refuerzo específico para subcategorías habituales en búsquedas de gimnasio/escolar/fitness
+  const aggressiveTerms = new Set(["gimnasio", "escolar", "fitness"]);
+  const hasAggressiveIntent = searchTerms.some((t) => aggressiveTerms.has(normalizeTerm(t)));
+  if (hasAggressiveIntent) {
+    ["Gimnasio", "Escolar", "Fitness"].forEach((sub) => {
+      orFilters.push(
+        { subcategory: { equals: sub, mode: "insensitive" } },
+        { subcategory: { contains: sub, mode: "insensitive" } },
+      );
     });
   }
 
-  async function runRankedSearch(terms: string[]) {
-    const ranked: Awaited<ReturnType<typeof findByField>> = [];
-    const pushUnique = (items: Awaited<ReturnType<typeof findByField>>) => {
-      for (const item of items) {
-        if (ranked.length >= LIMIT) break;
-        if (!ranked.some((r) => r.id === item.id)) ranked.push(item);
+  const candidates = await prisma.product.findMany({
+    where: {
+      visible_web: true,
+      activo: true,
+      OR: orFilters,
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      price: true,
+      categoryId: true,
+      subcategory: true,
+      description: true,
+      featured: true,
+      updatedAt: true,
+    },
+    take: 250,
+  });
+
+  const colchonetaKeywords = ["colchoneta", "colchonetas"];
+  const gimnasiaKeywords = ["gimnasia", "gimnasio"];
+
+  const scored = candidates
+    .map((p) => {
+      const name = normalizeTerm(p.name);
+      const sub = normalizeTerm(p.subcategory ?? "");
+      const cat = normalizeTerm(p.categoryId);
+      const desc = normalizeTerm(p.description ?? "");
+      const haystack = `${name} ${sub} ${cat} ${desc}`;
+
+      let score = 0;
+      let hasAnyKeyword = false;
+      let hasColchoneta = false;
+      let hasGimnasia = false;
+
+      for (const kw of importantKeywords) {
+        const kwNorm = normalizeTerm(kw);
+        if (!kwNorm) continue;
+        const inName = name.includes(kwNorm);
+        const inSub = sub.includes(kwNorm);
+        const inCat = cat.includes(kwNorm);
+        const inDesc = desc.includes(kwNorm);
+
+        if (inName || inSub || inCat || inDesc) hasAnyKeyword = true;
+        if (inName) score += 90;
+        if (inSub) score += 55;
+        if (inCat) score += 35;
+        if (inDesc) score += 18;
       }
-    };
 
-    const getExcludedIds = () => ranked.map((r) => r.id);
+      for (const kw of searchTerms) {
+        const kwNorm = normalizeTerm(kw);
+        if (!kwNorm) continue;
+        if (name.includes(kwNorm)) score += 20;
+        else if (sub.includes(kwNorm)) score += 12;
+        else if (cat.includes(kwNorm)) score += 8;
+        else if (desc.includes(kwNorm)) score += 5;
+      }
 
-    // Prioridad de relevancia: name > subcategory > categoryId > description
-    pushUnique(await findByField("name", terms, getExcludedIds()));
-    if (ranked.length < LIMIT) pushUnique(await findByField("subcategory", terms, getExcludedIds()));
-    if (ranked.length < LIMIT) pushUnique(await findByField("categoryId", terms, getExcludedIds()));
-    if (ranked.length < LIMIT) pushUnique(await findByField("description", terms, getExcludedIds()));
+      if (colchonetaKeywords.some((k) => name.includes(k))) {
+        hasColchoneta = true;
+        score += 120; // prioridad máxima para colchonetas en nombre
+      }
+      if (gimnasiaKeywords.some((k) => haystack.includes(k))) {
+        hasGimnasia = true;
+        score += 60; // prioridad media para gimnasia
+      }
+      if (hasColchoneta && hasGimnasia) {
+        score += 80; // prioridad alta cuando coinciden ambas
+      }
 
-    return ranked;
-  }
+      if (p.featured) score += 4;
 
-  let products = await runRankedSearch(exactTerms);
-  if (products.length === 0) {
-    // Si no hay coincidencias exactas, ampliar términos con sinónimos/relacionados
-    products = await runRankedSearch(broadTerms);
-  }
+      return { ...p, score, hasAnyKeyword };
+    })
+    .filter((p) => p.hasAnyKeyword || p.score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return b.updatedAt.getTime() - a.updatedAt.getTime();
+    })
+    .slice(0, LIMIT);
 
-  return products.map((p) => ({
+  return scored.map((p) => ({
     id: p.id,
     name: p.name,
     slug: p.slug,
@@ -222,7 +317,13 @@ NUNCA digas:
 
 Actua como si las marcas no existieran. Solo existen tipos de productos.`;
 
-  return `${systemPrompt}\n\nCONTEXTO_CATALOGO:\n${catalogContext}`;
+  const criticalRule = `IMPORTANTE:
+- SOLO menciona productos que REALMENTE aparecen en el CONTEXTO_CATALOGO
+- NUNCA inventes productos, colores, tallas o caracteristicas
+- Si no tienes informacion exacta, di 'tenemos varias opciones disponibles' sin inventar detalles
+- Cuando hables de productos especificos, COPIA el nombre exacto del catalogo`;
+
+  return `${systemPrompt}\n\n${criticalRule}\n\nCONTEXTO_CATALOGO:\n${catalogContext}`;
 }
 
 export async function POST(request: NextRequest) {
