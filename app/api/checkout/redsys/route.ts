@@ -25,6 +25,7 @@ interface CreateOrderRequest {
     nombre: string;
     apellidos: string;
     nifCif?: string;
+    requestInvoice?: boolean;
     direccion: string;
     piso?: string;
     codigoPostal: string;
@@ -341,6 +342,7 @@ export async function POST(request: NextRequest) {
       DS_MERCHANT_MERCHANTNAME: redsysMerchantName,
       DS_MERCHANT_TERMINAL: redsysTerminal,
       DS_MERCHANT_TRANSACTIONTYPE: '0', // Autorización
+      DS_MERCHANT_MERCHANTDATA: customer.requestInvoice ? 'invoice=1' : 'invoice=0',
       DS_MERCHANT_MERCHANTURL: `${baseUrl}/api/checkout/redsys/notification`,
       DS_MERCHANT_URLOK: `${baseUrl}/carrito/checkout/redsys/success?order=${encodeURIComponent(
         redsysOrderId,

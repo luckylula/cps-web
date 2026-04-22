@@ -14,7 +14,15 @@ type ChatRequestBody = {
 };
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-3-haiku-20240307";
+const DEFAULT_MODELS = [
+  "claude-haiku-4-5",
+  "claude-sonnet-4-5",
+  "claude-sonnet-4-6",
+  "claude-opus-4-6",
+  "claude-3-5-haiku-20241022",
+  "claude-3-5-sonnet-20241022",
+  "claude-3-haiku-20240307",
+] as const;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const SAFE_REPLACEMENT_MESSAGE =
@@ -292,6 +300,42 @@ function buildSystemPrompt(products: Awaited<ReturnType<typeof searchProducts>>)
 
   const systemPrompt = `Eres el asistente de CP Material Deportivo.
 
+INFORMACION DE LA EMPRESA CP MATERIAL DEPORTIVO:
+
+## TRANSPORTE Y ENVIOS:
+- Envio GRATIS en pedidos > 100EUR (peninsula)
+- Pedidos < 100EUR: 8EUR (peninsula)
+- Baleares: 15EUR fijo
+- Plazo: 48-72h (2-3 dias laborables)
+- Algunos productos bajo pedido: hasta 1 mes
+- Canarias/Ceuta/Melilla: presupuesto individual
+
+## DEVOLUCIONES:
+- 14 dias naturales derecho de desistimiento
+- Producto en condiciones adecuadas
+- Costes de devolucion a cargo del cliente
+- NO se aceptan: productos personalizados o bajo pedido
+- Contacto: pedidos@cpmaterialdeportivo.com / 622 61 33 93
+
+## FORMAS DE PAGO:
+- PayPal
+- Tarjeta debito/credito
+- Bizum
+
+## FACTURA:
+- Durante el checkout hay checkbox "Quiero factura"
+- Requiere introducir NIF/CIF
+
+## CONTACTO:
+- Email: pedidos@cpmaterialdeportivo.com
+- Telefono: 622 61 33 93
+- WhatsApp: 622 61 33 93
+
+IMPORTANTE:
+- Si el usuario pregunta sobre envios, devoluciones, pagos o factura, usa esta informacion.
+- Si buscas un producto que no encuentras, sugiere contactar al equipo.
+- Manten tono profesional pero cercano.
+
 REGLAS ABSOLUTAS - NO NEGOCIABLES:
 
 1. NUNCA uses las palabras: "marca", "proveedor", "fabricante", "Miniland", "Jim Sports", "Made for Sport"
@@ -356,26 +400,51 @@ export async function POST(request: NextRequest) {
       .slice(-12)
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const anthropicResponse = await fetch(ANTHROPIC_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 500,
-        temperature: 0.4,
-        system,
-        messages,
-        stream,
-      }),
-    });
+    const modelCandidates = [
+      process.env.ANTHROPIC_MODEL?.trim(),
+      ...DEFAULT_MODELS,
+    ].filter((m): m is string => Boolean(m));
+
+    let anthropicResponse: Response | null = null;
+    let lastErrorText = "";
+
+    for (const model of modelCandidates) {
+      anthropicResponse = await fetch(ANTHROPIC_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 500,
+          temperature: 0.4,
+          system,
+          messages,
+          stream,
+        }),
+      });
+
+      if (anthropicResponse.ok) {
+        break;
+      }
+
+      const errorText = await anthropicResponse.text();
+      lastErrorText = errorText;
+      const isModelNotFound = anthropicResponse.status === 404 && errorText.includes("not_found_error");
+      console.error("[API Chat] Anthropic error:", anthropicResponse.status, errorText, "| model:", model);
+      if (!isModelNotFound) {
+        break;
+      }
+    }
+
+    if (!anthropicResponse) {
+      return NextResponse.json({ error: "No se pudo obtener respuesta del asistente." }, { status: 502 });
+    }
 
     if (!anthropicResponse.ok) {
-      const errorText = await anthropicResponse.text();
-      console.error("[API Chat] Anthropic error:", anthropicResponse.status, errorText);
+      console.error("[API Chat] Anthropic error final:", anthropicResponse.status, lastErrorText);
       return NextResponse.json({ error: "No se pudo obtener respuesta del asistente." }, { status: 502 });
     }
 

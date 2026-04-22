@@ -14,6 +14,8 @@ type ProductMatch = {
   price: number | null;
 };
 
+type ContactType = "email" | "telefono" | "whatsapp";
+
 function sanitizeProducts(input: unknown): ProductMatch[] {
   if (!Array.isArray(input)) return [];
   return input
@@ -30,8 +32,14 @@ function sanitizeProducts(input: unknown): ProductMatch[] {
 }
 
 const STORAGE_KEY = "cp_chatbot_history";
-const INITIAL_ASSISTANT_MESSAGE =
-  "Hola, soy el asistente de CP Material Deportivo. Te ayudo a encontrar productos, precios y preparar un presupuesto.";
+const INITIAL_ASSISTANT_MESSAGE = `Hola, soy PLAY, el asistente de CP Material Deportivo.
+Si tienes alguna duda sobre algun producto, tienes alguna pregunta o no encuentras lo que estas buscando, escribeme aqui:
+PREGUNTA:
+COMO TE CONTACTAMOS?
+DAR OPCION: TLF / WHASTAP / EMAIL:
+NOMBRE:
+Y el equipo de CP Material Deportivo te contestara en 24/48h.
+Gracias!`;
 
 function getStoredHistory(): ChatMessage[] {
   try {
@@ -58,11 +66,21 @@ export default function Chatbot() {
   const [error, setError] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState(false);
   const [hasStoredHistory, setHasStoredHistory] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [contactName, setContactName] = useState("");
+  const [contactQuestion, setContactQuestion] = useState("");
+  const [contactType, setContactType] = useState<ContactType>("email");
+  const [contactValue, setContactValue] = useState("");
+  const [contactError, setContactError] = useState<string | null>(null);
+  const [isSendingContact, setIsSendingContact] = useState(false);
 
   const historyForApi = useMemo(
     () => messages.filter((m) => m.role === "user" || m.role === "assistant").slice(-10),
     [messages],
   );
+  const hasUserMessages = useMemo(() => messages.some((m) => m.role === "user"), [messages]);
+  const isContactFormValid =
+    contactName.trim().length > 0 && contactQuestion.trim().length > 0 && contactValue.trim().length > 0;
 
   useEffect(() => {
     setHasStoredHistory(getStoredHistory().length > 1);
@@ -99,6 +117,61 @@ export default function Chatbot() {
     setMessages(history);
     setProducts([]);
     setError(null);
+  }
+
+  function resetContactForm() {
+    setContactName("");
+    setContactQuestion("");
+    setContactType("email");
+    setContactValue("");
+    setContactError(null);
+    setIsSendingContact(false);
+  }
+
+  function openContactModal() {
+    setContactError(null);
+    setIsContactModalOpen(true);
+  }
+
+  async function handleSendContact() {
+    if (!isContactFormValid || isSendingContact) return;
+
+    setContactError(null);
+    setIsSendingContact(true);
+
+    try {
+      const res = await fetch("http://54.37.231.89:5678/webhook/chatbot-consulta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: contactName.trim(),
+          pregunta: contactQuestion.trim(),
+          tipoContacto: contactType,
+          contacto: contactValue.trim(),
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error enviando consulta.");
+      }
+
+      setIsContactModalOpen(false);
+      resetContactForm();
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "✅ Consulta enviada. El equipo de CP Material Deportivo te respondera en 24-48h.",
+        },
+      ]);
+    } catch {
+      const failMessage =
+        "❌ Error al enviar consulta. Por favor, escribe a pedidos@cpmaterialdeportivo.com";
+      setContactError(failMessage);
+      setMessages((prev) => [...prev, { role: "assistant", content: failMessage }]);
+    } finally {
+      setIsSendingContact(false);
+    }
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -224,10 +297,10 @@ export default function Chatbot() {
             <span className="flex h-full w-full items-center justify-center text-2xl">💬</span>
           ) : (
             <img
-              src="/categorias/PLAY LOGO.jpeg"
+              src="/categorias/chatbot%20logo.png"
               alt="Asistente PLAY"
               className="h-full w-full object-cover"
-              style={{ objectPosition: "center -6px" }}
+              style={{ objectPosition: "center center" }}
               onError={() => setAvatarError(true)}
             />
           )}
@@ -241,6 +314,9 @@ export default function Chatbot() {
             <div className="flex items-center gap-3">
               <button type="button" onClick={clearConversation} className="text-xs opacity-90 hover:opacity-100">
                 Limpiar conversacion
+              </button>
+              <button type="button" onClick={openContactModal} className="text-xs opacity-90 hover:opacity-100">
+                📧 Contactar con el equipo
               </button>
               {hasStoredHistory && (
                 <button
@@ -261,7 +337,7 @@ export default function Chatbot() {
             {messages.map((message, idx) => (
               <div
                 key={`${message.role}-${idx}`}
-                className={`max-w-[90%] rounded-lg px-3 py-2 text-sm ${
+                className={`max-w-[90%] whitespace-pre-line rounded-lg px-3 py-2 text-sm ${
                   message.role === "user"
                     ? "ml-auto bg-[#f4a261] text-black"
                     : "mr-auto bg-white text-gray-800 shadow-sm"
@@ -292,6 +368,21 @@ export default function Chatbot() {
                 </ul>
               </div>
             )}
+
+            {!isLoading && hasUserMessages && products.length === 0 && (
+              <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
+                <p className="mb-2 text-xs text-orange-900">
+                  ¿No encuentras lo que buscas? Te ayudamos personalmente.
+                </p>
+                <button
+                  type="button"
+                  onClick={openContactModal}
+                  className="rounded-md bg-[#1a1a2e] px-3 py-2 text-xs font-medium text-white hover:opacity-95"
+                >
+                  📧 Contactar con el equipo
+                </button>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="border-t border-gray-200 bg-white p-3">
@@ -313,6 +404,109 @@ export default function Chatbot() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+      {isOpen && isContactModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-4 shadow-2xl md:p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h4 className="text-sm font-semibold text-gray-900">Contactar con el equipo</h4>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsContactModalOpen(false);
+                  setContactError(null);
+                }}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-700">Nombre *</label>
+                <input
+                  type="text"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  placeholder="Tu nombre"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#f4a261]"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-700">Tu pregunta *</label>
+                <textarea
+                  value={contactQuestion}
+                  onChange={(e) => setContactQuestion(e.target.value)}
+                  placeholder="Describe tu consulta..."
+                  rows={4}
+                  className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#f4a261]"
+                />
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-medium text-gray-700">¿Como te contactamos? *</p>
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="contactType"
+                      value="email"
+                      checked={contactType === "email"}
+                      onChange={() => setContactType("email")}
+                    />
+                    Email
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="contactType"
+                      value="telefono"
+                      checked={contactType === "telefono"}
+                      onChange={() => setContactType("telefono")}
+                    />
+                    Telefono
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="contactType"
+                      value="whatsapp"
+                      checked={contactType === "whatsapp"}
+                      onChange={() => setContactType("whatsapp")}
+                    />
+                    WhatsApp
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-700">
+                  {contactType === "email" ? "Email" : contactType === "telefono" ? "Telefono" : "WhatsApp"} *
+                </label>
+                <input
+                  type={contactType === "email" ? "email" : "tel"}
+                  value={contactValue}
+                  onChange={(e) => setContactValue(e.target.value)}
+                  placeholder={contactType === "email" ? "tu@email.com" : "622 61 33 93"}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#f4a261]"
+                />
+              </div>
+            </div>
+
+            {contactError && <p className="mt-3 text-xs text-red-600">{contactError}</p>}
+
+            <button
+              type="button"
+              onClick={handleSendContact}
+              disabled={!isContactFormValid || isSendingContact}
+              className="mt-4 w-full rounded-md bg-[#f4a261] px-4 py-2 text-sm font-medium text-black disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSendingContact ? "Enviando..." : "Enviar consulta"}
+            </button>
+          </div>
         </div>
       )}
     </>

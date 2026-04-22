@@ -20,6 +20,7 @@ interface CreateOrderRequest {
     nombre: string;
     apellidos: string;
     nifCif?: string;
+    requestInvoice?: boolean;
 
     // Dirección detallada
     direccion: string;        // Calle y número
@@ -367,6 +368,7 @@ export async function POST(request: NextRequest) {
         email: customer.email,
         telefono: customer.telefono,
         paymentMethod: customer.paymentMethod || null,
+        requestInvoice: Boolean(customer.requestInvoice),
       },
       items: order.items.map((item, index) => {
         const cartItem = cart.items[index];
@@ -386,6 +388,7 @@ export async function POST(request: NextRequest) {
         discountAmount: order.discountAmount ? Number(order.discountAmount) : 0,
       } : null,
       total: Number(order.total),
+      requestInvoice: Boolean(customer.requestInvoice),
     };
 
     console.log('==========================================');

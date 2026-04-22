@@ -5,6 +5,18 @@ import { isResponseCodeOk, getResponseCodeMessage } from 'redsys-easy';
 
 const N8N_WEBHOOK_URL = 'https://n8n.lulamartinezperez.com/webhook/pedido-confirmado';
 
+function parseInvoiceRequest(notification: Record<string, unknown>): boolean {
+  const rawValue =
+    notification.Ds_MerchantData ??
+    notification.DS_MERCHANTDATA ??
+    notification.ds_merchantdata;
+
+  if (typeof rawValue !== 'string') return false;
+
+  const normalized = rawValue.trim().toLowerCase();
+  return normalized === 'invoice=1' || normalized === '1' || normalized === 'true';
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!process.env.REDSYS_SECRET_KEY) {
@@ -62,6 +74,7 @@ export async function POST(request: NextRequest) {
 
     const redsysOrderId = notification.Ds_Order;
     const responseCode = notification.Ds_Response;
+    const requestInvoice = parseInvoiceRequest(notification as Record<string, unknown>);
 
     if (!redsysOrderId) {
       console.error('[Redsys Notification] Falta Ds_Order en la notificación');
@@ -114,6 +127,7 @@ export async function POST(request: NextRequest) {
             email: order.email,
             telefono: order.telefono,
             paymentMethod: order.paymentMethod ?? 'redsys',
+            requestInvoice,
           },
           items: order.items.map((item) => ({
             name: item.productName,
@@ -131,6 +145,7 @@ export async function POST(request: NextRequest) {
             : null,
           total: Number(order.total),
           shippingCost: order.shippingCost != null ? Number(order.shippingCost) : 0,
+          requestInvoice,
         };
 
         const webhookResponse = await fetch(N8N_WEBHOOK_URL, {

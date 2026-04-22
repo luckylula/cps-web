@@ -17,6 +17,7 @@ interface FormData {
   telefono: string;
   nombreCentro: string;
   nifCif: string;
+  requestInvoice: boolean;
 
   // Dirección (separada)
   direccion: string;
@@ -54,6 +55,7 @@ function CheckoutForm() {
     telefono: "",
     nombreCentro: "",
     nifCif: "",
+    requestInvoice: false,
     // Dirección
     direccion: "",
     piso: "",
@@ -93,9 +95,13 @@ function CheckoutForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    const nextValue =
+      e.target instanceof HTMLInputElement && e.target.type === "checkbox"
+        ? e.target.checked
+        : value;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: nextValue,
     }));
     // Limpiar error del campo cuando el usuario empiece a escribir
     if (errors[name as keyof FormErrors]) {
@@ -223,6 +229,9 @@ function CheckoutForm() {
         newErrors.nifCif = "Formato de NIF/CIF inválido";
       }
     }
+    if (formData.requestInvoice && !formData.nifCif.trim()) {
+      newErrors.nifCif = "Para solicitar factura, indica tu NIF/CIF";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -246,6 +255,7 @@ function CheckoutForm() {
             nombre: formData.nombre.trim(),
             apellidos: formData.apellidos.trim(),
             nifCif: formData.nifCif.trim() || undefined,
+            requestInvoice: formData.requestInvoice,
             direccion: formData.direccion.trim(),
             piso: formData.piso.trim() || undefined,
             codigoPostal: formData.codigoPostal.trim(),
@@ -314,6 +324,7 @@ function CheckoutForm() {
           nombre: formData.nombre.trim(),
           apellidos: formData.apellidos.trim(),
           nifCif: formData.nifCif.trim() || undefined,
+          requestInvoice: formData.requestInvoice,
           // Dirección detallada
           direccion: formData.direccion.trim(),
           piso: formData.piso.trim() || undefined,
@@ -578,11 +589,28 @@ function CheckoutForm() {
                     </div>
 
                     <div>
+                      <label className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                        <input
+                          type="checkbox"
+                          id="requestInvoice"
+                          name="requestInvoice"
+                          checked={formData.requestInvoice}
+                          onChange={handleInputChange}
+                          className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Quiero factura</span>
+                      </label>
+                    </div>
+
+                    <div>
                       <label
                         htmlFor="nifCif"
                         className="block text-sm font-medium text-gray-700 mb-2"
                       >
-                        NIF/CIF <span className="text-gray-400 text-xs font-normal">(Opcional)</span>
+                        NIF/CIF{" "}
+                        <span className="text-gray-400 text-xs font-normal">
+                          ({formData.requestInvoice ? "Obligatorio para factura" : "Opcional"})
+                        </span>
                       </label>
                       <input
                         type="text"
