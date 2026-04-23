@@ -33,13 +33,12 @@ function sanitizeProducts(input: unknown): ProductMatch[] {
 
 const STORAGE_KEY = "cp_chatbot_history";
 const INITIAL_ASSISTANT_MESSAGE = `Hola, soy PLAY, el asistente de CP Material Deportivo.
-Si tienes alguna duda sobre algun producto, tienes alguna pregunta o no encuentras lo que estas buscando, escribeme aqui:
-PREGUNTA:
-COMO TE CONTACTAMOS?
-DAR OPCION: TLF / WHASTAP / EMAIL:
-NOMBRE:
-Y el equipo de CP Material Deportivo te contestara en 24/48h.
-Gracias!`;
+Si tienes alguna duda sobre algún producto, tienes alguna pregunta o no encuentras lo que estas buscando, escríbeme aquí:
+• PREGUNTA:
+• COMO TE CONTACTAMOS?
+• TLF / WHASTAP / EMAIL:
+• NOMBRE:
+Y el equipo de CP Material Deportivo te contestara en 24/48h. Gracias!`;
 
 function getStoredHistory(): ChatMessage[] {
   try {
