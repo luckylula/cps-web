@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/client";
+import {
+  normalizeTerm,
+  sqlAccentInsensitiveContains,
+  sqlAccentInsensitiveEquals,
+} from "@/app/lib/searchUtils";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -52,13 +57,7 @@ function extractKeywords(input: string): string[] {
   );
 }
 
-function normalizeTerm(term: string): string {
-  return term
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-}
+const PRODUCT_SEARCH_FIELDS = ["name", "subcategory", "categoryId", "description"] as const;
 
 function keywordVariants(word: string): string[] {
   const variants = new Set<string>([word]);
@@ -163,53 +162,64 @@ function filterForbiddenWords(text: string): string {
   return text;
 }
 
+type ProductSearchRow = {
+  id: number;
+  name: string;
+  slug: string;
+  price: Prisma.Decimal | null;
+  categoryId: string;
+  subcategory: string | null;
+  description: string | null;
+  featured: boolean;
+  updatedAt: Date;
+};
+
 async function searchProducts(query: string) {
   const LIMIT = 15;
   const importantKeywords = extractImportantKeywords(query);
   const expandedTerms = expandWithSynonyms([query, ...importantKeywords]);
-  const searchTerms = [...new Set([...importantKeywords, ...expandedTerms])].filter((t) => t.length >= 3);
+  const searchTerms = [...new Set([...importantKeywords, ...expandedTerms])]
+    .map((t) => normalizeTerm(t))
+    .filter((t) => t.length >= 3);
 
-  const orFilters: Prisma.ProductWhereInput[] = [];
+  const orConditions: Prisma.Sql[] = [];
   for (const term of searchTerms) {
-    orFilters.push(
-      { name: { contains: term, mode: "insensitive" } },
-      { subcategory: { contains: term, mode: "insensitive" } },
-      { categoryId: { contains: term, mode: "insensitive" } },
-      { description: { contains: term, mode: "insensitive" } },
-    );
+    for (const field of PRODUCT_SEARCH_FIELDS) {
+      orConditions.push(sqlAccentInsensitiveContains(field, term, 3));
+    }
   }
 
   // Refuerzo específico para subcategorías habituales en búsquedas de gimnasio/escolar/fitness
   const aggressiveTerms = new Set(["gimnasio", "escolar", "fitness"]);
-  const hasAggressiveIntent = searchTerms.some((t) => aggressiveTerms.has(normalizeTerm(t)));
+  const hasAggressiveIntent = searchTerms.some((t) => aggressiveTerms.has(t));
   if (hasAggressiveIntent) {
-    ["Gimnasio", "Escolar", "Fitness"].forEach((sub) => {
-      orFilters.push(
-        { subcategory: { equals: sub, mode: "insensitive" } },
-        { subcategory: { contains: sub, mode: "insensitive" } },
-      );
-    });
+    for (const sub of ["Gimnasio", "Escolar", "Fitness"]) {
+      orConditions.push(sqlAccentInsensitiveEquals("subcategory", sub));
+      orConditions.push(sqlAccentInsensitiveContains("subcategory", sub));
+    }
   }
 
-  const candidates = await prisma.product.findMany({
-    where: {
-      visible_web: true,
-      activo: true,
-      OR: orFilters,
-    },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      price: true,
-      categoryId: true,
-      subcategory: true,
-      description: true,
-      featured: true,
-      updatedAt: true,
-    },
-    take: 250,
-  });
+  if (orConditions.length === 0) {
+    return [];
+  }
+
+  const candidates = await prisma.$queryRaw<ProductSearchRow[]>`
+    SELECT
+      id,
+      name,
+      slug,
+      price,
+      "categoryId",
+      subcategory,
+      description,
+      featured,
+      "updatedAt"
+    FROM "Product"
+    WHERE visible_web = true
+      AND activo = true
+      AND (${Prisma.join(orConditions, " OR ")})
+    LIMIT 250
+  `;
 
   const colchonetaKeywords = ["colchoneta", "colchonetas"];
   const gimnasiaKeywords = ["gimnasia", "gimnasio"];
@@ -251,11 +261,11 @@ async function searchProducts(query: string) {
         else if (desc.includes(kwNorm)) score += 5;
       }
 
-      if (colchonetaKeywords.some((k) => name.includes(k))) {
+      if (colchonetaKeywords.some((k) => name.includes(normalizeTerm(k)))) {
         hasColchoneta = true;
         score += 120; // prioridad máxima para colchonetas en nombre
       }
-      if (gimnasiaKeywords.some((k) => haystack.includes(k))) {
+      if (gimnasiaKeywords.some((k) => haystack.includes(normalizeTerm(k)))) {
         hasGimnasia = true;
         score += 60; // prioridad media para gimnasia
       }

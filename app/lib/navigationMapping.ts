@@ -5,6 +5,7 @@ export const slugToName: Record<string, Record<string, Record<string, string>>> 
   deportes: {
     colectivos: {
       futbol: 'Fútbol',
+      'futbol-sala': 'Fútbol Sala',
       baloncesto: 'Baloncesto',
       voleibol: 'Voleibol',
       balonmano: 'Balonmano',

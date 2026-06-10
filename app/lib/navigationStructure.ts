@@ -90,6 +90,7 @@ export const navigationStructure: Categoria[] = [
         slug: "colectivos",
         grupos: [
           { nombre: "Fútbol", slug: "futbol" },
+          { nombre: "Fútbol Sala", slug: "futbol-sala" },
           { nombre: "Baloncesto", slug: "baloncesto" },
           { nombre: "Voleibol", slug: "voleibol" },
           { nombre: "Balonmano", slug: "balonmano" },

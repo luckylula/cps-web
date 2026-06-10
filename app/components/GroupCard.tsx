@@ -5,6 +5,7 @@ import Image from 'next/image';
 const GROUPS_WITH_VIDEO: Record<string, string | true> = {
   'por-deporte-padel': 'pordeporte-padel', // video: pordeporte-padel.mp4
   futbol: true,   // futbol.mp4
+  baloncesto: 'video baloncesto chicas', // video baloncesto chicas.mp4
   voleibol: true, // voleibol.mp4
   rugby: true,    // rugby.mp4
   yoga: true,     // yoga.mp4
@@ -14,8 +15,12 @@ const GROUPS_WITH_VIDEO: Record<string, string | true> = {
 
 // Grupos con imagen personalizada por subcategoría (subcategorySlug -> grupoSlug -> nombre archivo)
 const CUSTOM_GROUP_IMAGES: Record<string, Record<string, string>> = {
+  colectivos: {
+    'futbol-sala': 'futbolsala',
+  },
   'estructuras-deportivas': {
     varios: 'variosestructuras',
+    'futbol-sala': 'futbolsala',
   },
 };
 
@@ -38,7 +43,11 @@ export default function GroupCard({ grupo, categoriaSlug, subcategorySlug }: Gro
   const imageName = customImage || grupo.slug.replace(/-/g, '');
   const videoFile = GROUPS_WITH_VIDEO[grupo.slug];
   const useVideo = !!videoFile;
-  const mediaSrc = useVideo ? `/categorias/${videoFile === true ? imageName : videoFile}.mp4` : `/categorias/${imageName}.png`;
+  const mediaSrc = encodeURI(
+    useVideo
+      ? `/categorias/${videoFile === true ? imageName : videoFile}.mp4`
+      : `/categorias/${imageName}.png`,
+  );
   
   const shouldUnoptimize = mediaSrc.includes('cdn.jimsports.shop') || 
                           mediaSrc.includes('jimsports.shop') ||
