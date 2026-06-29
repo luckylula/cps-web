@@ -6,41 +6,53 @@
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "id": "manual-trigger-v5"
     },
     {
       "parameters": {
-        "filePath": "/home/ubuntu/miniland-catalogo.csv",
+        "filePath": "/home/ubuntu/.n8n-files/miniland-catalogo.csv",
         "options": {}
       },
       "name": "Read CSV File",
       "type": "n8n-nodes-base.readBinaryFile",
       "typeVersion": 1,
-      "position": [220, 0],
+      "position": [
+        220,
+        0
+      ],
       "id": "read-csv-local-v5",
       "notes": "Lee el CSV desde el filesystem del VPS (no HTTP)"
     },
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// Decodificar CSV desde Read Binary File\n// n8n guarda: item.binary.data = { data: '<base64>', mimeType, fileName }\nlet csvText = '';\n\ntry {\n  const buffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n  csvText = buffer.toString('utf-8');\n} catch (e) {\n  const item = $input.first();\n  const binMeta = item.binary?.data;\n\n  if (binMeta && typeof binMeta === 'object' && typeof binMeta.data === 'string') {\n    csvText = Buffer.from(binMeta.data, 'base64').toString('utf-8');\n  } else if (Buffer.isBuffer(binMeta)) {\n    csvText = binMeta.toString('utf-8');\n  } else if (typeof binMeta === 'string') {\n    csvText = Buffer.from(binMeta, 'base64').toString('utf-8');\n  } else if (item.json?.data) {\n    csvText = String(item.json.data);\n  } else {\n    const keys = Object.keys(item.binary || {});\n    throw new Error('No CSV binario. binary keys: ' + keys.join(', '));\n  }\n}\n\nif (!csvText || csvText.trim().length === 0) {\n  throw new Error('CSV vacío tras decodificar UTF-8');\n}\n\nconst lines = csvText.split(/\\r?\\n/);\n\nfunction slugify(str) { return String(str || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }\nfunction cleanText(str) { if (!str) return ''; return String(str).normalize('NFC').trim(); }\nfunction norm(str) { return cleanText(str).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, ''); }\n\nfunction parseCSVLine(line) {\n  const fields = [];\n  let currentField = '';\n  let inQuotes = false;\n  for (let i = 0; i < line.length; i++) {\n    const char = line[i];\n    if (char === '\"') {\n      if (inQuotes && line[i + 1] === '\"') { currentField += '\"'; i++; }\n      else { inQuotes = !inQuotes; }\n    } else if (char === ',' && !inQuotes) { fields.push(currentField); currentField = ''; }\n    else { currentField += char; }\n  }\n  fields.push(currentField);\n  return fields;\n}\n\nfunction classifyProduct(name, description) {\n  const text = norm(name + ' ' + description);\n  if (text.match(/bebe|lactancia|biberon|chupete|humidificador|termometro.*digital|vigilabebes|cuna|cambiador/)) return { c: 'bebe', s: 'Puericultura', g: null, t: null };\n  if (text.match(/juego|puzzle|construccion|bloques|encajable|apilable|juguete/)) return { c: 'juguetes', s: 'Educativos', g: null, t: null };\n  if (text.match(/figura.*animal|animales.*figura|dinosaurio|insecto|granja/)) return { c: 'juguetes', s: 'Figuras', g: null, t: null };\n  if (text.match(/coche|vehiculo|tractor|camion|minimobil/)) return { c: 'juguetes', s: 'Vehículos', g: null, t: null };\n  if (text.match(/didactico|educativo|matematicas|numeros|letras|aprendizaje/)) return { c: 'material-escolar', s: 'Didáctico', g: null, t: null };\n  if (text.match(/manualidades|pintura|plastilina|modelado|arte/)) return { c: 'material-escolar', s: 'Manualidades', g: null, t: null };\n  return { c: 'sin-clasificar', s: 'Miniland pendiente', g: null, t: null };\n}\n\nconst products = [];\nfor (let i = 2; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n  try {\n    const fields = parseCSVLine(line);\n    const name = cleanText(fields[42]);\n    const price = parseFloat(fields[48]) || 0;\n    const ean = cleanText(fields[51]);\n    const sku = cleanText(fields[60]);\n    const description = cleanText(fields[8]);\n    const image = cleanText(fields[21]);\n    if (!sku || !name) continue;\n    const skuInterno = `M${sku}`;\n    const slug = `${slugify(name)}-${slugify(skuInterno)}`;\n    const cats = classifyProduct(name, description);\n    const imagenes = image ? [`https://minilandgroup.com/pub/media/catalog/product${image}`] : [];\n    products.push({ json: { proveedor: 'miniland', ref_proveedor: sku, sku_interno: skuInterno, name, description, precioBase: price, price: price, ean: ean || null, imagenes, slug, stock: 999, categoryId: cats.c, subcategory: cats.s, grupo: cats.g, tipo_producto: cats.t, published: true, activo: true, visible_web: false, marca: 'Miniland' }});\n  } catch (err) {}\n}\nreturn products;"
+        "jsCode": "// Miniland CSV hibrido: columna 0 = CSV Magento (comas), resto columnas ; vacias\r\nconst item = $input.first();\r\nlet csvText = '';\r\nconst binaryKeys = Object.keys(item.binary || {});\r\n\r\nfor (const key of binaryKeys.length ? binaryKeys : ['data']) {\r\n  try {\r\n    const buffer = await this.helpers.getBinaryDataBuffer(0, key);\r\n    const text = buffer.toString('utf-8');\r\n    if (text?.trim()) { csvText = text; break; }\r\n  } catch (e) {\r\n    const binMeta = item.binary?.[key];\r\n    if (binMeta?.data && typeof binMeta.data === 'string') {\r\n      csvText = Buffer.from(binMeta.data, 'base64').toString('utf-8');\r\n      if (csvText.trim()) break;\r\n    } else if (Buffer.isBuffer(binMeta)) {\r\n      csvText = binMeta.toString('utf-8');\r\n      if (csvText.trim()) break;\r\n    }\r\n  }\r\n}\r\n\r\nif (!csvText?.trim()) throw new Error('CSV vacio');\r\n\r\ncsvText = csvText.replace(/^\\uFEFF/, '');\r\n\r\nfunction slugify(str) {\r\n  return String(str || '').toLowerCase().normalize('NFD')\r\n    .replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');\r\n}\r\nfunction cleanText(str) {\r\n  if (str == null) return '';\r\n  let s = String(str).normalize('NFC').trim();\r\n  if (s.startsWith('\"') && s.endsWith('\"')) s = s.slice(1, -1).replace(/\"\"/g, '\"');\r\n  return s.trim();\r\n}\r\nfunction norm(str) {\r\n  return cleanText(str).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');\r\n}\r\nfunction stripHtml(html) {\r\n  return cleanText(String(html || '').replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' '));\r\n}\r\nfunction truncate(str, max) {\r\n  const s = cleanText(str);\r\n  return s.length <= max ? s : s.slice(0, max);\r\n}\r\nfunction parsePrice(val) {\r\n  const n = parseFloat(cleanText(val).replace(/\\s/g, '').replace(',', '.'));\r\n  return Number.isFinite(n) ? n : 0;\r\n}\r\nfunction isValidSku(sku) {\r\n  const s = cleanText(sku);\r\n  if (!s || s.length < 2 || s.length > 50) return false;\r\n  if (/[<>]/.test(s) || s.includes('http') || /\\s/.test(s)) return false;\r\n  return /^[A-Za-z0-9._-]+$/.test(s);\r\n}\r\n\r\nfunction parseCSVAll(text, delimiter) {\r\n  const rows = [];\r\n  let row = [], field = '', inQuotes = false;\r\n  for (let i = 0; i < text.length; i++) {\r\n    const c = text[i];\r\n    if (inQuotes) {\r\n      if (c === '\"') {\r\n        if (text[i + 1] === '\"') { field += '\"'; i++; }\r\n        else inQuotes = false;\r\n      } else field += c;\r\n    } else if (c === '\"') inQuotes = true;\r\n    else if (c === delimiter) { row.push(field); field = ''; }\r\n    else if (c === '\\r') continue;\r\n    else if (c === '\\n') {\r\n      row.push(field); field = '';\r\n      if (row.some((x) => cleanText(x))) rows.push(row);\r\n      row = [];\r\n    } else field += c;\r\n  }\r\n  row.push(field);\r\n  if (row.some((x) => cleanText(x))) rows.push(row);\r\n  return rows;\r\n}\r\n\r\n/** Primera celda no vacia de fila externa (;) */\r\nfunction outerCell(row) {\r\n  if (!row?.length) return '';\r\n  for (const c of row) {\r\n    const t = cleanText(c);\r\n    if (t) return t;\r\n  }\r\n  return cleanText(row[0] || '');\r\n}\r\n\r\nfunction parseInnerRow(cell) {\r\n  if (!cell) return [];\r\n  const parsed = parseCSVAll(cell, ',');\r\n  return parsed[0] || [];\r\n}\r\n\r\nfunction headerIndex(header, names) {\r\n  const h = header.map((x) => norm(x));\r\n  for (const n of names) {\r\n    const i = h.indexOf(n);\r\n    if (i >= 0) return i;\r\n  }\r\n  for (const n of names) {\r\n    const i = h.findIndex((x) => x === n || x.endsWith('_' + n));\r\n    if (i >= 0) return i;\r\n  }\r\n  return -1;\r\n}\r\n\r\nfunction buildInnerMap(header) {\r\n  const skuIdx = headerIndex(header, ['sku']);\r\n  const nameIdx = headerIndex(header, ['name']);\r\n  if (skuIdx < 0 || nameIdx < 0) return null;\r\n  return {\r\n    skuIdx,\r\n    nameIdx,\r\n    priceIdx: headerIndex(header, ['price']),\r\n    eanIdx: headerIndex(header, ['product_ean', 'ean']),\r\n    descIdx: headerIndex(header, ['description', 'short_description']),\r\n    imageIdx: headerIndex(header, ['image', 'small_image', 'thumbnail']),\r\n    refIdx: headerIndex(header, ['referencia']),\r\n  };\r\n}\r\n\r\nfunction classifyProduct(name, description) {\r\n  const text = norm(name + ' ' + description);\r\n  if (text.match(/bebe|lactancia|biberon|chupete|humidificador|termometro.*digital|vigilabebes|cuna|cambiador/))\r\n    return { c: 'bebe', s: 'Puericultura', g: null, t: null };\r\n  if (text.match(/juego|puzzle|construccion|bloques|encajable|apilable|juguete/))\r\n    return { c: 'juguetes', s: 'Educativos', g: null, t: null };\r\n  if (text.match(/figura.*animal|animales.*figura|dinosaurio|insecto|granja/))\r\n    return { c: 'juguetes', s: 'Figuras', g: null, t: null };\r\n  if (text.match(/coche|vehiculo|tractor|camion|minimobil/))\r\n    return { c: 'juguetes', s: 'Vehiculos', g: null, t: null };\r\n  if (text.match(/didactico|educativo|matematicas|numeros|letras|aprendizaje/))\r\n    return { c: 'material-escolar', s: 'Didactico', g: null, t: null };\r\n  if (text.match(/manualidades|pintura|plastilina|modelado|arte/))\r\n    return { c: 'material-escolar', s: 'Manualidades', g: null, t: null };\r\n  return { c: 'sin-clasificar', s: 'Miniland pendiente', g: null, t: null };\r\n}\r\n\r\n// --- Parse hibrido ; + coma en columna 0 ---\r\nconst outerRows = parseCSVAll(csvText, ';');\r\nif (!outerRows.length) throw new Error('CSV vacio tras parse ;');\r\n\r\nconst headerInner = parseInnerRow(outerCell(outerRows[0]));\r\nlet map = buildInnerMap(headerInner);\r\n\r\nif (!map) {\r\n  map = {\r\n    skuIdx: 60,\r\n    nameIdx: 42,\r\n    priceIdx: 48,\r\n    eanIdx: 51,\r\n    descIdx: 8,\r\n    imageIdx: 21,\r\n    refIdx: -1,\r\n  };\r\n}\r\n\r\nconst products = [];\r\nlet skipped = 0;\r\n\r\nfor (let i = 2; i < outerRows.length; i++) {\r\n  const inner = parseInnerRow(outerCell(outerRows[i]));\r\n  if (inner.length < Math.max(map.skuIdx, map.nameIdx) + 1) {\r\n    skipped++;\r\n    continue;\r\n  }\r\n\r\n  let sku = cleanText(inner[map.skuIdx]);\r\n  const name = cleanText(inner[map.nameIdx]);\r\n  if (!isValidSku(sku) && map.refIdx >= 0) {\r\n    const ref = cleanText(inner[map.refIdx]);\r\n    if (isValidSku(ref)) sku = ref;\r\n  }\r\n  if (!isValidSku(sku) || !name || name.length > 500) {\r\n    skipped++;\r\n    continue;\r\n  }\r\n\r\n  const price = map.priceIdx >= 0 ? parsePrice(inner[map.priceIdx]) : 0;\r\n  const ean = map.eanIdx >= 0 ? cleanText(inner[map.eanIdx]) : '';\r\n  const description = map.descIdx >= 0 ? stripHtml(inner[map.descIdx]) : '';\r\n  const image = map.imageIdx >= 0 ? cleanText(inner[map.imageIdx]) : '';\r\n\r\n  const imagenes = image && image.startsWith('/')\r\n    ? [`https://minilandgroup.com/pub/media/catalog/product${image}`]\r\n    : image.startsWith('http') ? [image] : [];\r\n\r\n  const cats = classifyProduct(name, description);\r\n  products.push({\r\n    json: {\r\n      proveedor: 'miniland',\r\n      ref_proveedor: truncate(sku, 100),\r\n      sku_interno: truncate(`M${sku}`, 100),\r\n      name: truncate(name, 500),\r\n      description: truncate(description, 8000),\r\n      precioBase: price,\r\n      price: price,\r\n      ean: truncate(ean, 50) || null,\r\n      imagenes,\r\n      slug: truncate(`${slugify(name)}-m${slugify(sku)}`, 200),\r\n      stock: 999,\r\n      categoryId: cats.c,\r\n      subcategory: cats.s,\r\n      grupo: cats.g,\r\n      tipo_producto: cats.t,\r\n      published: true,\r\n      activo: true,\r\n      visible_web: false,\r\n      marca: 'Miniland',\r\n    },\r\n  });\r\n}\r\n\r\nif (products.length === 0) {\r\n  const sample = parseInnerRow(outerCell(outerRows[2] || []));\r\n  throw new Error(\r\n    `0 productos. outer=${outerRows.length} headerInner=${headerInner.length} ` +\r\n    `map=${JSON.stringify(map)} sampleCols=${sample.length} skipped=${skipped} ` +\r\n    `sampleSku=${JSON.stringify(cleanText(sample[map.skuIdx]))} sampleName=${JSON.stringify(cleanText(sample[map.nameIdx])?.slice(0, 60))}`\r\n  );\r\n}\r\n\r\nreturn products;\r\n"
       },
       "name": "Parse + Classify",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [440, 0],
+      "position": [
+        440,
+        0
+      ],
       "id": "parse-classify-v5"
     },
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "function roundUp(price) { return Math.ceil(price * 2) / 2; }\nfunction calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  const precioConIva = precio * 1.21;\n  return { precioBase: parseFloat(precio.toFixed(2)), precioFinal: roundUp(precioConIva * multiplicador) };\n}\nconst results = [];\nfor (const item of $input.all()) {\n  const precios = calcularPrecioConMargen(item.json.precioBase);\n  results.push({ json: { ...item.json, precioBase: precios.precioBase, price: precios.precioFinal }});\n}\nreturn results;"
+        "jsCode": "function calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  const precioConMargen = precio * multiplicador;\n  const precioFinal = precioConMargen * 1.21;\n  return { precioBase: parseFloat(precio.toFixed(2)), precioFinal: parseFloat(precioFinal.toFixed(2)) };\n}\nconst results = [];\nfor (const item of $input.all()) {\n  const precios = calcularPrecioConMargen(item.json.precioBase);\n  results.push({ json: { ...item.json, precioBase: precios.precioBase, price: precios.precioFinal }});\n}\nreturn results;"
       },
       "name": "Apply Margins",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [660, 0],
+      "position": [
+        660,
+        0
+      ],
       "id": "apply-margins-v5"
     },
     {
@@ -51,7 +63,10 @@
       "name": "Loop Batches",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [880, 0],
+      "position": [
+        880,
+        0
+      ],
       "id": "loop-batches-v5"
     },
     {
@@ -63,7 +78,10 @@
       "name": "Insert to Neon",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
-      "position": [1100, 0],
+      "position": [
+        1100,
+        0
+      ],
       "id": "insert-neon-v5",
       "alwaysOutputData": true,
       "credentials": {
@@ -76,26 +94,77 @@
   ],
   "connections": {
     "Manual Trigger": {
-      "main": [[{"node": "Read CSV File", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Read CSV File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Read CSV File": {
-      "main": [[{"node": "Parse + Classify", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Parse + Classify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Parse + Classify": {
-      "main": [[{"node": "Apply Margins", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Apply Margins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Apply Margins": {
-      "main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Loop Batches": {
-      "main": [[], [{"node": "Insert to Neon", "type": "main", "index": 0}]]
+      "main": [
+        [],
+        [
+          {
+            "node": "Insert to Neon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Insert to Neon": {
-      "main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "id": "miniland-sync-v5-local",
   "meta": {
     "templateCredsSetupCompleted": true
