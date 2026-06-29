@@ -41,7 +41,6 @@ interface Product {
   grupo?: string | null;
   sku_interno?: string | null;
   marca?: string | null;
-  proveedor?: string | null;
   color?: string | null;
   talla?: string | null;
   variants?: ProductVariant[];
@@ -330,13 +329,6 @@ export default function ArticuloPage({ params }: PageProps) {
       ? product.variants.some((v) => v.stock > 0)
       : product.stock > 0;
 
-  // Formatear nombre del proveedor
-  const proveedorName = product.proveedor === 'jim_sports' 
-    ? 'Jim Sports' 
-    : product.proveedor === 'made_for_sport' 
-    ? 'Made for Sport' 
-    : product.proveedor || 'N/A';
-
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -411,17 +403,14 @@ export default function ArticuloPage({ params }: PageProps) {
 
             {/* Product Info Section - Right Column */}
             <div className="space-y-6">
-              {/* SKU y Proveedor */}
-              <div className="flex items-center gap-4 flex-wrap">
-                {product.sku_interno && (
+              {/* SKU */}
+              {product.sku_interno && (
+                <div className="flex items-center gap-4 flex-wrap">
                   <span className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded">
                     SKU: {product.sku_interno}
                   </span>
-                )}
-                <span className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded">
-                  {proveedorName}
-                </span>
-              </div>
+                </div>
+              )}
 
               {/* Product Name + Sin stock badge */}
               <div className="flex flex-wrap items-center gap-2">
