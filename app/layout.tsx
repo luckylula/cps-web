@@ -5,6 +5,7 @@ import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import CookieBanner from "@/components/CookieBanner";
 import Chatbot from "@/app/components/Chatbot";
+import ChunkLoadRecovery from "@/app/components/ChunkLoadRecovery";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -74,6 +75,7 @@ gtag('consent', 'default', {
         <CartProvider>
           <FavoritesProvider>
             {children}
+            <ChunkLoadRecovery />
             <CookieBanner />
             <Chatbot />
           </FavoritesProvider>
