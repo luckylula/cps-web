@@ -4,13 +4,21 @@
     {
       "parameters": {
         "rule": {
-          "interval": [{"field": "hours", "hoursInterval": 4}]
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
         }
       },
       "name": "Every 4 hours",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "id": "trigger-1"
     },
     {
@@ -21,7 +29,10 @@
       "name": "Download CSV",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [200, 0],
+      "position": [
+        200,
+        0
+      ],
       "id": "download-1"
     },
     {
@@ -31,7 +42,10 @@
       "name": "Parse CSV + Fix Encoding",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [400, 0],
+      "position": [
+        400,
+        0
+      ],
       "id": "parse-1",
       "notes": "✅ Limpia UTF-8 + Filtra vacíos"
     },
@@ -42,15 +56,24 @@
       "name": "Extract Unique REF_PATRON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [600, 0],
+      "position": [
+        600,
+        0
+      ],
       "id": "extract-refs"
     },
     {
-      "parameters": {"batchSize": 10, "options": {}},
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
       "name": "Loop REF_PATRON",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [800, 0],
+      "position": [
+        800,
+        0
+      ],
       "id": "loop-refs"
     },
     {
@@ -61,16 +84,32 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {"name": "Accept", "value": "application/json"},
-            {"name": "ClientAuth", "value": "13658d28-28f7-493b-bb16-16307fe31398"}
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "ClientAuth",
+              "value": "13658d28-28f7-493b-bb16-16307fe31398"
+            }
           ]
         },
-        "options": {"batching": {"batch": {"batchSize": 1, "batchInterval": 1100}}}
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1100
+            }
+          }
+        }
       },
       "name": "API Get Product",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1000, 0],
+      "position": [
+        1000,
+        0
+      ],
       "id": "api-get-product",
       "continueOnFail": true
     },
@@ -81,7 +120,10 @@
       "name": "Extract Prices + Apply Margins",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1200, 0],
+      "position": [
+        1200,
+        0
+      ],
       "id": "extract-prices"
     },
     {
@@ -89,7 +131,10 @@
       "name": "Wait for API Loop",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [1400, 0],
+      "position": [
+        1400,
+        0
+      ],
       "id": "wait-api"
     },
     {
@@ -99,46 +144,103 @@
       "name": "Merge CSV + Prices",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1600, 0],
+      "position": [
+        1600,
+        0
+      ],
       "id": "merge-data"
     },
     {
-      "parameters": {"batchSize": 100, "options": {}},
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
       "name": "Loop Batches",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [1800, 0],
+      "position": [
+        1800,
+        0
+      ],
       "id": "loop-batches"
     },
     {
       "parameters": {
         "rules": {
           "values": [
-            {"conditions": {"options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict"}, "conditions": [{"leftValue": "={{$json.type}}", "rightValue": "product", "operator": {"type": "string", "operation": "equals"}}]}},
-            {"conditions": {"options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict"}, "conditions": [{"leftValue": "={{ $json.type }}", "rightValue": "variant", "operator": {"type": "string", "operation": "equals"}}]}}
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.type}}",
+                    "rightValue": "product",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "variant",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            }
           ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
-      "position": [2000, 0],
+      "position": [
+        2000,
+        0
+      ],
       "id": "switch-type",
       "name": "Switch Type"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO \"Product\" (name,slug,description,price,\"precioBase\",images,stock,\"categoryId\",subcategory,published,featured,\"createdAt\",\"updatedAt\",proveedor,ref_proveedor,ref_variante,ean,marca,categoria_texto,categoria_padre,color,talla,activo,visible_web,sku_interno) VALUES ('{{ ($json.name ?? \"\").replace(/'/g, \"''\") }}','{{ ((($json.slug ?? \"\").trim() !== \"\" ? $json.slug : ($json.sku_interno ?? \"producto\"))).replace(/'/g, \"''\") }}','',{{ $json.price ?? 0 }},{{ $json.precioBase ?? 0 }},{{ $json.imagen ? \"ARRAY['\" + $json.imagen.replace(/'/g, \"''\") + \"']::text[]\" : \"ARRAY[]::text[]\" }},0,'{{ $json.categoryId ?? \"deportes\" }}','{{ ($json.subcategory ?? \"\").replace(/'/g, \"''\") }}',{{ $json.published === false ? 'false' : 'true' }},false,NOW(),NOW(),'{{ $json.proveedor ?? \"jim_sports\" }}','{{ $json.ref_proveedor ?? \"\" }}',NULL,NULL,{{ $json.marca ? \"'\" + $json.marca.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},NULL,NULL,NULL,NULL,{{ $json.activo === false ? 'false' : 'true' }},{{ $json.visible_web === false ? 'false' : 'true' }},'{{ ($json.sku_interno ?? \"\").replace(/'/g, \"''\") }}') ON CONFLICT (sku_interno) DO UPDATE SET \"categoryId\"=CASE WHEN \"Product\".\"categoryId\" IS NULL OR \"Product\".\"categoryId\"='' OR \"Product\".\"categoryId\"='default' THEN EXCLUDED.\"categoryId\" ELSE \"Product\".\"categoryId\" END,subcategory=CASE WHEN \"Product\".subcategory IS NULL OR \"Product\".subcategory='' THEN EXCLUDED.subcategory ELSE \"Product\".subcategory END,proveedor=EXCLUDED.proveedor,ref_proveedor=EXCLUDED.ref_proveedor,name=EXCLUDED.name,slug=CASE WHEN EXCLUDED.slug IS NULL OR EXCLUDED.slug='' THEN \"Product\".slug ELSE EXCLUDED.slug END,price=EXCLUDED.price,\"precioBase\"=EXCLUDED.\"precioBase\",images=EXCLUDED.images,stock=0,published=EXCLUDED.published,featured=EXCLUDED.featured,marca=EXCLUDED.marca,activo=EXCLUDED.activo,visible_web=EXCLUDED.visible_web,\"updatedAt\"=NOW() RETURNING id;",
+        "query": "INSERT INTO \"Product\" (name,slug,description,price,\"precioBase\",images,stock,\"categoryId\",subcategory,published,featured,\"createdAt\",\"updatedAt\",proveedor,ref_proveedor,ref_variante,ean,marca,categoria_texto,categoria_padre,color,talla,activo,visible_web,sku_interno) VALUES ('{{ ($json.name ?? \"\").replace(/'/g, \"''\") }}','{{ ((($json.slug ?? \"\").trim() !== \"\" ? $json.slug : ($json.sku_interno ?? \"producto\"))).replace(/'/g, \"''\") }}','',{{ $json.price ?? 0 }},{{ $json.precioBase ?? 0 }},{{ $json.imagen ? \"ARRAY['\" + $json.imagen.replace(/'/g, \"''\") + \"']::text[]\" : \"ARRAY[]::text[]\" }},0,'{{ $json.categoryId ?? \"deportes\" }}','{{ ($json.subcategory ?? \"\").replace(/'/g, \"''\") }}',{{ $json.published === false ? 'false' : 'true' }},false,NOW(),NOW(),'{{ $json.proveedor ?? \"jim_sports\" }}','{{ $json.ref_proveedor ?? \"\" }}',NULL,NULL,{{ $json.marca ? \"'\" + $json.marca.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},NULL,NULL,NULL,NULL,{{ $json.activo === false ? 'false' : 'true' }},{{ $json.visible_web === false ? 'false' : 'true' }},'{{ ($json.sku_interno ?? \"\").replace(/'/g, \"''\") }}') ON CONFLICT ON CONSTRAINT product_unique_proveedor_ref DO UPDATE SET name=EXCLUDED.name,price=EXCLUDED.price,\"precioBase\"=EXCLUDED.\"precioBase\",images=EXCLUDED.images,marca=EXCLUDED.marca,published=EXCLUDED.published,featured=EXCLUDED.featured,activo=EXCLUDED.activo,visible_web=EXCLUDED.visible_web,stock=0,\"categoryId\"=CASE WHEN \"Product\".\"categoryId\" IS NULL OR \"Product\".\"categoryId\"='' OR \"Product\".\"categoryId\"='default' THEN EXCLUDED.\"categoryId\" ELSE \"Product\".\"categoryId\" END,subcategory=CASE WHEN \"Product\".subcategory IS NULL OR \"Product\".subcategory='' THEN EXCLUDED.subcategory ELSE \"Product\".subcategory END,slug=\"Product\".slug,sku_interno=COALESCE(\"Product\".sku_interno, EXCLUDED.sku_interno),proveedor=EXCLUDED.proveedor,ref_proveedor=EXCLUDED.ref_proveedor,\"updatedAt\"=NOW() RETURNING id;",
         "options": {}
       },
-      "name": "Insert Product",
+      "name": "Upsert Product",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
-      "position": [2200, -100],
+      "position": [
+        2200,
+        -100
+      ],
       "id": "insert-product",
       "alwaysOutputData": true,
-      "credentials": {"postgres": {"id": "wum06K40sV6oLIqF", "name": "Postgres account"}}
+      "credentials": {
+        "postgres": {
+          "id": "wum06K40sV6oLIqF",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "v4.1: ON CONFLICT (proveedor, ref_proveedor); conserva slug y sku."
     },
     {
       "parameters": {
@@ -148,32 +250,189 @@
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
-      "position": [2200, 100],
+      "position": [
+        2200,
+        100
+      ],
       "id": "insert-variant",
       "name": "Insert ProductVariant",
-      "credentials": {"postgres": {"id": "wum06K40sV6oLIqF", "name": "Postgres account"}}
+      "credentials": {
+        "postgres": {
+          "id": "wum06K40sV6oLIqF",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
-    "Every 4 hours": {"main": [[{"node": "Download CSV", "type": "main", "index": 0}]]},
-    "Download CSV": {"main": [[{"node": "Parse CSV + Fix Encoding", "type": "main", "index": 0}]]},
-    "Parse CSV + Fix Encoding": {"main": [[{"node": "Extract Unique REF_PATRON", "type": "main", "index": 0}]]},
-    "Extract Unique REF_PATRON": {"main": [[{"node": "Loop REF_PATRON", "type": "main", "index": 0}]]},
-    "Loop REF_PATRON": {"main": [[{"node": "Wait for API Loop", "type": "main", "index": 0}], [{"node": "API Get Product", "type": "main", "index": 0}]]},
-    "API Get Product": {"main": [[{"node": "Extract Prices + Apply Margins", "type": "main", "index": 0}]]},
-    "Extract Prices + Apply Margins": {"main": [[{"node": "Loop REF_PATRON", "type": "main", "index": 0}]]},
-    "Wait for API Loop": {"main": [[{"node": "Merge CSV + Prices", "type": "main", "index": 0}]]},
-    "Merge CSV + Prices": {"main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]},
-    "Loop Batches": {"main": [[], [{"node": "Switch Type", "type": "main", "index": 0}]]},
-    "Switch Type": {"main": [[{"node": "Insert Product", "type": "main", "index": 0}], [{"node": "Insert ProductVariant", "type": "main", "index": 0}]]},
-    "Insert Product": {"main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]},
-    "Insert ProductVariant": {"main": [[{"node": "Loop Batches", "type": "main", "index": 0}]]}
+    "Every 4 hours": {
+      "main": [
+        [
+          {
+            "node": "Download CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CSV": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV + Fix Encoding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV + Fix Encoding": {
+      "main": [
+        [
+          {
+            "node": "Extract Unique REF_PATRON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Unique REF_PATRON": {
+      "main": [
+        [
+          {
+            "node": "Loop REF_PATRON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop REF_PATRON": {
+      "main": [
+        [
+          {
+            "node": "Wait for API Loop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API Get Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Get Product": {
+      "main": [
+        [
+          {
+            "node": "Extract Prices + Apply Margins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Prices + Apply Margins": {
+      "main": [
+        [
+          {
+            "node": "Loop REF_PATRON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for API Loop": {
+      "main": [
+        [
+          {
+            "node": "Merge CSV + Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge CSV + Prices": {
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Switch Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Type": {
+      "main": [
+        [
+          {
+            "node": "Upsert Product",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert ProductVariant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert ProductVariant": {
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Product": {
+      "main": [
+        [
+          {
+            "node": "Loop Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
-  "settings": {"executionOrder": "v1"},
+  "settings": {
+    "executionOrder": "v1"
+  },
   "versionId": "v4-encoding-fixed",
-  "meta": {"instanceId": "aef744e3957da2c375c7aacb4bff35ae811f44f72fadc18bfa3421d85ee62dfe"},
+  "meta": {
+    "instanceId": "aef744e3957da2c375c7aacb4bff35ae811f44f72fadc18bfa3421d85ee62dfe"
+  },
   "id": "jim-sports-v4-encoding",
   "tags": []
 }
