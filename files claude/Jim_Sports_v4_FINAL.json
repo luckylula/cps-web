@@ -62,10 +62,10 @@
         "headerParameters": {
           "parameters": [
             {"name": "Accept", "value": "application/json"},
-            {"name": "ClientAuth", "value": "61b4bac3-4afb-401e-b40a-f242271acd83"}
+            {"name": "ClientAuth", "value": "13658d28-28f7-493b-bb16-16307fe31398"}
           ]
         },
-        "options": {"batching": {"batch": {"batchSize": 1, "batchInterval": 100}}}
+        "options": {"batching": {"batch": {"batchSize": 1, "batchInterval": 1100}}}
       },
       "name": "API Get Product",
       "type": "n8n-nodes-base.httpRequest",
@@ -73,7 +73,7 @@
       "position": [1000, 0],
       "id": "api-get-product",
       "continueOnFail": true,
-      "notes": "URL CORRECTA: https://api.jimsports.com/v1/product/byref/{ref}\nNO usar localhost:9020 salvo proxy configurado en el VPS.\nObligatorio header ClientAuth. 403 = IP no autorizada o falta ClientAuth.\nSi n8n está en Docker, localhost NO es el host: usar IP del host o api.jimsports.com directo."
+      "notes": "URL: https://api.jimsports.com/v1/product/byref/{ref}\nHeader ClientAuth = API key real (no la de pruebas).\nLímite Jim Sports: 1 llamada/seg → batchInterval 1100 ms.\n403 = IP no autorizada o ClientAuth incorrecto."
     },
     {
       "parameters": {

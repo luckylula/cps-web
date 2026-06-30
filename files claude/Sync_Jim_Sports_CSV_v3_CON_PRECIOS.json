@@ -74,7 +74,7 @@
             },
             {
               "name": "ClientAuth",
-              "value": "61b4bac3-4afb-401e-b40a-f242271acd83"
+              "value": "13658d28-28f7-493b-bb16-16307fe31398"
             }
           ]
         },
@@ -82,7 +82,7 @@
           "batching": {
             "batch": {
               "batchSize": 1,
-              "batchInterval": 100
+              "batchInterval": 1100
             }
           }
         }
