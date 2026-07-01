@@ -10,7 +10,10 @@ OUT = ROOT / "files claude"
 
 POSTGRES_CRED = {"postgres": {"id": "wum06K40sV6oLIqF", "name": "Postgres account"}}
 
-PARSE_CSV_JS = r"""const csvText = items[0].json.data ?? items[0].json.body ?? items[0].json;
+TAXONOMY_JS = (ROOT / "prisma" / "scripts" / "jim-sports-taxonomy.n8n.js").read_text(encoding="utf-8")
+
+PARSE_CSV_JS = TAXONOMY_JS + r"""
+const csvText = items[0].json.data ?? items[0].json.body ?? items[0].json;
 const lines = String(csvText).split(/\r?\n/);
 
 function slugify(str) {
@@ -60,12 +63,33 @@ for (let i = 1; i < lines.length; i++) {
   const talla = fixEncoding(clean[10] || null);
   if (!refPatron || !name || name.trim() === "") continue;
   if (!groups.has(refPatron)) {
-    const categoryId = resolveCategoryId(categoriaPadre || "", categoriaTexto || "");
-    const subcategory = `${categoriaPadre || ""} > ${categoriaTexto || ""}`;
+    const rawCategoryId = resolveCategoryId(categoriaPadre || "", categoriaTexto || "");
+    const rawSub = `${categoriaPadre || ""} > ${categoriaTexto || ""}`;
+    const mapped = resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, rawSub, rawCategoryId) || {
+      categoryId: rawCategoryId,
+      subcategory: rawSub,
+      grupo: null,
+    };
     const skuPadre = `J${refPatron}`;
     const slug = `${slugify(name)}-${slugify(skuPadre)}`;
     groups.set(refPatron, {
-      product: { proveedor: "jim_sports", ref_proveedor: refPatron, sku_interno: skuPadre, name, marca, imagen, categoryId, subcategory, slug, published: true, activo: true, visible_web: true },
+      product: {
+        proveedor: "jim_sports",
+        ref_proveedor: refPatron,
+        sku_interno: skuPadre,
+        name,
+        marca,
+        imagen,
+        categoryId: mapped.categoryId,
+        subcategory: mapped.subcategory,
+        grupo: mapped.grupo,
+        categoria_padre: categoriaPadre || null,
+        categoria_texto: categoriaTexto || null,
+        slug,
+        published: true,
+        activo: true,
+        visible_web: true,
+      },
       variants: [],
     });
   }
@@ -147,16 +171,20 @@ return chunk.map(ref => ({
 COLLECT_PRICES_JS = r"""const priceItems = $('Extract Prices + Apply Margins').all();
 return priceItems.filter(item => item.json.price > 0 && item.json.ref_proveedor);"""
 
-# Catálogo: no toca price/precioBase en UPDATE
+# Catálogo v5.2: taxonomía web (categoryId/subcategory/grupo). No toca price/precioBase en UPDATE.
 UPSERT_PRODUCT_CATALOG = (
-    'INSERT INTO "Product" (name,slug,description,price,"precioBase",images,stock,"categoryId",subcategory,published,featured,'
+    'INSERT INTO "Product" (name,slug,description,price,"precioBase",images,stock,"categoryId",subcategory,grupo,published,featured,'
     '"createdAt","updatedAt",proveedor,ref_proveedor,ref_variante,ean,marca,categoria_texto,categoria_padre,color,talla,activo,visible_web,sku_interno) '
     "VALUES ('{{ ($json.name ?? \"\").replace(/'/g, \"''\") }}','{{ ((($json.slug ?? \"\").trim() !== \"\" ? $json.slug : ($json.sku_interno ?? \"producto\"))).replace(/'/g, \"''\") }}','',0,0,"
     "{{ $json.imagen ? \"ARRAY['\" + $json.imagen.replace(/'/g, \"''\") + \"']::text[]\" : \"ARRAY[]::text[]\" }},0,"
     "'{{ $json.categoryId ?? \"deportes\" }}','{{ ($json.subcategory ?? \"\").replace(/'/g, \"''\") }}',"
+    "{{ $json.grupo ? \"'\" + $json.grupo.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},"
     "{{ $json.published === false ? 'false' : 'true' }},false,NOW(),NOW(),"
     "'{{ $json.proveedor ?? \"jim_sports\" }}','{{ $json.ref_proveedor ?? \"\" }}',NULL,NULL,"
-    "{{ $json.marca ? \"'\" + $json.marca.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},NULL,NULL,NULL,NULL,"
+    "{{ $json.marca ? \"'\" + $json.marca.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},"
+    "{{ $json.categoria_texto ? \"'\" + $json.categoria_texto.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},"
+    "{{ $json.categoria_padre ? \"'\" + $json.categoria_padre.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},"
+    "NULL,NULL,"
     "{{ $json.activo === false ? 'false' : 'true' }},{{ $json.visible_web === false ? 'false' : 'true' }},"
     "'{{ ($json.sku_interno ?? \"\").replace(/'/g, \"''\") }}') "
     "ON CONFLICT (proveedor, ref_proveedor) DO UPDATE SET "
@@ -165,8 +193,11 @@ UPSERT_PRODUCT_CATALOG = (
     "marca=CASE WHEN EXCLUDED.marca IS NOT NULL AND TRIM(EXCLUDED.marca::text)<>'' THEN EXCLUDED.marca ELSE \"Product\".marca END,"
     "published=EXCLUDED.published,"
     "featured=EXCLUDED.featured,activo=EXCLUDED.activo,visible_web=EXCLUDED.visible_web,stock=0,"
-    '"categoryId"=CASE WHEN "Product"."categoryId" IS NULL OR "Product"."categoryId"=\'\' OR "Product"."categoryId"=\'default\' THEN EXCLUDED."categoryId" ELSE "Product"."categoryId" END,'
-    "subcategory=CASE WHEN \"Product\".subcategory IS NULL OR \"Product\".subcategory='' THEN EXCLUDED.subcategory ELSE \"Product\".subcategory END,"
+    '"categoryId"=EXCLUDED."categoryId",'
+    "subcategory=EXCLUDED.subcategory,"
+    "grupo=EXCLUDED.grupo,"
+    "categoria_padre=EXCLUDED.categoria_padre,"
+    "categoria_texto=EXCLUDED.categoria_texto,"
     'slug="Product".slug,sku_interno=COALESCE("Product".sku_interno, EXCLUDED.sku_interno),'
     "proveedor=EXCLUDED.proveedor,ref_proveedor=EXCLUDED.ref_proveedor,\"updatedAt\"=NOW() RETURNING id;"
 )
@@ -239,15 +270,15 @@ def filter_node(name, pos, nid, type_value):
 
 def build_catalog():
     return {
-        "name": "Jim Sports v5 - CATALOG (CSV sin API)",
+        "name": "Jim Sports v5.2 - CATALOG (CSV + taxonomía web)",
         "nodes": [
             node("Every 4 hours", "n8n-nodes-base.scheduleTrigger", [0, 0], "trig-cat", typeVersion=1.2, parameters={"rule": {"interval": [{"field": "hours", "hoursInterval": 4}]}}),
             node("Download CSV", "n8n-nodes-base.httpRequest", [220, 0], "dl-cat", typeVersion=4.2, parameters={"url": "https://jimsports.shop/fichero-b2b/integracion_producto.csv", "options": {}}),
-            node("Parse CSV + Fix Encoding", "n8n-nodes-base.code", [440, 0], "parse-cat", parameters={"jsCode": PARSE_CSV_JS}, notes="Catálogo + stock. NO llama API. NO toca precios en UPDATE."),
+            node("Parse CSV + Fix Encoding", "n8n-nodes-base.code", [440, 0], "parse-cat", parameters={"jsCode": PARSE_CSV_JS}, notes="v5.2: catálogo + taxonomía web (resolveJimSportsTaxonomy). NO API. NO toca precios."),
             node("Loop Batches", "n8n-nodes-base.splitInBatches", [660, 0], "loop-cat", typeVersion=3, parameters={"batchSize": 100, "options": {}}),
             filter_node("Filter Products", [880, -80], "filt-prod", "product"),
             filter_node("Filter Variants", [880, 80], "filt-var", "variant"),
-            node("Upsert Product", "n8n-nodes-base.postgres", [1100, -80], "up-prod-cat", typeVersion=2.5, parameters={"operation": "executeQuery", "query": UPSERT_PRODUCT_CATALOG, "options": {}}, alwaysOutputData=True, credentials=POSTGRES_CRED, notes="v5.1: solo productos. No machaca name/images/marca vacíos."),
+            node("Upsert Product", "n8n-nodes-base.postgres", [1100, -80], "up-prod-cat", typeVersion=2.5, parameters={"operation": "executeQuery", "query": UPSERT_PRODUCT_CATALOG, "options": {}}, alwaysOutputData=True, credentials=POSTGRES_CRED, notes="v5.2: actualiza categoryId/subcategory/grupo web. No machaca name/images/marca vacíos."),
             node("Upsert ProductVariant", "n8n-nodes-base.postgres", [1100, 80], "up-var-cat", typeVersion=2.6, parameters={"operation": "executeQuery", "query": UPSERT_VARIANT_CATALOG, "options": {}}, credentials=POSTGRES_CRED),
         ],
         "connections": {
