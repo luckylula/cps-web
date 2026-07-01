@@ -238,6 +238,11 @@ async function getSubcategoriesForCategory(categoriaSlug: string): Promise<{ nom
     return navCategoria.subcategorias.map((s) => ({ nombre: s.nombre, slug: s.slug }));
   }
 
+  // Instalaciones: solo las 6 subcategorías del nav (no las etiquetas crudas del catálogo Jim Sports)
+  if (categoriaSlug === 'instalaciones' && navCategoria?.subcategorias?.length) {
+    return navCategoria.subcategorias.map((s) => ({ nombre: s.nombre, slug: s.slug }));
+  }
+
   const tree = await getCategoryTree(categoriaSlug);
   const categoryNode = tree.find((n) => n.categoryId === categoriaSlug);
   if (categoryNode && categoryNode.subcategories.length > 0) {
