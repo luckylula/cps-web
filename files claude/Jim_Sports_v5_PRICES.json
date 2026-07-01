@@ -1,0 +1,419 @@
+{
+  "name": "Jim Sports v5 - PRICES (lotes 400 refs / 30 min)",
+  "nodes": [
+    {
+      "name": "Every 30 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "trig-price",
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Download CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "dl-price",
+      "parameters": {
+        "url": "https://jimsports.shop/fichero-b2b/integracion_producto.csv",
+        "options": {}
+      }
+    },
+    {
+      "name": "Pick Chunk (400 refs)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "chunk-price",
+      "parameters": {
+        "jsCode": "const CHUNK_SIZE = 400;\n\nconst csvText = $('Download CSV').first().json.data ?? $('Download CSV').first().json.body ?? $('Download CSV').first().json;\nconst lines = String(csvText).split(/\\r?\\n/);\nconst refs = new Set();\nfor (let i = 1; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n  const ref = line.split(';')[0]?.replace(/\"/g, '').trim();\n  if (ref) refs.add(ref);\n}\n\nconst allRefs = Array.from(refs).sort();\nconst staticData = $getWorkflowStaticData('global');\nif (typeof staticData.offset !== 'number') staticData.offset = 0;\n\nconst start = staticData.offset;\nconst end = Math.min(start + CHUNK_SIZE, allRefs.length);\nconst chunk = allRefs.slice(start, end);\nstaticData.offset = end >= allRefs.length ? 0 : end;\nstaticData.totalRefs = allRefs.length;\nstaticData.chunkFrom = start;\nstaticData.chunkTo = end;\nstaticData.cycleComplete = end >= allRefs.length;\n\nreturn chunk.map(ref => ({\n  json: {\n    ref_proveedor: ref,\n    _chunk: { start, end, total: allRefs.length, nextOffset: staticData.offset, cycleComplete: staticData.cycleComplete },\n  },\n}));"
+      },
+      "notes": "Reanudación con $getWorkflowStaticData. Ciclo completo ~4h con 2981 refs."
+    },
+    {
+      "name": "Loop REF Chunk",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        660,
+        0
+      ],
+      "id": "loop-price",
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      }
+    },
+    {
+      "name": "API Get Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "api-price",
+      "parameters": {
+        "url": "=https://api.jimsports.com/v1/product/byref/{{ $json.ref_proveedor }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "ClientAuth",
+              "value": "13658d28-28f7-493b-bb16-16307fe31398"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1000
+            }
+          }
+        }
+      },
+      "continueOnFail": true,
+      "notes": "1 req/s Jim Sports. batchInterval 1000ms."
+    },
+    {
+      "name": "Extract Prices + Apply Margins",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        0
+      ],
+      "id": "extract-price",
+      "parameters": {
+        "jsCode": "function calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  const precioConMargen = precio * multiplicador;\n  return { precioBase: parseFloat(precio.toFixed(2)), precioFinal: parseFloat((precioConMargen * 1.21).toFixed(2)) };\n}\n\nconst results = [];\nfor (const item of items) {\n  if (!item.json.reference) continue;\n  const refPatron = item.json.reference;\n  const productPrice = calcularPrecioConMargen(item.json.price || 0);\n  if (productPrice.precioFinal > 0) {\n    results.push({ json: { type: \"price\", ref_proveedor: refPatron, ref_variante: \"\", precioBase: productPrice.precioBase, price: productPrice.precioFinal } });\n  }\n  if (item.json.variants && Array.isArray(item.json.variants)) {\n    for (const variant of item.json.variants) {\n      const variantPrice = calcularPrecioConMargen(variant.price || 0);\n      if (variantPrice.precioFinal > 0) {\n        results.push({ json: { type: \"price\", ref_proveedor: refPatron, ref_variante: variant.reference || null, precioBase: variantPrice.precioBase, price: variantPrice.precioFinal } });\n      }\n    }\n  }\n}\nreturn results;"
+      }
+    },
+    {
+      "name": "Wait for API Loop",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        0
+      ],
+      "id": "wait-price",
+      "parameters": {}
+    },
+    {
+      "name": "Collect All Prices",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        0
+      ],
+      "id": "collect-price",
+      "parameters": {
+        "jsCode": "const priceItems = $('Extract Prices + Apply Margins').all();\nreturn priceItems.filter(item => item.json.price > 0 && item.json.ref_proveedor);"
+      },
+      "notes": "FIX v4: usa .all() del nodo Extract Prices, no $input."
+    },
+    {
+      "name": "Loop Price Writes",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1760,
+        0
+      ],
+      "id": "loop-write",
+      "parameters": {
+        "batchSize": 50,
+        "options": {}
+      }
+    },
+    {
+      "name": "Switch Price Target",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        1980,
+        0
+      ],
+      "id": "sw-price",
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.ref_variante }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.ref_variante }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "name": "Update Product Price",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2200,
+        -80
+      ],
+      "id": "upd-prod-price",
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"Product\" SET price={{ $json.price }}, \"precioBase\"={{ $json.precioBase }}, \"updatedAt\"=NOW() WHERE proveedor='jim_sports' AND ref_proveedor='{{ $json.ref_proveedor }}'; UPDATE \"ProductVariant\" SET price={{ $json.price }}, \"updatedAt\"=NOW() WHERE proveedor='jim_sports' AND ref_proveedor='{{ $json.ref_proveedor }}' AND ref_variante IS NULL;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "wum06K40sV6oLIqF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "name": "Update Variant Price",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2200,
+        80
+      ],
+      "id": "upd-var-price",
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"ProductVariant\" SET price={{ $json.price }}, \"updatedAt\"=NOW() WHERE proveedor='jim_sports' AND ref_proveedor='{{ $json.ref_proveedor }}' AND COALESCE(ref_variante, '') = '{{ $json.ref_variante ?? \"\" }}';",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "wum06K40sV6oLIqF",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 30 minutes": {
+      "main": [
+        [
+          {
+            "node": "Download CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CSV": {
+      "main": [
+        [
+          {
+            "node": "Pick Chunk (400 refs)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Chunk (400 refs)": {
+      "main": [
+        [
+          {
+            "node": "Loop REF Chunk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop REF Chunk": {
+      "main": [
+        [
+          {
+            "node": "Wait for API Loop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API Get Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Get Product": {
+      "main": [
+        [
+          {
+            "node": "Extract Prices + Apply Margins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Prices + Apply Margins": {
+      "main": [
+        [
+          {
+            "node": "Loop REF Chunk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for API Loop": {
+      "main": [
+        [
+          {
+            "node": "Collect All Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect All Prices": {
+      "main": [
+        [
+          {
+            "node": "Loop Price Writes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Price Writes": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Switch Price Target",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Price Target": {
+      "main": [
+        [
+          {
+            "node": "Update Product Price",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Variant Price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Product Price": {
+      "main": [
+        [
+          {
+            "node": "Loop Price Writes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Variant Price": {
+      "main": [
+        [
+          {
+            "node": "Loop Price Writes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 1200
+  },
+  "meta": {
+    "instanceId": "aef744e3957da2c375c7aacb4bff35ae811f44f72fadc18bfa3421d85ee62dfe"
+  },
+  "tags": [
+    {
+      "name": "jim-sports"
+    },
+    {
+      "name": "v5"
+    }
+  ]
+}
