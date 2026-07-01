@@ -134,7 +134,13 @@ for (const item of items) {
     }
   }
 }
-return results;"""
+
+const staticData = $getWorkflowStaticData('global');
+if (!Array.isArray(staticData.pendingPrices)) staticData.pendingPrices = [];
+for (const r of results) staticData.pendingPrices.push(r.json);
+
+// Un solo item de vuelta al bucle (evita que variantes cuenten como iteraciones extra)
+return [{ json: { _continue: true, pricesAdded: results.length, pendingTotal: staticData.pendingPrices.length } }];"""
 
 PICK_CHUNK_JS = r"""const CHUNK_SIZE = 400;
 
@@ -151,6 +157,7 @@ for (let i = 1; i < lines.length; i++) {
 const allRefs = Array.from(refs).sort();
 const staticData = $getWorkflowStaticData('global');
 if (typeof staticData.offset !== 'number') staticData.offset = 0;
+staticData.pendingPrices = [];
 
 const start = staticData.offset;
 const end = Math.min(start + CHUNK_SIZE, allRefs.length);
@@ -168,8 +175,12 @@ return chunk.map(ref => ({
   },
 }));"""
 
-COLLECT_PRICES_JS = r"""const priceItems = $('Extract Prices + Apply Margins').all();
-return priceItems.filter(item => item.json.price > 0 && item.json.ref_proveedor);"""
+COLLECT_PRICES_JS = r"""const staticData = $getWorkflowStaticData('global');
+const prices = Array.isArray(staticData.pendingPrices) ? staticData.pendingPrices : [];
+staticData.pendingPrices = [];
+return prices
+  .filter(p => p && p.price > 0 && p.ref_proveedor)
+  .map(p => ({ json: p }));"""
 
 # Catálogo v5.2: taxonomía web (categoryId/subcategory/grupo). No toca price/precioBase en UPDATE.
 UPSERT_PRODUCT_CATALOG = (
@@ -300,7 +311,7 @@ def build_catalog():
 
 def build_prices():
     return {
-        "name": "Jim Sports v5 - PRICES (lotes 400 refs / 30 min)",
+        "name": "Jim Sports v5.1 - PRICES (lotes 400 refs / 30 min)",
         "nodes": [
             node("Every 30 minutes", "n8n-nodes-base.scheduleTrigger", [0, 0], "trig-price", typeVersion=1.2, parameters={"rule": {"interval": [{"field": "minutes", "minutesInterval": 30}]}}),
             node("Download CSV", "n8n-nodes-base.httpRequest", [220, 0], "dl-price", typeVersion=4.2, parameters={"url": "https://jimsports.shop/fichero-b2b/integracion_producto.csv", "options": {}}),
@@ -314,7 +325,7 @@ def build_prices():
             }, notes="1 req/s Jim Sports. batchInterval 1000ms."),
             node("Extract Prices + Apply Margins", "n8n-nodes-base.code", [1100, 0], "extract-price", parameters={"jsCode": EXTRACT_PRICES_JS}),
             node("Wait for API Loop", "n8n-nodes-base.noOp", [1320, 0], "wait-price", typeVersion=1),
-            node("Collect All Prices", "n8n-nodes-base.code", [1540, 0], "collect-price", parameters={"jsCode": COLLECT_PRICES_JS}, notes="FIX v4: usa .all() del nodo Extract Prices, no $input."),
+            node("Collect All Prices", "n8n-nodes-base.code", [1540, 0], "collect-price", parameters={"jsCode": COLLECT_PRICES_JS}, notes="v5.1: lee pendingPrices de staticData (fix .all() solo devolvía ~10 items)."),
             node("Loop Price Writes", "n8n-nodes-base.splitInBatches", [1760, 0], "loop-write", typeVersion=3, parameters={"batchSize": 50, "options": {}}),
             node("Switch Price Target", "n8n-nodes-base.switch", [1980, 0], "sw-price", typeVersion=3, parameters={"rules": {"values": [
                 {"conditions": {"options": {"caseSensitive": True, "leftValue": "", "typeValidation": "strict"}, "conditions": [{"leftValue": "={{ $json.ref_variante }}", "rightValue": "", "operator": {"type": "string", "operation": "equals"}}]}},

@@ -1,5 +1,5 @@
 {
-  "name": "Jim Sports v5 - PRICES (lotes 400 refs / 30 min)",
+  "name": "Jim Sports v5.1 - PRICES (lotes 400 refs / 30 min)",
   "nodes": [
     {
       "name": "Every 30 minutes",
@@ -45,7 +45,7 @@
       ],
       "id": "chunk-price",
       "parameters": {
-        "jsCode": "const CHUNK_SIZE = 400;\n\nconst csvText = $('Download CSV').first().json.data ?? $('Download CSV').first().json.body ?? $('Download CSV').first().json;\nconst lines = String(csvText).split(/\\r?\\n/);\nconst refs = new Set();\nfor (let i = 1; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n  const ref = line.split(';')[0]?.replace(/\"/g, '').trim();\n  if (ref) refs.add(ref);\n}\n\nconst allRefs = Array.from(refs).sort();\nconst staticData = $getWorkflowStaticData('global');\nif (typeof staticData.offset !== 'number') staticData.offset = 0;\n\nconst start = staticData.offset;\nconst end = Math.min(start + CHUNK_SIZE, allRefs.length);\nconst chunk = allRefs.slice(start, end);\nstaticData.offset = end >= allRefs.length ? 0 : end;\nstaticData.totalRefs = allRefs.length;\nstaticData.chunkFrom = start;\nstaticData.chunkTo = end;\nstaticData.cycleComplete = end >= allRefs.length;\n\nreturn chunk.map(ref => ({\n  json: {\n    ref_proveedor: ref,\n    _chunk: { start, end, total: allRefs.length, nextOffset: staticData.offset, cycleComplete: staticData.cycleComplete },\n  },\n}));"
+        "jsCode": "const CHUNK_SIZE = 400;\n\nconst csvText = $('Download CSV').first().json.data ?? $('Download CSV').first().json.body ?? $('Download CSV').first().json;\nconst lines = String(csvText).split(/\\r?\\n/);\nconst refs = new Set();\nfor (let i = 1; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line) continue;\n  const ref = line.split(';')[0]?.replace(/\"/g, '').trim();\n  if (ref) refs.add(ref);\n}\n\nconst allRefs = Array.from(refs).sort();\nconst staticData = $getWorkflowStaticData('global');\nif (typeof staticData.offset !== 'number') staticData.offset = 0;\nstaticData.pendingPrices = [];\n\nconst start = staticData.offset;\nconst end = Math.min(start + CHUNK_SIZE, allRefs.length);\nconst chunk = allRefs.slice(start, end);\nstaticData.offset = end >= allRefs.length ? 0 : end;\nstaticData.totalRefs = allRefs.length;\nstaticData.chunkFrom = start;\nstaticData.chunkTo = end;\nstaticData.cycleComplete = end >= allRefs.length;\n\nreturn chunk.map(ref => ({\n  json: {\n    ref_proveedor: ref,\n    _chunk: { start, end, total: allRefs.length, nextOffset: staticData.offset, cycleComplete: staticData.cycleComplete },\n  },\n}));"
       },
       "notes": "Reanudación con $getWorkflowStaticData. Ciclo completo ~4h con 2981 refs."
     },
@@ -111,7 +111,7 @@
       ],
       "id": "extract-price",
       "parameters": {
-        "jsCode": "function calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  const precioConMargen = precio * multiplicador;\n  return { precioBase: parseFloat(precio.toFixed(2)), precioFinal: parseFloat((precioConMargen * 1.21).toFixed(2)) };\n}\n\nconst results = [];\nfor (const item of items) {\n  if (!item.json.reference) continue;\n  const refPatron = item.json.reference;\n  const productPrice = calcularPrecioConMargen(item.json.price || 0);\n  if (productPrice.precioFinal > 0) {\n    results.push({ json: { type: \"price\", ref_proveedor: refPatron, ref_variante: \"\", precioBase: productPrice.precioBase, price: productPrice.precioFinal } });\n  }\n  if (item.json.variants && Array.isArray(item.json.variants)) {\n    for (const variant of item.json.variants) {\n      const variantPrice = calcularPrecioConMargen(variant.price || 0);\n      if (variantPrice.precioFinal > 0) {\n        results.push({ json: { type: \"price\", ref_proveedor: refPatron, ref_variante: variant.reference || null, precioBase: variantPrice.precioBase, price: variantPrice.precioFinal } });\n      }\n    }\n  }\n}\nreturn results;"
+        "jsCode": "function calcularPrecioConMargen(precioBase) {\n  const precio = parseFloat(precioBase);\n  if (isNaN(precio) || precio <= 0) return { precioBase: 0, precioFinal: 0 };\n  let multiplicador;\n  if (precio < 50) multiplicador = 1.50;\n  else if (precio < 100) multiplicador = 1.47;\n  else if (precio < 200) multiplicador = 1.43;\n  else if (precio < 400) multiplicador = 1.38;\n  else multiplicador = 1.30;\n  const precioConMargen = precio * multiplicador;\n  return { precioBase: parseFloat(precio.toFixed(2)), precioFinal: parseFloat((precioConMargen * 1.21).toFixed(2)) };\n}\n\nconst results = [];\nfor (const item of items) {\n  if (!item.json.reference) continue;\n  const refPatron = item.json.reference;\n  const productPrice = calcularPrecioConMargen(item.json.price || 0);\n  if (productPrice.precioFinal > 0) {\n    results.push({ json: { type: \"price\", ref_proveedor: refPatron, ref_variante: \"\", precioBase: productPrice.precioBase, price: productPrice.precioFinal } });\n  }\n  if (item.json.variants && Array.isArray(item.json.variants)) {\n    for (const variant of item.json.variants) {\n      const variantPrice = calcularPrecioConMargen(variant.price || 0);\n      if (variantPrice.precioFinal > 0) {\n        results.push({ json: { type: \"price\", ref_proveedor: refPatron, ref_variante: variant.reference || null, precioBase: variantPrice.precioBase, price: variantPrice.precioFinal } });\n      }\n    }\n  }\n}\n\nconst staticData = $getWorkflowStaticData('global');\nif (!Array.isArray(staticData.pendingPrices)) staticData.pendingPrices = [];\nfor (const r of results) staticData.pendingPrices.push(r.json);\n\n// Un solo item de vuelta al bucle (evita que variantes cuenten como iteraciones extra)\nreturn [{ json: { _continue: true, pricesAdded: results.length, pendingTotal: staticData.pendingPrices.length } }];"
       }
     },
     {
@@ -135,9 +135,9 @@
       ],
       "id": "collect-price",
       "parameters": {
-        "jsCode": "const priceItems = $('Extract Prices + Apply Margins').all();\nreturn priceItems.filter(item => item.json.price > 0 && item.json.ref_proveedor);"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst prices = Array.isArray(staticData.pendingPrices) ? staticData.pendingPrices : [];\nstaticData.pendingPrices = [];\nreturn prices\n  .filter(p => p && p.price > 0 && p.ref_proveedor)\n  .map(p => ({ json: p }));"
       },
-      "notes": "FIX v4: usa .all() del nodo Extract Prices, no $input."
+      "notes": "v5.1: lee pendingPrices de staticData (fix .all() solo devolvía ~10 items)."
     },
     {
       "name": "Loop Price Writes",
