@@ -1,19 +1,29 @@
 /**
- * Aplicar criba Miniland: solo material-escolar visible en web.
- * bebe, juguetes y sin-clasificar quedan en BD pero ocultos (visible_web=false).
+ * Aplicar criba Miniland: solo material-escolar vendible visible en web.
+ * Muñecas, bebé y puericultura quedan ocultos siempre.
  *
- * node --import tsx prisma/scripts/activar-miniland-visible-web.ts
+ * npx tsx prisma/scripts/activar-miniland-visible-web.ts
  */
 import 'dotenv/config';
 import { Pool } from 'pg';
+import { NON_SELLABLE_SQL_REGEX } from '../../app/lib/productExclusions';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+const TXT = `lower(COALESCE(name, '') || ' ' || COALESCE(description, ''))`;
 
 async function main() {
+  await pool.query(`
+    UPDATE "Product"
+    SET visible_web = false, published = false, "updatedAt" = NOW()
+    WHERE LOWER(proveedor) = 'miniland'
+      AND ${TXT} ~* '${NON_SELLABLE_SQL_REGEX}'
+  `);
+
   const upd = await pool.query(`
     UPDATE "Product"
     SET
-      visible_web = ("categoryId" = 'material-escolar'),
+      visible_web = ("categoryId" = 'material-escolar' AND NOT (${TXT} ~* '${NON_SELLABLE_SQL_REGEX}')),
+      published = ("categoryId" = 'material-escolar' AND NOT (${TXT} ~* '${NON_SELLABLE_SQL_REGEX}')),
       "updatedAt" = NOW()
     WHERE LOWER(proveedor) = 'miniland'
   `);

@@ -207,9 +207,76 @@ function resolveInstalaciones(
   return null;
 }
 
-function resolveMaterialEscolar(padre: string, texto: string): JimTaxonomy | null {
+function figurasEspumaEscolar(): JimTaxonomy {
+  return { categoryId: 'material-escolar', subcategory: 'Figuras espuma', grupo: null };
+}
+
+function materialFoamEscolar(): JimTaxonomy {
+  return { categoryId: 'material-escolar', subcategory: 'Material foam', grupo: null };
+}
+
+function isPsicomotricidadBase(n: string): boolean {
+  return (
+    n.startsWith('base ') ||
+    n.includes('base maciza') ||
+    n.includes('base para pica') ||
+    n.includes('base softee')
+  );
+}
+
+function isFiguraEspumaName(n: string): boolean {
+  return (
+    n.startsWith('figura ') ||
+    n.includes(' set figura') ||
+    n.startsWith('set figura') ||
+    n.includes('plinton') ||
+    (n.includes('set tatami') && n.includes('figura'))
+  );
+}
+
+function isPiscinaBolasFoam(n: string): boolean {
+  if (n.includes('suelo de lona') && n.includes('piscina')) return true;
+  if (n.includes('piscina de bolas')) return true;
+  if (n.startsWith('lote ') && n.includes('pelotas')) return false;
+  return (
+    n.includes('piscina') &&
+    (n.includes('llenado') || n.includes('pelota') || n.includes('bola'))
+  );
+}
+
+/**
+ * Jim Sports agrupa Psicomotricidad en Accesorios y Figuras acolchadas.
+ * Las figuras de espuma van a Figuras espuma; antifaz y bases no son psicomotricidad.
+ */
+function resolvePsicomotricidad(texto: string, productName: string): JimTaxonomy {
+  const n = normalizeProductName(productName);
+
+  if (n.includes('antifaz')) {
+    return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo: null };
+  }
+  if (isPsicomotricidadBase(n)) {
+    return materialFoamEscolar();
+  }
+  if (isPiscinaBolasFoam(n)) {
+    return materialFoamEscolar();
+  }
+  if (texto === 'Figuras acolchadas') {
+    return figurasEspumaEscolar();
+  }
+  if (isFiguraEspumaName(n)) {
+    return figurasEspumaEscolar();
+  }
+
+  return { categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null };
+}
+
+function resolveMaterialEscolar(
+  padre: string,
+  texto: string,
+  productName?: string | null
+): JimTaxonomy | null {
   if (padre === 'Psicomotricidad') {
-    return { categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null };
+    return resolvePsicomotricidad(texto, productName ?? '');
   }
   if (padre === 'Juegos') {
     const grupoMap: Record<string, string> = {
@@ -320,7 +387,7 @@ export function resolveJimSportsTaxonomy(
   const instalaciones = resolveInstalaciones(padre, texto, fallbackCategoryId);
   if (instalaciones) return instalaciones;
 
-  const escolar = resolveMaterialEscolar(padre, texto);
+  const escolar = resolveMaterialEscolar(padre, texto, productName);
   if (escolar) return escolar;
 
   // Deportes por defecto para padres deportivos conocidos

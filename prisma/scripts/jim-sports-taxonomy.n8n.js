@@ -80,8 +80,31 @@ function resolveInstalaciones(padre, texto, categoryId) {
   if (padre === 'Para la tienda' && texto === 'Accesorios') return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
   return null;
 }
-function resolveMaterialEscolar(padre, texto) {
-  if (padre === 'Psicomotricidad') return { categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null };
+function figurasEspumaEscolar() { return { categoryId: 'material-escolar', subcategory: 'Figuras espuma', grupo: null }; }
+function materialFoamEscolar() { return { categoryId: 'material-escolar', subcategory: 'Material foam', grupo: null }; }
+function isPsicomotricidadBase(n) {
+  return n.startsWith('base ') || n.includes('base maciza') || n.includes('base para pica') || n.includes('base softee');
+}
+function isFiguraEspumaName(n) {
+  return n.startsWith('figura ') || n.includes(' set figura') || n.startsWith('set figura') || n.includes('plinton') || (n.includes('set tatami') && n.includes('figura'));
+}
+function isPiscinaBolasFoam(n) {
+  if (n.includes('suelo de lona') && n.includes('piscina')) return true;
+  if (n.includes('piscina de bolas')) return true;
+  if (n.startsWith('lote ') && n.includes('pelotas')) return false;
+  return n.includes('piscina') && (n.includes('llenado') || n.includes('pelota') || n.includes('bola'));
+}
+function resolvePsicomotricidad(texto, productName) {
+  const n = normalizeProductName(productName || '');
+  if (n.includes('antifaz')) return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo: null };
+  if (isPsicomotricidadBase(n)) return materialFoamEscolar();
+  if (isPiscinaBolasFoam(n)) return materialFoamEscolar();
+  if (texto === 'Figuras acolchadas') return figurasEspumaEscolar();
+  if (isFiguraEspumaName(n)) return figurasEspumaEscolar();
+  return { categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null };
+}
+function resolveMaterialEscolar(padre, texto, productName) {
+  if (padre === 'Psicomotricidad') return resolvePsicomotricidad(texto, productName || '');
   if (padre === 'Juegos') {
     const grupoMap = { 'Juegos exterior': 'Juegos exterior', 'Juegos de mesa': 'Juegos mesa', 'Juegos acuáticos': 'Juegos acuáticos' };
     if (grupoMap[texto]) return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo: grupoMap[texto] };
@@ -124,7 +147,7 @@ function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcat
   if (textil) return textil;
   const instalaciones = resolveInstalaciones(padre, texto, fallbackCategoryId);
   if (instalaciones) return instalaciones;
-  const escolar = resolveMaterialEscolar(padre, texto);
+  const escolar = resolveMaterialEscolar(padre, texto, productName);
   if (escolar) return escolar;
   if (COLECTIVOS_PADRES.has(padre) || RAQUETA_PADRES.has(padre) || ['Fitness', 'Natación', 'Outdoor', 'Atletismo', 'Running', 'Gimnasia rítmica', 'Deportes de contacto', 'Playa', 'Entrenamiento', 'Para la tienda', 'Deportes alternativos'].includes(padre)) {
     return resolveDeportes(padre);
