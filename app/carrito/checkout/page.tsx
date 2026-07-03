@@ -80,16 +80,14 @@ function CheckoutForm() {
   const EXPRESS_SHIPPING = 15;
 
   const subtotal = getTotalPrice();
-  const iva = subtotal * 0.21;
-  const subtotalWithIva = subtotal + iva;
   const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
   const shippingCost = hasFreeShipping
     ? (formData.metodoEntrega === "express" ? EXPRESS_SHIPPING : 0)
     : (formData.metodoEntrega === "express" ? EXPRESS_SHIPPING : STANDARD_SHIPPING);
   const discountAmount = appliedCoupon 
-    ? (subtotalWithIva * appliedCoupon.discountPercent) / 100 
+    ? (subtotal * appliedCoupon.discountPercent) / 100 
     : 0;
-  const finalTotal = subtotalWithIva + shippingCost - discountAmount;
+  const finalTotal = subtotal + shippingCost - discountAmount;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -1174,12 +1172,8 @@ function CheckoutForm() {
               {/* Price Breakdown */}
               <div className="space-y-3 pt-6 border-t border-gray-300">
                 <div className="flex justify-between text-sm text-gray-600">
-                  <span>Subtotal</span>
+                  <span>Subtotal (IVA incluido)</span>
                   <span className="font-medium">{subtotal.toFixed(2)}€</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>IVA (21%)</span>
-                  <span className="font-medium">{iva.toFixed(2)}€</span>
                 </div>
                 {shippingCost > 0 ? (
                   <div className="flex justify-between text-sm text-gray-600">
