@@ -65,6 +65,9 @@ UPSERT_VISIBLE_NEW = f"""    visible_web = CASE
       ELSE d.published
     END,"""
 
+UPSERT_PUBLISHED_DUPLICATE = "    tipo_producto = d.tipo_producto,\n    published = d.published,\n    ref_proveedor"
+UPSERT_PUBLISHED_FIXED = "    tipo_producto = d.tipo_producto,\n    ref_proveedor"
+
 for node in data["nodes"]:
     params = node.get("parameters", {})
     code = params.get("jsCode")
@@ -83,9 +86,11 @@ for node in data["nodes"]:
         q = params.get("query", "")
         if UPSERT_VISIBLE_OLD in q:
             q = q.replace(UPSERT_VISIBLE_OLD, UPSERT_VISIBLE_NEW, 1)
-            params["query"] = q
-            node["notes"] = "v5.6.2: fuerza visible_web=false en muñecas/bebé."
-            print("Patched Upsert to Neon")
+        if UPSERT_PUBLISHED_DUPLICATE in q:
+            q = q.replace(UPSERT_PUBLISHED_DUPLICATE, UPSERT_PUBLISHED_FIXED, 1)
+        params["query"] = q
+        node["notes"] = "v5.6.2: fuerza visible_web=false en muñecas/bebé."
+        print("Patched Upsert to Neon")
 
 data["name"] = "Miniland Sync v5.6.2 - CATALOGO + TARIFA + NON-SELLABLE HIDE"
 path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

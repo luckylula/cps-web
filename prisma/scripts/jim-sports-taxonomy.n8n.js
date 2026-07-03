@@ -82,6 +82,20 @@ function resolveInstalaciones(padre, texto, categoryId) {
 }
 function figurasEspumaEscolar() { return { categoryId: 'material-escolar', subcategory: 'Figuras espuma', grupo: null }; }
 function materialFoamEscolar() { return { categoryId: 'material-escolar', subcategory: 'Material foam', grupo: null }; }
+function materialDidacticoEscolar() { return { categoryId: 'material-escolar', subcategory: 'Material Didáctico', grupo: null }; }
+function juguetesEducativosEscolar() { return { categoryId: 'material-escolar', subcategory: 'Juguetes Educativos', grupo: null }; }
+function educacionInfantilEscolar() { return { categoryId: 'material-escolar', subcategory: 'Juegos en Educación infantil', grupo: null }; }
+function resolveJuegoEscolarByName(productName) {
+  const n = normalizeProductName(productName || '');
+  if (!n.includes('juego')) return null;
+  if (/infantil|iniciacion|educacion infantil|bebe|0-3|1-2 anos/.test(n)) return educacionInfantilEscolar();
+  return juguetesEducativosEscolar();
+}
+function applyJuegoNameOverride(taxonomy, productName) {
+  if (!taxonomy || taxonomy.categoryId !== 'material-escolar') return taxonomy;
+  if (taxonomy.subcategory === 'Juegos alternativos') return taxonomy;
+  return resolveJuegoEscolarByName(productName || '') || taxonomy;
+}
 function isPsicomotricidadBase(n) {
   return n.startsWith('base ') || n.includes('base maciza') || n.includes('base para pica') || n.includes('base softee');
 }
@@ -94,11 +108,23 @@ function isPiscinaBolasFoam(n) {
   if (n.startsWith('lote ') && n.includes('pelotas')) return false;
   return n.includes('piscina') && (n.includes('llenado') || n.includes('pelota') || n.includes('bola'));
 }
+function isBarraEquilibrioEspuma(n) { return n.includes('barra') && n.includes('espuma'); }
+function isPanelSenalizacionTrafico(n) {
+  if (n.includes('para pica')) return false;
+  return n.includes('panel') && n.includes('senalizacion') && n.includes('trafico');
+}
+function isPelotaMaterialDidactico(n) {
+  if (n.startsWith('lote ') && n.includes('pelotas')) return true;
+  return n.startsWith('pelota ');
+}
 function resolvePsicomotricidad(texto, productName) {
   const n = normalizeProductName(productName || '');
   if (n.includes('antifaz')) return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo: null };
   if (isPsicomotricidadBase(n)) return materialFoamEscolar();
-  if (isPiscinaBolasFoam(n)) return materialFoamEscolar();
+  if (isPiscinaBolasFoam(n)) return figurasEspumaEscolar();
+  if (isBarraEquilibrioEspuma(n)) return materialFoamEscolar();
+  if (isPanelSenalizacionTrafico(n)) return materialDidacticoEscolar();
+  if (isPelotaMaterialDidactico(n)) return materialDidacticoEscolar();
   if (texto === 'Figuras acolchadas') return figurasEspumaEscolar();
   if (isFiguraEspumaName(n)) return figurasEspumaEscolar();
   return { categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null };
@@ -148,13 +174,13 @@ function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcat
   const instalaciones = resolveInstalaciones(padre, texto, fallbackCategoryId);
   if (instalaciones) return instalaciones;
   const escolar = resolveMaterialEscolar(padre, texto, productName);
-  if (escolar) return escolar;
+  if (escolar) return applyJuegoNameOverride(escolar, productName);
   if (COLECTIVOS_PADRES.has(padre) || RAQUETA_PADRES.has(padre) || ['Fitness', 'Natación', 'Outdoor', 'Atletismo', 'Running', 'Gimnasia rítmica', 'Deportes de contacto', 'Playa', 'Entrenamiento', 'Para la tienda', 'Deportes alternativos'].includes(padre)) {
     return resolveDeportes(padre);
   }
   if (fallbackCategoryId === 'textil') return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
   if (fallbackCategoryId === 'instalaciones') return gimnasioInstalaciones();
-  if (fallbackCategoryId === 'material-escolar') return { categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null };
+  if (fallbackCategoryId === 'material-escolar') return applyJuegoNameOverride({ categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null }, productName);
   if (fallbackCategoryId === 'deportes') return resolveDeportes(padre || 'Varios');
   return null;
 }
