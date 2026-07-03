@@ -65,7 +65,7 @@ for (let i = 1; i < lines.length; i++) {
   if (!groups.has(refPatron)) {
     const rawCategoryId = resolveCategoryId(categoriaPadre || "", categoriaTexto || "");
     const rawSub = `${categoriaPadre || ""} > ${categoriaTexto || ""}`;
-    const mapped = resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, rawSub, rawCategoryId) || {
+    const mapped = resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, rawSub, rawCategoryId, name) || {
       categoryId: rawCategoryId,
       subcategory: rawSub,
       grupo: null,

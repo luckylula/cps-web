@@ -66,7 +66,7 @@ function resolveTextil(padre: string, texto: string): JimTaxonomy | null {
     return { categoryId: 'textil', subcategory: 'Calzado', grupo: null };
   }
   if (padre === 'Equipaciones') {
-    return { categoryId: 'textil', subcategory: 'Ropa Deportiva', grupo: null };
+    return { categoryId: 'textil', subcategory: 'Ropa Deportiva', grupo: 'Equipaciones' };
   }
   if (padre === 'Pádel' && texto === 'Textil') {
     return { categoryId: 'textil', subcategory: 'Ropa Deportiva', grupo: 'Por deporte - Pádel' };
@@ -75,7 +75,7 @@ function resolveTextil(padre: string, texto: string): JimTaxonomy | null {
     return {
       categoryId: 'textil',
       subcategory: texto === 'Calzado' ? 'Calzado' : 'Ropa Deportiva',
-      grupo: null,
+      grupo: texto === 'Calzado' ? null : 'Natación y Playa',
     };
   }
   if (padre === 'Línea Work') {
@@ -89,6 +89,69 @@ function resolveTextil(padre: string, texto: string): JimTaxonomy | null {
     };
   }
   return null;
+}
+
+function normalizeProductName(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase();
+}
+
+function fitnessIndividual(): JimTaxonomy {
+  return { categoryId: 'deportes', subcategory: 'Individual', grupo: 'Fitness' };
+}
+
+function yogaIndividual(): JimTaxonomy {
+  return { categoryId: 'deportes', subcategory: 'Individual', grupo: 'Yoga' };
+}
+
+function outdoorIndividual(): JimTaxonomy {
+  return { categoryId: 'deportes', subcategory: 'Individual', grupo: 'Outdoor' };
+}
+
+function gimnasioInstalaciones(): JimTaxonomy {
+  return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
+}
+
+/**
+ * Jim Sports agrupa muchas colchonetas en Equipamiento > Colchonetas.
+ * Solo las de instalación deportiva van a Instalaciones > Gimnasio.
+ */
+function resolveColchonetasByName(productName: string): JimTaxonomy {
+  const n = normalizeProductName(productName);
+
+  if (n.includes('camping')) return outdoorIndividual();
+  if (n.includes('aerobic') || n.includes('aerobico')) return fitnessIndividual();
+  if (n.includes('pilates') || n.includes('yoga') || n.includes('bolsa softee')) {
+    return yogaIndividual();
+  }
+  if (n.includes('fitness multifuncion')) return fitnessIndividual();
+  if (n.includes('plegable 180x60')) return yogaIndividual();
+
+  if (
+    n.includes('ignifuga') ||
+    n.includes('clasica 200') ||
+    n.includes('clasica 240') ||
+    n.includes('reforzada') ||
+    n.includes('matrixcell') ||
+    n.includes('quitamiedos') ||
+    n.includes('funda colchoneta') ||
+    n.includes('funda quitamiedos') ||
+    n.includes('loseta proteccion') ||
+    n.includes('tatami') ||
+    n.includes('saltos portero') ||
+    n.includes('termoconformada') ||
+    n.includes('figura colchoneta')
+  ) {
+    return gimnasioInstalaciones();
+  }
+
+  if (n.includes('tapices infantil') || n.includes('infantil')) {
+    return { categoryId: 'material-escolar', subcategory: 'Material foam', grupo: null };
+  }
+
+  return { categoryId: 'material-escolar', subcategory: 'Manualidades', grupo: null };
 }
 
 function resolveInstalaciones(
@@ -113,18 +176,15 @@ function resolveInstalaciones(
     if (texto === 'Vestuarios') {
       return { categoryId: 'instalaciones', subcategory: 'Vestuarios', grupo: null };
     }
-    if (texto === 'Colchonetas' || texto === 'Gimnasia') {
-      return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
+    if (texto === 'Gimnasia') {
+      return gimnasioInstalaciones();
     }
     if (texto === 'Banquillos') {
       return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
     }
   }
   if (padre === 'Fitness' && ['Musculación', 'Entrenamiento funcional', 'Cardio'].includes(texto)) {
-    if (categoryId === 'instalaciones') {
-      return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
-    }
-    return null;
+    return fitnessIndividual();
   }
   if (padre === 'Para la tienda' && texto === 'Mobiliario') {
     return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
@@ -132,11 +192,8 @@ function resolveInstalaciones(
   if (padre === 'Entrenamiento' && texto === 'Portamaterial') {
     return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
   }
-  if (padre === 'Entrenamiento' && texto === 'Accesorios' && categoryId === 'instalaciones') {
-    return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
-  }
   if (padre === 'Entrenamiento' && texto === 'Protecciones' && categoryId === 'instalaciones') {
-    return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
+    return gimnasioInstalaciones();
   }
   if (padre === 'Outdoor' && texto === 'Accesorios') {
     return { categoryId: 'instalaciones', subcategory: 'Redes y Protecciones', grupo: null };
@@ -204,6 +261,16 @@ function resolveMaterialEscolar(padre: string, texto: string): JimTaxonomy | nul
   return null;
 }
 
+function resolveEntrenamientoAccesorios(
+  productName: string | null | undefined,
+  categoryId?: string | null
+): JimTaxonomy | null {
+  const n = normalizeProductName(productName ?? '');
+  if (n.includes('botella')) return fitnessIndividual();
+  if (categoryId === 'instalaciones') return gimnasioInstalaciones();
+  return null;
+}
+
 function resolveDeportes(padre: string, _texto: string): JimTaxonomy {
   const subcategory = deportesSubcategory(padre);
   return {
@@ -218,7 +285,8 @@ export function resolveJimSportsTaxonomy(
   categoriaPadre: string | null | undefined,
   categoriaTexto: string | null | undefined,
   fallbackSubcategory?: string | null,
-  fallbackCategoryId?: string | null
+  fallbackCategoryId?: string | null,
+  productName?: string | null
 ): JimTaxonomy | null {
   let padre = categoriaPadre?.trim() || '';
   let texto = categoriaTexto?.trim() || '';
@@ -232,6 +300,15 @@ export function resolveJimSportsTaxonomy(
   }
 
   if (!padre) return null;
+
+  if (padre === 'Equipamiento' && texto === 'Colchonetas') {
+    return resolveColchonetasByName(productName ?? '');
+  }
+
+  if (padre === 'Entrenamiento' && texto === 'Accesorios') {
+    const accesorios = resolveEntrenamientoAccesorios(productName, fallbackCategoryId);
+    if (accesorios) return accesorios;
+  }
 
   if (padre === 'Producto promocional') {
     return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };

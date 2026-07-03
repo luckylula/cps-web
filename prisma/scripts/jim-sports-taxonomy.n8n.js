@@ -24,12 +24,40 @@ function parseSubcategoryField(subcategory) {
   if (!parts[0]) return null;
   return { padre: parts[0], texto: parts[1] || '' };
 }
+function normalizeProductName(name) {
+  return String(name || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+}
+function fitnessIndividual() { return { categoryId: 'deportes', subcategory: 'Individual', grupo: 'Fitness' }; }
+function yogaIndividual() { return { categoryId: 'deportes', subcategory: 'Individual', grupo: 'Yoga' }; }
+function outdoorIndividual() { return { categoryId: 'deportes', subcategory: 'Individual', grupo: 'Outdoor' }; }
+function gimnasioInstalaciones() { return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null }; }
+function resolveColchonetasByName(productName) {
+  const n = normalizeProductName(productName);
+  if (n.includes('camping')) return outdoorIndividual();
+  if (n.includes('aerobic') || n.includes('aerobico')) return fitnessIndividual();
+  if (n.includes('pilates') || n.includes('yoga') || n.includes('bolsa softee')) return yogaIndividual();
+  if (n.includes('fitness multifuncion')) return fitnessIndividual();
+  if (n.includes('plegable 180x60')) return yogaIndividual();
+  if (n.includes('ignifuga') || n.includes('clasica 200') || n.includes('clasica 240') || n.includes('reforzada') || n.includes('matrixcell') || n.includes('quitamiedos') || n.includes('funda colchoneta') || n.includes('funda quitamiedos') || n.includes('loseta proteccion') || n.includes('tatami') || n.includes('saltos portero') || n.includes('termoconformada') || n.includes('figura colchoneta')) {
+    return gimnasioInstalaciones();
+  }
+  if (n.includes('tapices infantil') || n.includes('infantil')) {
+    return { categoryId: 'material-escolar', subcategory: 'Material foam', grupo: null };
+  }
+  return { categoryId: 'material-escolar', subcategory: 'Manualidades', grupo: null };
+}
 function resolveTextil(padre, texto) {
   if (padre === 'Casual' && ['Textil', 'Accesorios', 'Complementos'].includes(texto)) return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
   if (padre === 'Casual' && texto === 'Calzado') return { categoryId: 'textil', subcategory: 'Calzado', grupo: null };
-  if (padre === 'Equipaciones') return { categoryId: 'textil', subcategory: 'Ropa Deportiva', grupo: null };
+  if (padre === 'Equipaciones') return { categoryId: 'textil', subcategory: 'Ropa Deportiva', grupo: 'Equipaciones' };
   if (padre === 'Pádel' && texto === 'Textil') return { categoryId: 'textil', subcategory: 'Ropa Deportiva', grupo: 'Por deporte - Pádel' };
-  if (texto === 'Bañadores' || (padre === 'Natación' && texto === 'Calzado')) return { categoryId: 'textil', subcategory: texto === 'Calzado' ? 'Calzado' : 'Ropa Deportiva', grupo: null };
+  if (texto === 'Bañadores' || (padre === 'Natación' && texto === 'Calzado')) {
+    return {
+      categoryId: 'textil',
+      subcategory: texto === 'Calzado' ? 'Calzado' : 'Ropa Deportiva',
+      grupo: texto === 'Calzado' ? null : 'Natación y Playa',
+    };
+  }
   if (padre === 'Línea Work') return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
   if (texto === 'Textil' || texto === 'Calzado') return { categoryId: 'textil', subcategory: texto === 'Calzado' ? 'Calzado' : 'Ropa Casual', grupo: null };
   return null;
@@ -40,17 +68,13 @@ function resolveInstalaciones(padre, texto, categoryId) {
     if (texto === 'Redes' || texto === 'Protecciones columnas') return { categoryId: 'instalaciones', subcategory: 'Redes y Protecciones', grupo: null };
     if (texto === 'Equipamiento agua') return { categoryId: 'instalaciones', subcategory: 'Piscina', grupo: null };
     if (texto === 'Vestuarios') return { categoryId: 'instalaciones', subcategory: 'Vestuarios', grupo: null };
-    if (texto === 'Colchonetas' || texto === 'Gimnasia') return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
+    if (texto === 'Gimnasia') return gimnasioInstalaciones();
     if (texto === 'Banquillos') return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
   }
-  if (padre === 'Fitness' && ['Musculación', 'Entrenamiento funcional', 'Cardio'].includes(texto)) {
-    if (categoryId === 'instalaciones') return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
-    return null;
-  }
+  if (padre === 'Fitness' && ['Musculación', 'Entrenamiento funcional', 'Cardio'].includes(texto)) return fitnessIndividual();
   if (padre === 'Para la tienda' && texto === 'Mobiliario') return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
   if (padre === 'Entrenamiento' && texto === 'Portamaterial') return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
-  if (padre === 'Entrenamiento' && texto === 'Accesorios' && categoryId === 'instalaciones') return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
-  if (padre === 'Entrenamiento' && texto === 'Protecciones' && categoryId === 'instalaciones') return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
+  if (padre === 'Entrenamiento' && texto === 'Protecciones' && categoryId === 'instalaciones') return gimnasioInstalaciones();
   if (padre === 'Outdoor' && texto === 'Accesorios') return { categoryId: 'instalaciones', subcategory: 'Redes y Protecciones', grupo: null };
   if (padre === 'Pádel' && texto === 'Accesorios' && categoryId === 'instalaciones') return { categoryId: 'instalaciones', subcategory: 'Estructuras deportivas', grupo: 'Pádel' };
   if (padre === 'Para la tienda' && texto === 'Accesorios') return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
@@ -73,10 +97,16 @@ function resolveMaterialEscolar(padre, texto) {
   if (padre === 'Equipamiento' && texto === 'Colchonetas') return { categoryId: 'material-escolar', subcategory: 'Manualidades', grupo: null };
   return null;
 }
+function resolveEntrenamientoAccesorios(productName, categoryId) {
+  const n = normalizeProductName(productName);
+  if (n.includes('botella')) return fitnessIndividual();
+  if (categoryId === 'instalaciones') return gimnasioInstalaciones();
+  return null;
+}
 function resolveDeportes(padre) {
   return { categoryId: 'deportes', subcategory: deportesSubcategory(padre), grupo: normalizeGrupo(padre) };
 }
-function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcategory, fallbackCategoryId) {
+function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcategory, fallbackCategoryId, productName) {
   let padre = (categoriaPadre || '').trim();
   let texto = (categoriaTexto || '').trim();
   if (!padre && fallbackSubcategory) {
@@ -84,6 +114,11 @@ function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcat
     if (parsed) { padre = parsed.padre; texto = parsed.texto; }
   }
   if (!padre) return null;
+  if (padre === 'Equipamiento' && texto === 'Colchonetas') return resolveColchonetasByName(productName || '');
+  if (padre === 'Entrenamiento' && texto === 'Accesorios') {
+    const acc = resolveEntrenamientoAccesorios(productName, fallbackCategoryId);
+    if (acc) return acc;
+  }
   if (padre === 'Producto promocional') return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
   const textil = resolveTextil(padre, texto);
   if (textil) return textil;
@@ -95,7 +130,7 @@ function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcat
     return resolveDeportes(padre);
   }
   if (fallbackCategoryId === 'textil') return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
-  if (fallbackCategoryId === 'instalaciones') return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };
+  if (fallbackCategoryId === 'instalaciones') return gimnasioInstalaciones();
   if (fallbackCategoryId === 'material-escolar') return { categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null };
   if (fallbackCategoryId === 'deportes') return resolveDeportes(padre || 'Varios');
   return null;

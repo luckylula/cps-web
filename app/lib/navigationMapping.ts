@@ -38,6 +38,7 @@ export const slugToName: Record<string, Record<string, Record<string, string>>> 
     'ropa-deportiva': {
       equipaciones: 'Equipaciones',
       'por-deporte-padel': 'Por deporte - Pádel',
+      'natacion-y-playa': 'Natación y Playa',
     },
     calzado: {
       casual: 'Casual',

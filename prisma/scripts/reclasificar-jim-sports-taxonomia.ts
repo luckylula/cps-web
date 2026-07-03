@@ -16,13 +16,14 @@ async function main() {
   const { rows } = await pool.query<{
     id: number;
     ref_proveedor: string;
+    name: string;
     categoria_padre: string | null;
     categoria_texto: string | null;
     categoryId: string;
     subcategory: string | null;
     grupo: string | null;
   }>(`
-    SELECT id, ref_proveedor, categoria_padre, categoria_texto, "categoryId", subcategory, grupo
+    SELECT id, ref_proveedor, name, categoria_padre, categoria_texto, "categoryId", subcategory, grupo
     FROM "Product"
     WHERE LOWER(proveedor) = 'jim_sports'
   `);
@@ -36,7 +37,8 @@ async function main() {
       row.categoria_padre,
       row.categoria_texto,
       row.subcategory,
-      row.categoryId
+      row.categoryId,
+      row.name
     );
     if (!mapped) {
       skipped++;

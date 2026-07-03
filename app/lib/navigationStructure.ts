@@ -149,6 +149,7 @@ export const navigationStructure: Categoria[] = [
         grupos: [
           { nombre: "Equipaciones", slug: "equipaciones" },
           { nombre: "Por deporte - Pádel", slug: "por-deporte-padel" },
+          { nombre: "Natación y Playa", slug: "natacion-y-playa" },
         ],
       },
     ],

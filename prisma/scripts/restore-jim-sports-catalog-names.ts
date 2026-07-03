@@ -74,7 +74,7 @@ async function main() {
               ? 'material-escolar'
               : 'deportes';
       const mapped =
-        resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, rawSub, categoryId) ?? {
+        resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, rawSub, categoryId, name.trim()) ?? {
           categoryId,
           subcategory: rawSub,
           grupo: null,
