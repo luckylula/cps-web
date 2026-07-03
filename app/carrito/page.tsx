@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import SafeImage from "@/app/components/SafeImage";
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import Navigation from "@/app/components/Navigation";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
+import { useCartStock } from "@/app/hooks/useCartStock";
 
 interface FormData {
   nombre: string;
@@ -23,6 +24,15 @@ interface FormErrors {
 
 export default function CarritoPage() {
   const { items, updateQuantity, removeItem, clearCart, getTotalPrice } = useCart();
+  const { loading: stockLoading, getMaxStock } = useCartStock(items);
+  const [stockNotice, setStockNotice] = useState<string | null>(null);
+  const stockAdjustedRef = useRef(false);
+  const itemsKey = items.map((i) => `${i.id}:${i.quantity}`).join("|");
+
+  useEffect(() => {
+    stockAdjustedRef.current = false;
+    setStockNotice(null);
+  }, [itemsKey]);
   const [formData, setFormData] = useState<FormData>({
     nombre: "",
     email: "",
@@ -33,12 +43,45 @@ export default function CarritoPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
 
+  useEffect(() => {
+    if (stockLoading || items.length === 0) {
+      stockAdjustedRef.current = false;
+      return;
+    }
+
+    if (stockAdjustedRef.current) return;
+
+    const messages: string[] = [];
+    for (const item of items) {
+      const maxStock = getMaxStock(item);
+      if (maxStock === undefined) continue;
+
+      if (maxStock === 0) {
+        removeItem(item.id);
+        messages.push(`${item.name}: sin stock, eliminado del carrito`);
+      } else if (item.quantity > maxStock) {
+        updateQuantity(item.id, maxStock, maxStock);
+        messages.push(`${item.name}: cantidad ajustada a ${maxStock}`);
+      }
+    }
+
+    if (messages.length > 0) {
+      setStockNotice(messages.join(" · "));
+    }
+
+    stockAdjustedRef.current = true;
+  }, [stockLoading, items, getMaxStock, removeItem, updateQuantity]);
+
   const handleQuantityChange = (id: string, newQuantity: number) => {
+    const item = items.find((i) => i.id === id);
+    const maxStock = item ? getMaxStock(item) : undefined;
+
     if (newQuantity < 1) {
       removeItem(id);
-    } else {
-      updateQuantity(id, newQuantity);
+      return;
     }
+
+    updateQuantity(id, newQuantity, maxStock);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -193,6 +236,12 @@ export default function CarritoPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-4xl font-light text-gray-900 mb-8">Mi Carrito</h1>
 
+        {stockNotice && (
+          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            {stockNotice}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Lista de Productos */}
           <div className="lg:col-span-2">
@@ -204,7 +253,12 @@ export default function CarritoPage() {
               </div>
 
               <div className="divide-y divide-gray-200">
-                {items.map((item) => (
+                {items.map((item) => {
+                  const maxStock = getMaxStock(item);
+                  const atMaxStock =
+                    maxStock !== undefined && item.quantity >= maxStock;
+
+                  return (
                   <div key={item.id} className="p-6 flex flex-col sm:flex-row gap-4">
                     {/* Imagen */}
                     <div className="relative w-full sm:w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
@@ -235,6 +289,9 @@ export default function CarritoPage() {
                         )}
                         <p className="text-gray-600 mt-1">
                           {item.price.toFixed(2)}€ unidad
+                          {maxStock !== undefined && (
+                            <span className="text-gray-400"> · Stock: {maxStock}</span>
+                          )}
                         </p>
                       </div>
 
@@ -255,7 +312,8 @@ export default function CarritoPage() {
                           </span>
                           <button
                             onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                            className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                            disabled={atMaxStock || stockLoading}
+                            className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             aria-label="Aumentar cantidad"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +342,8 @@ export default function CarritoPage() {
                       </div>
                     </div>
                   </div>
-                ))}
+                );
+                })}
               </div>
             </div>
           </div>

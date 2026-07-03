@@ -87,7 +87,7 @@ function sanitizeDescription(description: string): string {
 
 export default function ArticuloPage({ params }: PageProps) {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { items, addItemQuantity } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
@@ -163,37 +163,54 @@ export default function ArticuloPage({ params }: PageProps) {
   const handleAddToCart = () => {
     if (!product) return;
 
-    // Si hay variantes, verificar que se haya seleccionado una
     if (product.variants && product.variants.length > 0 && !selectedVariant) {
       alert('Por favor, selecciona color y talla');
       return;
     }
 
-    // Verificar stock
     const stock = selectedVariant ? selectedVariant.stock : product.stock;
-    if (stock === 0) {
+    if (stock <= 0) {
       alert('Este producto no está disponible');
       return;
     }
 
-    setIsAdding(true);
-    for (let i = 0; i < quantity; i++) {
-      if (product.price !== null && product.price !== undefined) {
-        addItem({
-          id: selectedVariant ? `variant-${selectedVariant.id}` : `product-${product.id}`,
-          productId: product.id,
-          variantId: selectedVariant ? selectedVariant.id : undefined,
-          name: product.name,
-          slug: product.slug,
-          price: Number(product.price),
-          images: selectedVariant && selectedVariant.images.length > 0 
-            ? selectedVariant.images 
-            : product.images,
-          color: selectedVariant?.color || null,
-          talla: selectedVariant?.talla || null,
-        });
-      }
+    const cartLineId = selectedVariant
+      ? `variant-${selectedVariant.id}`
+      : `product-${product.id}`;
+    const inCartQty = items.find((i) => i.id === cartLineId)?.quantity ?? 0;
+    const maxAddable = stock - inCartQty;
+
+    if (maxAddable <= 0) {
+      alert('Ya tienes en el carrito todas las unidades disponibles');
+      return;
     }
+
+    const qtyToAdd = Math.min(quantity, maxAddable);
+    if (qtyToAdd < quantity) {
+      alert(`Solo puedes añadir ${qtyToAdd} unidad${qtyToAdd === 1 ? '' : 'es'} más (stock disponible: ${stock})`);
+    }
+
+    if (product.price === null || product.price === undefined) return;
+
+    setIsAdding(true);
+    addItemQuantity(
+      {
+        id: cartLineId,
+        productId: product.id,
+        variantId: selectedVariant ? selectedVariant.id : undefined,
+        name: product.name,
+        slug: product.slug,
+        price: Number(product.price),
+        images:
+          selectedVariant && selectedVariant.images.length > 0
+            ? selectedVariant.images
+            : product.images,
+        color: selectedVariant?.color || null,
+        talla: selectedVariant?.talla || null,
+      },
+      qtyToAdd,
+      stock
+    );
     setTimeout(() => {
       setIsAdding(false);
       setQuantity(1);
@@ -246,16 +263,32 @@ export default function ArticuloPage({ params }: PageProps) {
     setSelectedTalla(null); // Resetear talla al cambiar color
   };
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value) || 1;
-    if (value < 1) {
+  const availableStock = product
+    ? selectedVariant
+      ? selectedVariant.stock
+      : product.variants && product.variants.length > 0
+        ? 0
+        : product.stock
+    : 0;
+
+  const cartLineId = product
+    ? selectedVariant
+      ? `variant-${selectedVariant.id}`
+      : `product-${product.id}`
+    : '';
+
+  const inCartQty = cartLineId
+    ? items.find((i) => i.id === cartLineId)?.quantity ?? 0
+    : 0;
+  const maxAddableQty = Math.max(0, availableStock - inCartQty);
+
+  useEffect(() => {
+    if (maxAddableQty <= 0) {
       setQuantity(1);
-    } else if (value > 99) {
-      setQuantity(99);
-    } else {
-      setQuantity(value);
+      return;
     }
-  };
+    setQuantity((q) => Math.min(q, maxAddableQty));
+  }, [cartLineId, maxAddableQty]);
 
   if (loading) {
     return (
@@ -328,6 +361,16 @@ export default function ArticuloPage({ params }: PageProps) {
     product.variants && product.variants.length > 0
       ? product.variants.some((v) => v.stock > 0)
       : product.stock > 0;
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 1;
+    const maxQty = maxAddableQty > 0 ? maxAddableQty : 1;
+    if (value < 1) {
+      setQuantity(1);
+    } else {
+      setQuantity(Math.min(value, maxQty));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -574,14 +617,16 @@ export default function ArticuloPage({ params }: PageProps) {
                       type="number"
                       id="quantity"
                       min="1"
-                      max="99"
+                      max={Math.max(1, maxAddableQty)}
                       value={quantity}
                       onChange={handleQuantityChange}
-                      className="w-16 px-3 py-1.5 text-center text-sm font-medium text-gray-900 border-0 focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                      disabled={maxAddableQty <= 0}
+                      className="w-16 px-3 py-1.5 text-center text-sm font-medium text-gray-900 border-0 focus:ring-1 focus:ring-orange-500 focus:outline-none disabled:bg-gray-50"
                     />
                     <button
-                      onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                      className="px-3 py-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                      onClick={() => setQuantity(Math.min(maxAddableQty, quantity + 1))}
+                      disabled={quantity >= maxAddableQty || maxAddableQty <= 0}
+                      className="px-3 py-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       aria-label="Aumentar cantidad"
                     >
                       <svg
@@ -599,23 +644,9 @@ export default function ArticuloPage({ params }: PageProps) {
                       </svg>
                     </button>
                   </div>
-                  {selectedVariant ? (
-                    selectedVariant.stock > 0 ? (
-                      <p className="text-xs text-gray-600">
-                        Stock: <span className="font-medium">{selectedVariant.stock} unidades</span>
-                      </p>
-                    ) : (
-                      <p className="text-xs text-gray-500 italic">
-                        Stock: Consultar disponibilidad
-                      </p>
-                    )
-                  ) : product.stock > 0 ? (
-                    <p className="text-xs text-gray-600">
-                      Stock: <span className="font-medium">{product.stock} unidades</span>
-                    </p>
-                  ) : (
-                    <p className="text-xs text-gray-500 italic">
-                      Stock: Consultar disponibilidad
+                  {inCartQty > 0 && (
+                    <p className="text-xs text-gray-500">
+                      En tu carrito: {inCartQty} · Puedes añadir hasta {maxAddableQty} más
                     </p>
                   )}
                 </div>
@@ -662,6 +693,7 @@ export default function ArticuloPage({ params }: PageProps) {
                     disabled={
                       isAdding ||
                       !hasVariantStock ||
+                      maxAddableQty <= 0 ||
                       (product.variants && product.variants.length > 0 && !selectedVariant)
                     }
                     className="bg-black hover:bg-gray-900 text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"

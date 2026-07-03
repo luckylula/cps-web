@@ -18,8 +18,9 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addItem: (product: Omit<CartItem, 'quantity'>) => void;
+  addItemQuantity: (product: Omit<CartItem, 'quantity'>, quantity: number, maxStock?: number) => void;
   removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  updateQuantity: (id: string, quantity: number, maxStock?: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -58,30 +59,45 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, isLoaded]);
 
-  const addItem = (product: Omit<CartItem, 'quantity'>) => {
-    setItems((prevItems) => {
-      // Buscar si ya existe el mismo producto/variante
-      const existingItem = prevItems.find((item) => {
-        if (product.variantId) {
-          // Si tiene variante, comparar por variantId
-          return item.variantId === product.variantId && item.productId === product.productId;
-        } else {
-          // Si no tiene variante, comparar solo por productId
-          return item.productId === product.productId && !item.variantId;
-        }
-      });
-      
-      if (existingItem) {
-        // Si el producto/variante ya existe, incrementar la cantidad
-        return prevItems.map((item) =>
-          item.id === existingItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        // Si es un producto/variante nuevo, añadirlo con cantidad 1
-        return [...prevItems, { ...product, quantity: 1 }];
+  const findExistingItem = (
+    prevItems: CartItem[],
+    product: Omit<CartItem, 'quantity'>
+  ) =>
+    prevItems.find((item) => {
+      if (product.variantId) {
+        return item.variantId === product.variantId && item.productId === product.productId;
       }
+      return item.productId === product.productId && !item.variantId;
+    });
+
+  const addItem = (product: Omit<CartItem, 'quantity'>) => {
+    addItemQuantity(product, 1);
+  };
+
+  const addItemQuantity = (
+    product: Omit<CartItem, 'quantity'>,
+    quantity: number,
+    maxStock?: number
+  ) => {
+    if (quantity <= 0) return;
+
+    setItems((prevItems) => {
+      const existingItem = findExistingItem(prevItems, product);
+      const currentQty = existingItem?.quantity ?? 0;
+      const cap = maxStock !== undefined ? maxStock : Number.POSITIVE_INFINITY;
+      const newQty = Math.min(currentQty + quantity, cap);
+
+      if (newQty <= 0) {
+        return prevItems.filter((item) => item.id !== product.id);
+      }
+
+      if (existingItem) {
+        return prevItems.map((item) =>
+          item.id === existingItem.id ? { ...item, quantity: newQty } : item
+        );
+      }
+
+      return [...prevItems, { ...product, quantity: Math.min(quantity, cap) }];
     });
   };
 
@@ -89,15 +105,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
-    if (quantity <= 0) {
+  const updateQuantity = (id: string, quantity: number, maxStock?: number) => {
+    const capped =
+      maxStock !== undefined ? Math.min(quantity, maxStock) : quantity;
+
+    if (capped <= 0) {
       removeItem(id);
       return;
     }
 
     setItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
+        item.id === id ? { ...item, quantity: capped } : item
       )
     );
   };
@@ -119,6 +138,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         addItem,
+        addItemQuantity,
         removeItem,
         updateQuantity,
         clearCart,

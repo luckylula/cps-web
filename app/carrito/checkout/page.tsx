@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import SafeImage from "@/app/components/SafeImage";
 import { useCart } from "@/app/context/CartContext";
@@ -8,6 +8,7 @@ import CartButton from "@/app/components/CartButton";
 import Navigation from "@/app/components/Navigation";
 import { useRouter } from "next/navigation";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
+import { useCartStock } from "@/app/hooks/useCartStock";
 
 interface FormData {
   // Información Personal
@@ -46,7 +47,12 @@ interface FormErrors {
 // Componente principal del checkout que maneja toda la lógica
 function CheckoutForm() {
   const router = useRouter();
-  const { items, getTotalPrice, getTotalItems, clearCart } = useCart();
+  const { items, getTotalPrice, getTotalItems, clearCart, updateQuantity, removeItem } = useCart();
+  const { loading: stockLoading, getMaxStock } = useCartStock(items);
+  const [stockNotice, setStockNotice] = useState<string | null>(null);
+  const [stockBlocked, setStockBlocked] = useState(false);
+  const stockAdjustedRef = useRef(false);
+  const itemsKey = items.map((i) => `${i.id}:${i.quantity}`).join("|");
   const [formData, setFormData] = useState<FormData>({
     // Información Personal
     nombre: "",
@@ -73,6 +79,46 @@ function CheckoutForm() {
   const [couponError, setCouponError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [redsysError, setRedsysError] = useState("");
+
+  useEffect(() => {
+    stockAdjustedRef.current = false;
+    setStockNotice(null);
+    setStockBlocked(false);
+  }, [itemsKey]);
+
+  useEffect(() => {
+    if (stockLoading || items.length === 0) return;
+    if (stockAdjustedRef.current) return;
+
+    const messages: string[] = [];
+    let blocked = false;
+
+    for (const item of items) {
+      const maxStock = getMaxStock(item);
+      if (maxStock === undefined) continue;
+
+      if (maxStock === 0) {
+        removeItem(item.id);
+        messages.push(`${item.name}: sin stock, eliminado del carrito`);
+        blocked = true;
+      } else if (item.quantity > maxStock) {
+        updateQuantity(item.id, maxStock, maxStock);
+        messages.push(`${item.name}: cantidad ajustada a ${maxStock}`);
+      }
+    }
+
+    if (messages.length > 0) {
+      setStockNotice(messages.join(" · "));
+    }
+
+    setStockBlocked(blocked);
+    stockAdjustedRef.current = true;
+  }, [stockLoading, items, getMaxStock, removeItem, updateQuantity]);
+
+  const hasStockIssues = items.some((item) => {
+    const maxStock = getMaxStock(item);
+    return maxStock !== undefined && (maxStock === 0 || item.quantity > maxStock);
+  });
 
   // Envío: gratis si subtotal >= 120€; si no, estándar 10€ y express 15€
   const FREE_SHIPPING_THRESHOLD = 120;
@@ -237,6 +283,16 @@ function CheckoutForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (stockLoading) {
+      setStockNotice("Comprobando stock disponible, espera un momento.");
+      return;
+    }
+
+    if (stockBlocked || hasStockIssues || items.length === 0) {
+      setStockNotice("Hay productos sin stock suficiente. Revisa tu carrito antes de continuar.");
+      return;
+    }
 
     if (!validateForm()) {
       return;
@@ -505,6 +561,18 @@ function CheckoutForm() {
           <span>/</span>
           <span className="text-gray-900 font-medium">Checkout</span>
         </nav>
+
+        {stockNotice && (
+          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            {stockNotice}
+          </div>
+        )}
+
+        {stockLoading && (
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600">
+            Comprobando stock disponible…
+          </div>
+        )}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -981,7 +1049,7 @@ function CheckoutForm() {
                   </Link>
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || stockLoading || stockBlocked || hasStockIssues || items.length === 0}
                     className="flex-1 bg-black hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                   >
                     {isSubmitting ? (

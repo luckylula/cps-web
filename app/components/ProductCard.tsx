@@ -60,7 +60,7 @@ export default function ProductCard({
   categoryId,
   hasStock = true,
 }: ProductCardProps) {
-  const { addItem } = useCart();
+  const { addItemQuantity } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAdding, setIsAdding] = useState(false);
   
@@ -80,14 +80,18 @@ export default function ProductCard({
     }
     
     setIsAdding(true);
-    addItem({
-      id: `product-${id}`,
-      productId: id,
-      name,
-      slug,
-      price: Number(price),
-      images,
-    });
+    addItemQuantity(
+      {
+        id: `product-${id}`,
+        productId: id,
+        name,
+        slug,
+        price: Number(price),
+        images,
+      },
+      1,
+      stock > 0 ? stock : undefined
+    );
     
     setTimeout(() => setIsAdding(false), 300);
   };
