@@ -1,20 +1,29 @@
 import { createRedsysAPI, PRODUCTION_URLS, SANDBOX_URLS } from 'redsys-easy';
 
-const isProduction = process.env.REDSYS_ENV?.trim() === 'production';
+/** Leer en cada petición: Next.js puede inlinar process.env a nivel de módulo en el build. */
+export function isRedsysProduction(): boolean {
+  return process.env.REDSYS_ENV?.trim() === 'production';
+}
 
 export function getRedsysApi() {
-  const secretKey = process.env.REDSYS_SECRET_KEY;
+  const secretKey = process.env.REDSYS_SECRET_KEY?.trim();
   if (!secretKey) {
     throw new Error('REDSYS_SECRET_KEY no está configurada');
   }
   return createRedsysAPI({
     secretKey,
-    urls: isProduction ? PRODUCTION_URLS : SANDBOX_URLS,
+    urls: isRedsysProduction() ? PRODUCTION_URLS : SANDBOX_URLS,
   });
 }
 
-export const redsysMerchantCode = process.env.REDSYS_MERCHANT_CODE || '';
-export const redsysTerminal = process.env.REDSYS_TERMINAL || '001';
-export const redsysMerchantName =
-  process.env.REDSYS_MERCHANT_NAME || 'CONTROL PLAY SERVICES';
+export function getRedsysMerchantCode(): string {
+  return process.env.REDSYS_MERCHANT_CODE?.trim() || '';
+}
 
+export function getRedsysTerminal(): string {
+  return process.env.REDSYS_TERMINAL?.trim() || '001';
+}
+
+export function getRedsysMerchantName(): string {
+  return process.env.REDSYS_MERCHANT_NAME?.trim() || 'CONTROL PLAY SERVICES';
+}

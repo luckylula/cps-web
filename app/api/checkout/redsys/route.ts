@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/client';
-import { getRedsysApi, redsysMerchantCode, redsysMerchantName, redsysTerminal } from '@/app/lib/redsys';
+import {
+  getRedsysApi,
+  getRedsysMerchantCode,
+  getRedsysMerchantName,
+  getRedsysTerminal,
+  isRedsysProduction,
+} from '@/app/lib/redsys';
 import { randomTransactionId } from 'redsys-easy';
 import { calculateCouponDiscount, validateCoupon } from '@/app/lib/coupon';
 
 // Forzar runtime Node (las variables de entorno pueden no estar en Edge)
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 interface OrderItemInput {
   id: string;
@@ -124,7 +131,7 @@ function findProductByCartItem<T extends { id: number }>(
 export async function POST(request: NextRequest) {
   try {
     const secretKey = process.env.REDSYS_SECRET_KEY?.trim();
-    const merchantCode = (process.env.REDSYS_MERCHANT_CODE ?? redsysMerchantCode)?.trim();
+    const merchantCode = (process.env.REDSYS_MERCHANT_CODE ?? getRedsysMerchantCode())?.trim();
     if (!secretKey || !merchantCode) {
       const missing = [
         !secretKey && 'REDSYS_SECRET_KEY',
@@ -350,8 +357,8 @@ export async function POST(request: NextRequest) {
       DS_MERCHANT_CURRENCY: '978', // EUR
       DS_MERCHANT_ORDER: redsysOrderId,
       DS_MERCHANT_MERCHANTCODE: merchantCode,
-      DS_MERCHANT_MERCHANTNAME: redsysMerchantName,
-      DS_MERCHANT_TERMINAL: redsysTerminal,
+      DS_MERCHANT_MERCHANTNAME: getRedsysMerchantName(),
+      DS_MERCHANT_TERMINAL: getRedsysTerminal(),
       DS_MERCHANT_TRANSACTIONTYPE: '0', // Autorización
       DS_MERCHANT_MERCHANTDATA: customer.requestInvoice ? 'invoice=1' : 'invoice=0',
       DS_MERCHANT_MERCHANTURL: `${baseUrl}/api/checkout/redsys/notification`,
@@ -369,7 +376,7 @@ export async function POST(request: NextRequest) {
           formAction: form.url,
           formParams: form.body,
         },
-        redsysEnv: process.env.REDSYS_ENV?.trim() === 'production' ? 'production' : 'sandbox',
+        redsysEnv: isRedsysProduction() ? 'production' : 'sandbox',
         order: {
           id: order.id,
           orderNumber: order.orderNumber,
