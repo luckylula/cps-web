@@ -164,7 +164,7 @@ export default function ArticuloPage({ params }: PageProps) {
     if (!product) return;
 
     if (product.variants && product.variants.length > 0 && !selectedVariant) {
-      alert('Por favor, selecciona color y talla');
+      alert('Por favor, selecciona una combinación de color y talla disponible');
       return;
     }
 
@@ -229,18 +229,21 @@ export default function ArticuloPage({ params }: PageProps) {
     return Array.from(colors);
   };
 
-  // Obtener tallas disponibles según el color seleccionado
+  // Obtener tallas únicas de todas las variantes (sin depender del color seleccionado)
   const getAvailableTallas = (): (string | null)[] => {
     if (!product?.variants || product.variants.length === 0) return [];
     const tallas = new Set<string | null>();
-    product.variants.forEach(v => {
-      if ((selectedColor === null && v.color === null) || v.color === selectedColor) {
-        if (v.talla !== null && v.talla !== undefined) {
-          tallas.add(v.talla);
-        }
+    product.variants.forEach((v) => {
+      if (v.talla !== null && v.talla !== undefined) {
+        tallas.add(v.talla);
       }
     });
     return Array.from(tallas);
+  };
+
+  const variantExists = (color: string | null, talla: string | null): boolean => {
+    if (!product?.variants) return false;
+    return product.variants.some((v) => v.color === color && v.talla === talla);
   };
 
   // Actualizar variante seleccionada cuando cambian color/talla
@@ -260,7 +263,6 @@ export default function ArticuloPage({ params }: PageProps) {
   // Resetear selección cuando cambia el color
   const handleColorChange = (color: string | null) => {
     setSelectedColor(color);
-    setSelectedTalla(null); // Resetear talla al cambiar color
   };
 
   const availableStock = product
@@ -521,7 +523,10 @@ export default function ArticuloPage({ params }: PageProps) {
                         Color
                       </label>
                       <div className="flex flex-wrap gap-2">
-                        {getAvailableColors().map((color) => (
+                        {getAvailableColors().map((color) => {
+                          const incompatible =
+                            selectedTalla !== null && !variantExists(color, selectedTalla);
+                          return (
                           <button
                             key={color || 'sin-color'}
                             onClick={() => handleColorChange(color)}
@@ -529,11 +534,12 @@ export default function ArticuloPage({ params }: PageProps) {
                               selectedColor === color
                                 ? 'border-[#003366] bg-[#003366] text-white'
                                 : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                            }`}
+                            } ${incompatible ? 'opacity-50' : ''}`}
                           >
                             {color || 'Sin color'}
                           </button>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -545,24 +551,23 @@ export default function ArticuloPage({ params }: PageProps) {
                         Talla
                       </label>
                       <div className="flex flex-wrap gap-2">
-                        {getAvailableTallas().map((talla) => (
+                        {getAvailableTallas().map((talla) => {
+                          const incompatible =
+                            selectedColor !== null && !variantExists(selectedColor, talla);
+                          return (
                           <button
                             key={talla || 'sin-talla'}
                             onClick={() => setSelectedTalla(talla)}
-                            disabled={!selectedColor && getAvailableColors().length > 0}
                             className={`px-4 py-2 rounded border-2 transition-all ${
                               selectedTalla === talla
                                 ? 'border-[#003366] bg-[#003366] text-white'
                                 : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                            } ${
-                              !selectedColor && getAvailableColors().length > 0
-                                ? 'opacity-50 cursor-not-allowed'
-                                : ''
-                            }`}
+                            } ${incompatible ? 'opacity-50' : ''}`}
                           >
                             {talla || 'Sin talla'}
                           </button>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}

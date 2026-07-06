@@ -14,7 +14,7 @@ export function getRedsysApi() {
 }
 
 export const redsysMerchantCode = process.env.REDSYS_MERCHANT_CODE || '';
-export const redsysTerminal = process.env.REDSYS_TERMINAL || '1';
+export const redsysTerminal = process.env.REDSYS_TERMINAL || '001';
 export const redsysMerchantName =
-  process.env.REDSYS_MERCHANT_NAME || 'Control Play Sports';
+  process.env.REDSYS_MERCHANT_NAME || 'CONTROL PLAY SERVICES';
 
