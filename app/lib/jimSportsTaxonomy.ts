@@ -98,6 +98,20 @@ function normalizeProductName(name: string): string {
     .toLowerCase();
 }
 
+function isPapeleriaEscolar(productName: string): boolean {
+  const n = normalizeProductName(productName);
+  return (
+    n.includes('portadocumento') ||
+    n.includes('archivador') ||
+    n.includes('portafolio')
+  );
+}
+
+function isBancoVestuario(productName: string): boolean {
+  const n = normalizeProductName(productName);
+  return n.startsWith('banco pvc') || n.includes('banco vestuario') || n.includes('banco de vestuario');
+}
+
 function fitnessIndividual(): JimTaxonomy {
   return { categoryId: 'deportes', subcategory: 'Individual', grupo: 'Fitness' };
 }
@@ -154,10 +168,27 @@ function resolveColchonetasByName(productName: string): JimTaxonomy {
   return { categoryId: 'material-escolar', subcategory: 'Manualidades', grupo: null };
 }
 
+function isFitnessGimnasioEquipment(n: string): boolean {
+  if (n.includes('agarre') && !n.startsWith('disco ')) return true;
+  if (n.includes('anillas') && n.includes('suspension')) return true;
+  if (n.startsWith('banco ') || n.includes('para banco')) return true;
+  if (n.startsWith('barra ')) {
+    if (n.includes('masaje') || n.includes('equilibrio')) return false;
+    return true;
+  }
+  if (n.startsWith('bicicleta ')) return true;
+  if (n.includes('cinta motorizada')) return true;
+  if (n.includes('eliptica')) return true;
+  if (n.includes('mancuerna') || n.includes('mancuernero')) return true;
+  if (n.startsWith('suspension ')) return true;
+  return false;
+}
+
 function resolveInstalaciones(
   padre: string,
   texto: string,
-  categoryId?: string | null
+  categoryId?: string | null,
+  productName?: string | null
 ): JimTaxonomy | null {
   if (padre === 'Equipamiento') {
     if (ESTRUCTURAS_GRUPO[texto]) {
@@ -171,6 +202,9 @@ function resolveInstalaciones(
       return { categoryId: 'instalaciones', subcategory: 'Redes y Protecciones', grupo: null };
     }
     if (texto === 'Equipamiento agua') {
+      if (isBancoVestuario(productName ?? '')) {
+        return { categoryId: 'instalaciones', subcategory: 'Vestuarios', grupo: null };
+      }
       return { categoryId: 'instalaciones', subcategory: 'Piscina', grupo: null };
     }
     if (texto === 'Vestuarios') {
@@ -184,7 +218,7 @@ function resolveInstalaciones(
     }
   }
   if (padre === 'Fitness' && ['Musculación', 'Entrenamiento funcional', 'Cardio'].includes(texto)) {
-    return fitnessIndividual();
+    return gimnasioInstalaciones();
   }
   if (padre === 'Para la tienda' && texto === 'Mobiliario') {
     return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
@@ -195,13 +229,13 @@ function resolveInstalaciones(
   if (padre === 'Entrenamiento' && texto === 'Protecciones' && categoryId === 'instalaciones') {
     return gimnasioInstalaciones();
   }
-  if (padre === 'Outdoor' && texto === 'Accesorios') {
-    return { categoryId: 'instalaciones', subcategory: 'Redes y Protecciones', grupo: null };
-  }
   if (padre === 'Pádel' && texto === 'Accesorios' && categoryId === 'instalaciones') {
     return { categoryId: 'instalaciones', subcategory: 'Estructuras deportivas', grupo: 'Pádel' };
   }
   if (padre === 'Para la tienda' && texto === 'Accesorios') {
+    if (isPapeleriaEscolar(productName ?? '')) {
+      return materialDidacticoEscolar();
+    }
     return { categoryId: 'instalaciones', subcategory: 'Mobiliario', grupo: null };
   }
   return null;
@@ -243,6 +277,7 @@ function applyJuegoNameOverride(
 ): JimTaxonomy | null {
   if (!taxonomy || taxonomy.categoryId !== 'material-escolar') return taxonomy;
   if (taxonomy.subcategory === 'Juegos alternativos') return taxonomy;
+  if (isPelotaProductName(normalizeProductName(productName ?? ''))) return taxonomy;
   const juego = resolveJuegoEscolarByName(productName ?? '');
   return juego ?? taxonomy;
 }
@@ -276,18 +311,54 @@ function isPiscinaBolasFoam(n: string): boolean {
   );
 }
 
-function isBarraEquilibrioEspuma(n: string): boolean {
-  return n.includes('barra') && n.includes('espuma');
+function isFoamMaterialName(n: string): boolean {
+  return (
+    n.includes('foam') ||
+    n.includes('espuma') ||
+    n.includes('softee') ||
+    n.includes('superseguro')
+  );
 }
 
-function isPelotaMaterialDidactico(n: string): boolean {
-  if (n.startsWith('lote ') && n.includes('pelotas')) return true;
-  return n.startsWith('pelota ');
+/** Pelotas sueltas o lotes de bolas/pelotas → Material Didáctico (no sets ni juegos con accesorios). */
+function isPelotaProductName(n: string): boolean {
+  if (n.startsWith('pelota ')) return true;
+  if (n.startsWith('lote ') && (n.includes('pelotas') || n.includes('bolas'))) return true;
+  if (
+    (n.startsWith('juego de pelota') || n.startsWith('juego pelota')) &&
+    !n.includes('raqueta')
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function juegosAlternativosEscolar(grupo: string | null, productName?: string | null): JimTaxonomy {
+  if (isPelotaProductName(normalizeProductName(productName ?? ''))) {
+    return materialDidacticoEscolar();
+  }
+  return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo };
+}
+
+/** Entrenamiento > Iniciación infantil: foam → Material foam; pelotas → Material Didáctico. */
+function resolveIniciacionInfantil(productName: string): JimTaxonomy {
+  const n = normalizeProductName(productName);
+  if (isFoamMaterialName(n)) return materialFoamEscolar();
+  if (isPelotaProductName(n)) return materialDidacticoEscolar();
+  return educacionInfantilEscolar();
+}
+
+function isBarraEquilibrioEspuma(n: string): boolean {
+  return n.includes('barra') && n.includes('espuma');
 }
 
 function isPanelSenalizacionTrafico(n: string): boolean {
   if (n.includes('para pica')) return false;
   return n.includes('panel') && n.includes('senalizacion') && n.includes('trafico');
+}
+
+function isAntifazName(n: string): boolean {
+  return n.includes('antifaz') || n.includes('antifaces');
 }
 
 /**
@@ -297,7 +368,7 @@ function isPanelSenalizacionTrafico(n: string): boolean {
 function resolvePsicomotricidad(texto: string, productName: string): JimTaxonomy {
   const n = normalizeProductName(productName);
 
-  if (n.includes('antifaz')) {
+  if (isAntifazName(n)) {
     return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo: null };
   }
   if (isPsicomotricidadBase(n)) {
@@ -307,12 +378,12 @@ function resolvePsicomotricidad(texto: string, productName: string): JimTaxonomy
     return figurasEspumaEscolar();
   }
   if (isBarraEquilibrioEspuma(n)) {
-    return materialFoamEscolar();
+    return figurasEspumaEscolar();
   }
   if (isPanelSenalizacionTrafico(n)) {
     return materialDidacticoEscolar();
   }
-  if (isPelotaMaterialDidactico(n)) {
+  if (isPelotaProductName(n)) {
     return materialDidacticoEscolar();
   }
   if (texto === 'Figuras acolchadas') {
@@ -340,42 +411,29 @@ function resolveMaterialEscolar(
       'Juegos acuáticos': 'Juegos acuáticos',
     };
     if (grupoMap[texto]) {
-      return {
-        categoryId: 'material-escolar',
-        subcategory: 'Juegos alternativos',
-        grupo: grupoMap[texto],
-      };
+      return juegosAlternativosEscolar(grupoMap[texto], productName);
     }
-    return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo: null };
+    return juegosAlternativosEscolar(null, productName);
   }
   if (padre === 'Juegos de salón') {
-    return {
-      categoryId: 'material-escolar',
-      subcategory: 'Juegos alternativos',
-      grupo: texto === 'Mesas' || texto === 'Dardos' ? 'Juegos mesa' : null,
-    };
+    return juegosAlternativosEscolar(
+      texto === 'Mesas' || texto === 'Dardos' ? 'Juegos mesa' : null,
+      productName
+    );
   }
   if (padre === 'Entrenamiento' && texto === 'Iniciación infantil') {
-    return {
-      categoryId: 'material-escolar',
-      subcategory: 'Juegos en Educación infantil',
-      grupo: null,
-    };
+    return resolveIniciacionInfantil(productName ?? '');
   }
   if (padre === 'Deportes alternativos') {
     if (texto === 'Malabares') {
       return { categoryId: 'material-escolar', subcategory: 'Material Didáctico', grupo: null };
     }
     if (['Petanca', 'Lanzamiento', 'Indiaka'].includes(texto)) {
-      return { categoryId: 'material-escolar', subcategory: 'Juegos alternativos', grupo: null };
+      return juegosAlternativosEscolar(null, productName);
     }
   }
   if (padre === 'Natación' && texto === 'Juegos piscina') {
-    return {
-      categoryId: 'material-escolar',
-      subcategory: 'Juegos alternativos',
-      grupo: 'Juegos acuáticos',
-    };
+    return juegosAlternativosEscolar('Juegos acuáticos', productName);
   }
   if (padre === 'Equipamiento' && texto === 'Colchonetas') {
     return { categoryId: 'material-escolar', subcategory: 'Manualidades', grupo: null };
@@ -393,13 +451,21 @@ function resolveEntrenamientoAccesorios(
   return null;
 }
 
-function resolveDeportes(padre: string, _texto: string): JimTaxonomy {
+function resolveDeportes(padre: string, texto: string, productName?: string | null): JimTaxonomy {
+  const n = normalizeProductName(productName ?? '');
+  if (padre === 'Fitness' && texto === 'Actividades dirigidas' && isFitnessGimnasioEquipment(n)) {
+    return gimnasioInstalaciones();
+  }
   const subcategory = deportesSubcategory(padre);
   return {
     categoryId: 'deportes',
     subcategory,
     grupo: normalizeGrupo(padre),
   };
+}
+
+function isJabalinaEscolarFoam(n: string): boolean {
+  return n.includes('jabalina');
 }
 
 /** Resuelve taxonomía web a partir de campos Jim Sports. */
@@ -423,8 +489,16 @@ export function resolveJimSportsTaxonomy(
 
   if (!padre) return null;
 
+  if (isJabalinaEscolarFoam(normalizeProductName(productName ?? ''))) {
+    return materialFoamEscolar();
+  }
+
   if (padre === 'Equipamiento' && texto === 'Colchonetas') {
     return resolveColchonetasByName(productName ?? '');
+  }
+
+  if (padre === 'Outdoor') {
+    return outdoorIndividual();
   }
 
   if (padre === 'Entrenamiento' && texto === 'Accesorios') {
@@ -439,7 +513,7 @@ export function resolveJimSportsTaxonomy(
   const textil = resolveTextil(padre, texto);
   if (textil) return textil;
 
-  const instalaciones = resolveInstalaciones(padre, texto, fallbackCategoryId);
+  const instalaciones = resolveInstalaciones(padre, texto, fallbackCategoryId, productName);
   if (instalaciones) return instalaciones;
 
   const escolar = resolveMaterialEscolar(padre, texto, productName);
@@ -464,7 +538,7 @@ export function resolveJimSportsTaxonomy(
       'Deportes alternativos',
     ].includes(padre)
   ) {
-    return resolveDeportes(padre, texto);
+    return resolveDeportes(padre, texto, productName);
   }
 
   // Fallback según categoryId Jim Sports si no hay regla específica
@@ -481,7 +555,7 @@ export function resolveJimSportsTaxonomy(
     );
   }
   if (fallbackCategoryId === 'deportes') {
-    return resolveDeportes(padre || 'Varios', texto);
+    return resolveDeportes(padre || 'Varios', texto, productName);
   }
 
   return null;

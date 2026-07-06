@@ -46,12 +46,12 @@ export const slugToName: Record<string, Record<string, Record<string, string>>> 
   },
   instalaciones: {
     'estructuras-deportivas': {
-      baloncesto: 'Baloncesto',
+      tenis: 'Tenis',
       futbol: 'Fútbol',
       'futbol-sala': 'Fútbol Sala',
       voleibol: 'Voleibol',
-      tenis: 'Tenis',
       padel: 'Pádel',
+      baloncesto: 'Baloncesto',
       varios: 'Varios',
     },
   },
