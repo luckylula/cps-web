@@ -5,6 +5,7 @@ import {
   getRedsysApi,
   getRedsysMerchantCode,
   getRedsysMerchantName,
+  getRedsysRedirectUrl,
   getRedsysTerminal,
   isRedsysProduction,
 } from '@/app/lib/redsys';
@@ -14,6 +15,19 @@ import { calculateCouponDiscount, validateCoupon } from '@/app/lib/coupon';
 // Forzar runtime Node (las variables de entorno pueden no estar en Edge)
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+/** Diagnóstico: abre /api/checkout/redsys en el navegador para ver qué entorno usa el servidor. */
+export async function GET() {
+  const rawEnv = process.env.REDSYS_ENV ?? null;
+  return NextResponse.json({
+    redsysEnv: isRedsysProduction() ? 'production' : 'sandbox',
+    redirectUrl: getRedsysRedirectUrl(),
+    merchantCode: getRedsysMerchantCode() || null,
+    terminal: getRedsysTerminal(),
+    hasSecretKey: Boolean(process.env.REDSYS_SECRET_KEY?.trim()),
+    rawRedsysEnv: rawEnv,
+  });
+}
 
 interface OrderItemInput {
   id: string;

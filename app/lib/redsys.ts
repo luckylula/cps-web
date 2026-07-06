@@ -5,6 +5,10 @@ export function isRedsysProduction(): boolean {
   return process.env.REDSYS_ENV?.trim() === 'production';
 }
 
+export function getRedsysRedirectUrl(): string {
+  return isRedsysProduction() ? PRODUCTION_URLS.redirect : SANDBOX_URLS.redirect;
+}
+
 export function getRedsysApi() {
   const secretKey = process.env.REDSYS_SECRET_KEY?.trim();
   if (!secretKey) {
