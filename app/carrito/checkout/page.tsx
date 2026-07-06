@@ -171,7 +171,10 @@ function CheckoutForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code: couponCode.trim() }),
+        body: JSON.stringify({
+          code: couponCode.trim(),
+          email: formData.email.trim() || undefined,
+        }),
       });
 
       const data = await response.json();
@@ -1131,7 +1134,7 @@ function CheckoutForm() {
                       type="text"
                       value={couponCode}
                       onChange={(e) => {
-                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponCode(e.target.value);
                         setCouponError("");
                       }}
                       onKeyPress={(e) => {
@@ -1140,7 +1143,7 @@ function CheckoutForm() {
                           handleApplyCoupon();
                         }
                       }}
-                      placeholder="PROMO10"
+                      placeholder="CURS26/27"
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                     />
                     <button

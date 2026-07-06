@@ -13,29 +13,52 @@ async function main() {
 
   try {
     // Crear cupón de prueba PROMO10
-    const coupon = await prisma.coupon.upsert({
+    const promo10 = await prisma.coupon.upsert({
       where: { code: 'PROMO10' },
       update: {
         discountPercent: 10.00,
         isActive: true,
-        expiresAt: null, // Sin fecha de expiración
+        expiresAt: null,
       },
       create: {
         code: 'PROMO10',
         discountPercent: 10.00,
         isActive: true,
-        expiresAt: null, // Sin fecha de expiración
+        expiresAt: null,
       },
     });
 
-    console.log('✅ Cupón creado exitosamente:');
-    console.log(`   Código: ${coupon.code}`);
-    console.log(`   Descuento: ${coupon.discountPercent}%`);
-    console.log(`   Activo: ${coupon.isActive ? 'Sí' : 'No'}`);
-    console.log(`   Expira: ${coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : 'Nunca'}`);
-    console.log(`   ID: ${coupon.id}`);
-    console.log('\n🎉 ¡Cupón listo para usar!');
-    console.log('   Puedes probarlo en el checkout con el código: PROMO10\n');
+    // Cupón curso 26/27: 10% descuento, un uso por email
+    const cursCoupon = await prisma.coupon.upsert({
+      where: { code: 'CURS26/27' },
+      update: {
+        discountPercent: 10.00,
+        isActive: true,
+        singleUsePerEmail: true,
+        expiresAt: null,
+      },
+      create: {
+        code: 'CURS26/27',
+        discountPercent: 10.00,
+        isActive: true,
+        singleUsePerEmail: true,
+        expiresAt: null,
+      },
+    });
+
+    console.log('✅ Cupones creados/actualizados:');
+    for (const coupon of [promo10, cursCoupon]) {
+      console.log(`   Código: ${coupon.code}`);
+      console.log(`   Descuento: ${coupon.discountPercent}%`);
+      console.log(`   Activo: ${coupon.isActive ? 'Sí' : 'No'}`);
+      console.log(`   Un uso por email: ${coupon.singleUsePerEmail ? 'Sí' : 'No'}`);
+      console.log(`   Expira: ${coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : 'Nunca'}`);
+      console.log(`   ID: ${coupon.id}`);
+      console.log('');
+    }
+
+    console.log('🎉 ¡Cupones listos para usar!');
+    console.log('   Prueba en checkout: PROMO10 o CURS26/27 (mayúsculas/minúsculas indiferente)\n');
 
   } catch (error: any) {
     console.error('❌ Error:', error);

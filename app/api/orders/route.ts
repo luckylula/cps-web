@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/client';
+import { calculateCouponDiscount, validateCoupon } from '@/app/lib/coupon';
 
 interface OrderItemInput {
   id: string;
@@ -223,7 +224,18 @@ export async function POST(request: NextRequest) {
 
     // Calcular coste de envío en servidor a partir del total (precios ya incluyen IVA)
     const itemsSubtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const couponDiscount = body.coupon?.discountAmount ?? 0;
+
+    let couponCode: string | null = null;
+    let couponDiscount = 0;
+    if (body.coupon?.code?.trim()) {
+      const couponResult = await validateCoupon(prisma, body.coupon.code, customer.email);
+      if (!couponResult.valid) {
+        return NextResponse.json({ error: couponResult.error }, { status: 400 });
+      }
+      couponCode = couponResult.code;
+      couponDiscount = calculateCouponDiscount(itemsSubtotal, couponResult.discountPercent);
+    }
+
     const rawShippingCost = cart.totalPrice - itemsSubtotal + couponDiscount;
     const shippingCostNumber = Math.max(0, Number(rawShippingCost.toFixed(2)));
 
@@ -261,9 +273,9 @@ export async function POST(request: NextRequest) {
           // Información del pedido
           total: new Prisma.Decimal(cart.totalPrice),
           shippingCost: shippingCostNumber ? new Prisma.Decimal(shippingCostNumber) : null,
-          couponCode: body.coupon?.code || null,
-          discountAmount: body.coupon?.discountAmount
-            ? new Prisma.Decimal(body.coupon.discountAmount)
+          couponCode,
+          discountAmount: couponDiscount
+            ? new Prisma.Decimal(couponDiscount)
             : null,
           paymentMethod: body.customer.paymentMethod || null,
           status: 'PENDING',

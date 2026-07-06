@@ -26,7 +26,7 @@ export default function AvisoLegalPage() {
             de los datos identificativos del titular:
           </p>
           <p>- Razon social: CONTROL PLAY SERVICES, S.L.</p>
-          <p>- CIF: G65565228</p>
+          <p>- C.I.F.: B-66942681</p>
           <p>
             - Registro Mercantil: Inscrita en el Registro Mercantil de Barcelona, Entrada 37022111,
             Folio 142, Hoja 498792, Seccion General, con fecha 03/02/2017.
