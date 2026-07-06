@@ -1,6 +1,6 @@
 import { createRedsysAPI, PRODUCTION_URLS, SANDBOX_URLS } from 'redsys-easy';
 
-const isProduction = process.env.REDSYS_ENV === 'production';
+const isProduction = process.env.REDSYS_ENV?.trim() === 'production';
 
 export function getRedsysApi() {
   const secretKey = process.env.REDSYS_SECRET_KEY;

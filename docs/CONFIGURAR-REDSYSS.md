@@ -30,21 +30,40 @@ Cuando BBVA valida tu web, debes hacer **solo esto**:
    - Menú: **Comercios → Consultar → Ver clave** (introduce tu contraseña del panel)
    - Copia la clave SHA256 que se muestra unos segundos
 
-2. **Actualizar variables en Vercel** (Settings → Environment Variables → Production):
-   - `REDSYS_ENV` → `production`
+2. **Actualizar variables en Vercel** (Settings → Environment Variables → **Production**):
+   - `REDSYS_ENV` → `production` (exactamente, minúsculas, sin espacios)
    - `REDSYS_MERCHANT_CODE` → `370080988`
    - `REDSYS_TERMINAL` → `001`
    - `REDSYS_SECRET_KEY` → la clave real del panel (sustituye la de test)
    - `NEXT_PUBLIC_URL` → `https://cpmaterialdeportivo.com`
 
-3. **Redeploy** del proyecto para que cargue las nuevas variables.
+   > **Importante:** las variables deben estar en el entorno **Production**, no solo en Preview o Development. Tras guardarlas, haz un **Redeploy** (Deployments → ⋯ → Redeploy).
 
-4. **Pruebas recomendadas por BBVA** (con dinero real; luego puedes devolver desde el panel):
+3. **Comprobar que estás en producción** (antes de pagar de nuevo):
+   - Abre DevTools (F12) → pestaña **Red/Network**
+   - Inicia un pago y busca la petición `POST /api/checkout/redsys`
+   - En la respuesta JSON:
+     - `redsysEnv` debe ser `"production"`
+     - `form.formAction` debe contener `sis.redsys.es` (sin la `-t`)
+   - Si ves `sis-t.redsys.es` o `redsysEnv: "sandbox"`, sigues en pruebas.
+
+4. **Redeploy** del proyecto para que cargue las nuevas variables.
+
+5. **Pruebas recomendadas por BBVA** (con dinero real; luego puedes devolver desde el panel):
    - Tarjeta **autorizada**: una compra real pequeña
    - Tarjeta **denegada**: `1111111111111117`
    - Bizum **autorizado**: teléfono con Bizum activo
    - Bizum **denegado**: cancelar en la pantalla de pago
    - Comprobar en el panel: **Consultas** (operaciones) y **Notificación** (que llegan al servidor)
+
+## Señales de que sigues en pruebas
+
+| Síntoma | Entorno |
+|---------|---------|
+| Pantalla **«Simulador de autenticación EMV3DS»** con opciones Autenticación con éxito / Denegar | **Sandbox** (`sis-t.redsys.es`) |
+| Tarjeta real rechazada tras el simulador | Normal en sandbox: ahí solo funcionan tarjetas de test |
+| URL de pago contiene `sis-t.redsys.es` | Sandbox |
+| URL de pago contiene `sis.redsys.es` (sin `-t`) | Producción |
 
 ## Entornos
 

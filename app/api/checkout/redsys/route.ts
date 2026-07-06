@@ -369,6 +369,7 @@ export async function POST(request: NextRequest) {
           formAction: form.url,
           formParams: form.body,
         },
+        redsysEnv: process.env.REDSYS_ENV?.trim() === 'production' ? 'production' : 'sandbox',
         order: {
           id: order.id,
           orderNumber: order.orderNumber,

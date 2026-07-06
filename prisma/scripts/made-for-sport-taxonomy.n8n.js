@@ -60,13 +60,20 @@ function isPorteriaName(n) {
   return n.includes('porteria');
 }
 
-function isBaloncestoName(n) {
+function isBaloncestoInstalacionName(n) {
+  if (n.includes('flotante')) return false;
+  if (n.includes('balon') || n.includes('balón')) return false;
   return (
     n.includes('canasta') ||
-    n.includes('basket') ||
+    n.includes('minicanasta') ||
+    n.includes('plafon basket') ||
+    n.includes('plafón basket') ||
     (n.includes('aro') && n.includes('baloncesto')) ||
-    (n.includes('tablero') && n.includes('basket')) ||
-    n.includes('retorno basket')
+    (n.includes('tablero') && (n.includes('basket') || n.includes('baloncesto'))) ||
+    n.includes('retorno basket') ||
+    (n.includes('soporte') && n.includes('baloncesto')) ||
+    n.includes('jgo canastas') ||
+    (n.includes('juego') && n.includes('canasta'))
   );
 }
 
@@ -93,8 +100,8 @@ function classifyMadeForSportProduct(name, description) {
   if (isTenisMesaName(n)) {
     return { categoryId: 'deportes', subcategory: 'Raqueta', grupo: 'Tenis de mesa' };
   }
-  if (isBaloncestoName(n)) {
-    return { categoryId: 'deportes', subcategory: 'Colectivos', grupo: 'Baloncesto' };
+  if (isBaloncestoInstalacionName(n)) {
+    return { categoryId: 'instalaciones', subcategory: 'Estructuras deportivas', grupo: 'Baloncesto' };
   }
   if (isPorteriaName(n)) {
     const grupo = n.includes('balonmano')

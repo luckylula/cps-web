@@ -222,22 +222,27 @@ function isTenisMesaProductName(n) {
     (n.includes('mesa') && n.includes('tenis de mesa'))
   );
 }
-function isBaloncestoEquipmentName(n) {
+function isBaloncestoInstalacionName(n) {
   if (n.includes('flotante')) return false;
+  if (n.includes('balon') || n.includes('balón')) return false;
   return (
     n.includes('canasta') ||
     n.includes('minicanasta') ||
     n.includes('plafon basket') ||
     n.includes('plafón basket') ||
     (n.includes('aro') && n.includes('baloncesto')) ||
-    (n.includes('juego') && n.includes('baloncesto'))
+    (n.includes('tablero') && (n.includes('basket') || n.includes('baloncesto'))) ||
+    n.includes('retorno basket') ||
+    (n.includes('soporte') && n.includes('baloncesto')) ||
+    n.includes('jgo canastas') ||
+    (n.includes('juego') && n.includes('canasta'))
   );
 }
 function tenisMesaDeportes() {
   return { categoryId: 'deportes', subcategory: 'Raqueta', grupo: 'Tenis de mesa' };
 }
-function baloncestoColectivos() {
-  return { categoryId: 'deportes', subcategory: 'Colectivos', grupo: 'Baloncesto' };
+function baloncestoEstructuras() {
+  return { categoryId: 'instalaciones', subcategory: 'Estructuras deportivas', grupo: 'Baloncesto' };
 }
 function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcategory, fallbackCategoryId, productName) {
   let padre = (categoriaPadre || '').trim();
@@ -249,17 +254,8 @@ function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcat
   if (!padre) return null;
   if (isJabalinaEscolarFoam(normalizeProductName(productName || ''))) return materialFoamEscolar();
   const normalizedName = normalizeProductName(productName || '');
-  const inJuegosEscolar =
-    fallbackCategoryId === 'material-escolar' ||
-    padre === 'Juegos' ||
-    padre === 'Juegos de salón';
   if (isTenisMesaProductName(normalizedName)) return tenisMesaDeportes();
-  if (
-    isBaloncestoEquipmentName(normalizedName) &&
-    (inJuegosEscolar || (normalizedName.includes('red') && normalizedName.includes('baloncesto')))
-  ) {
-    return baloncestoColectivos();
-  }
+  if (isBaloncestoInstalacionName(normalizedName)) return baloncestoEstructuras();
   if (padre === 'Equipamiento' && texto === 'Colchonetas') return resolveColchonetasByName(productName || '');
   if (padre === 'Outdoor') return outdoorIndividual();
   if (padre === 'Entrenamiento' && texto === 'Accesorios') {

@@ -483,15 +483,20 @@ function isTenisMesaProductName(n: string): boolean {
   );
 }
 
-function isBaloncestoEquipmentName(n: string): boolean {
+function isBaloncestoInstalacionName(n: string): boolean {
   if (n.includes('flotante')) return false;
+  if (n.includes('balon') || n.includes('balón')) return false;
   return (
     n.includes('canasta') ||
     n.includes('minicanasta') ||
     n.includes('plafon basket') ||
     n.includes('plafón basket') ||
     (n.includes('aro') && n.includes('baloncesto')) ||
-    (n.includes('juego') && n.includes('baloncesto'))
+    (n.includes('tablero') && (n.includes('basket') || n.includes('baloncesto'))) ||
+    n.includes('retorno basket') ||
+    (n.includes('soporte') && n.includes('baloncesto')) ||
+    n.includes('jgo canastas') ||
+    (n.includes('juego') && n.includes('canasta'))
   );
 }
 
@@ -499,8 +504,12 @@ function tenisMesaDeportes(): JimTaxonomy {
   return { categoryId: 'deportes', subcategory: 'Raqueta', grupo: 'Tenis de mesa' };
 }
 
-function baloncestoColectivos(): JimTaxonomy {
-  return { categoryId: 'deportes', subcategory: 'Colectivos', grupo: 'Baloncesto' };
+function baloncestoEstructuras(): JimTaxonomy {
+  return {
+    categoryId: 'instalaciones',
+    subcategory: 'Estructuras deportivas',
+    grupo: 'Baloncesto',
+  };
 }
 
 /** Resuelve taxonomía web a partir de campos Jim Sports. */
@@ -529,19 +538,12 @@ export function resolveJimSportsTaxonomy(
   }
 
   const normalizedName = normalizeProductName(productName ?? '');
-  const inJuegosEscolar =
-    fallbackCategoryId === 'material-escolar' ||
-    padre === 'Juegos' ||
-    padre === 'Juegos de salón';
 
   if (isTenisMesaProductName(normalizedName)) {
     return tenisMesaDeportes();
   }
-  if (
-    isBaloncestoEquipmentName(normalizedName) &&
-    (inJuegosEscolar || (normalizedName.includes('red') && normalizedName.includes('baloncesto')))
-  ) {
-    return baloncestoColectivos();
+  if (isBaloncestoInstalacionName(normalizedName)) {
+    return baloncestoEstructuras();
   }
 
   if (padre === 'Equipamiento' && texto === 'Colchonetas') {
