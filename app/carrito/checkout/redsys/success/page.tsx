@@ -3,12 +3,20 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useCart } from "@/app/context/CartContext";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const order = searchParams.get("order");
+  const { clearCart } = useCart();
   const [status, setStatus] = useState<"checking" | "ok" | "pending">("checking");
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "ok") {
+      clearCart();
+    }
+  }, [status, clearCart]);
 
   useEffect(() => {
     if (!order) {

@@ -2,6 +2,8 @@
  * Mapeo taxonomía Jim Sports (categoria_padre + categoria_texto) → navegación web CPS.
  */
 
+import { classifyTextilByName } from './textilTaxonomy';
+
 export type JimTaxonomy = {
   categoryId: string;
   subcategory: string;
@@ -56,6 +58,13 @@ function parseSubcategoryField(subcategory: string | null): { padre: string; tex
   const [padre, texto] = subcategory.split('>').map((s) => s.trim());
   if (!padre) return null;
   return { padre, texto: texto || '' };
+}
+
+function applyTextilNameRefine(tax: JimTaxonomy, productName: string | null | undefined): JimTaxonomy {
+  if (tax.categoryId !== 'textil') return tax;
+  const refined = classifyTextilByName(productName ?? '');
+  if (!refined) return tax;
+  return refined;
 }
 
 function resolveTextil(padre: string, texto: string): JimTaxonomy | null {
@@ -560,11 +569,14 @@ export function resolveJimSportsTaxonomy(
   }
 
   if (padre === 'Producto promocional') {
-    return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
+    return applyTextilNameRefine(
+      { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null },
+      productName
+    );
   }
 
   const textil = resolveTextil(padre, texto);
-  if (textil) return textil;
+  if (textil) return applyTextilNameRefine(textil, productName);
 
   const instalaciones = resolveInstalaciones(padre, texto, fallbackCategoryId, productName);
   if (instalaciones) return instalaciones;
@@ -596,7 +608,10 @@ export function resolveJimSportsTaxonomy(
 
   // Fallback según categoryId Jim Sports si no hay regla específica
   if (fallbackCategoryId === 'textil') {
-    return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
+    return applyTextilNameRefine(
+      { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null },
+      productName
+    );
   }
   if (fallbackCategoryId === 'instalaciones') {
     return { categoryId: 'instalaciones', subcategory: 'Gimnasio', grupo: null };

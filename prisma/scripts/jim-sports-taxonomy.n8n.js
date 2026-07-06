@@ -262,9 +262,11 @@ function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcat
     const acc = resolveEntrenamientoAccesorios(productName, fallbackCategoryId);
     if (acc) return acc;
   }
-  if (padre === 'Producto promocional') return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
+  if (padre === 'Producto promocional') {
+    return applyTextilNameRefine({ categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null }, productName);
+  }
   const textil = resolveTextil(padre, texto);
-  if (textil) return textil;
+  if (textil) return applyTextilNameRefine(textil, productName);
   const instalaciones = resolveInstalaciones(padre, texto, fallbackCategoryId, productName);
   if (instalaciones) return instalaciones;
   const escolar = resolveMaterialEscolar(padre, texto, productName);
@@ -272,7 +274,9 @@ function resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, fallbackSubcat
   if (COLECTIVOS_PADRES.has(padre) || RAQUETA_PADRES.has(padre) || ['Fitness', 'Natación', 'Outdoor', 'Atletismo', 'Running', 'Gimnasia rítmica', 'Deportes de contacto', 'Playa', 'Entrenamiento', 'Para la tienda', 'Deportes alternativos'].includes(padre)) {
     return resolveDeportes(padre, texto, productName);
   }
-  if (fallbackCategoryId === 'textil') return { categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null };
+  if (fallbackCategoryId === 'textil') {
+    return applyTextilNameRefine({ categoryId: 'textil', subcategory: 'Ropa Casual', grupo: null }, productName);
+  }
   if (fallbackCategoryId === 'instalaciones') return gimnasioInstalaciones();
   if (fallbackCategoryId === 'material-escolar') return applyJuegoNameOverride({ categoryId: 'material-escolar', subcategory: 'Psicomotricidad', grupo: null }, productName);
   if (fallbackCategoryId === 'deportes') return resolveDeportes(padre || 'Varios', texto, productName);

@@ -355,7 +355,8 @@ function CheckoutForm() {
           return;
         }
 
-        clearCart();
+        // No vaciar el carrito aquí: provoca un flash de "carrito vacío" antes del redirect.
+        // Se vacía en la página de éxito cuando el pago se confirma.
 
         // Crear formulario oculto y redirigir a Redsys
         const form = document.createElement('form');
@@ -466,8 +467,8 @@ function CheckoutForm() {
     }
   };
 
-  // Si el carrito está vacío, redirigir o mostrar mensaje
-  if (items.length === 0) {
+  // Si el carrito está vacío, redirigir o mostrar mensaje (excepto mientras redirige a Redsys)
+  if (items.length === 0 && !isSubmitting) {
     return (
       <div className="min-h-screen bg-gray-50">
         <nav className="w-full bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
@@ -1143,7 +1144,7 @@ function CheckoutForm() {
                           handleApplyCoupon();
                         }
                       }}
-                      placeholder="CURS26/27"
+                      placeholder="Código de descuento"
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                     />
                     <button

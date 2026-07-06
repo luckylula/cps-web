@@ -36,15 +36,17 @@ async function main() {
     if (row.subcategory === 'Tenis de mesa') {
       mapped = { categoryId: 'deportes', subcategory: 'Raqueta', grupo: 'Tenis de mesa' };
     } else {
-      mapped = resolveMadeForSportTaxonomy(row.name, row.grupo, row.subcategory);
+      mapped = resolveMadeForSportTaxonomy(
+        row.name,
+        row.grupo,
+        row.subcategory,
+        row.categoryId
+      );
     }
 
     if (!mapped) continue;
 
     const needsFix =
-      LEGACY_SUBCATEGORIES.has(row.subcategory ?? '') ||
-      row.subcategory === 'Tenis de mesa' ||
-      row.categoryId === 'material-escolar' ||
       row.categoryId !== mapped.categoryId ||
       row.subcategory !== mapped.subcategory ||
       (row.grupo ?? null) !== mapped.grupo;
@@ -73,6 +75,15 @@ async function main() {
 
   console.log(dryRun ? 'DRY RUN — Made for Sport' : 'Made for Sport reclasificados:', updated);
   console.log('Ejemplos:', JSON.stringify(samples, null, 2));
+
+  const remainingVarios = await pool.query(`
+    SELECT COUNT(*)::int AS n FROM "Product"
+    WHERE LOWER(proveedor) = 'made_for_sport'
+      AND "categoryId" = 'deportes'
+      AND subcategory = 'Colectivos'
+      AND grupo = 'Varios'
+  `);
+  console.log('Restantes en Colectivos/Varios:', remainingVarios.rows[0].n);
 
   const remaining = await pool.query(`
     SELECT COUNT(*)::int AS n FROM "Product"
