@@ -30,7 +30,12 @@ if (!parseNode) {
 
 parseNode.parameters.jsCode = fullCode;
 parseNode.notes =
-  'v5.2: catálogo + taxonomía web (resolveJimSportsTaxonomy). Regenerar con build-jim-sports-n8n-catalog.cjs';
+  'v5.3: catálogo + taxonomía web (resolveJimSportsTaxonomy, tenis de mesa/canastas). Regenerar con build-jim-sports-n8n-catalog.cjs';
+
+const catalogName = catalog.name || '';
+if (catalogName.includes('v5')) {
+  catalog.name = 'Jim Sports v5.3 - CATALOG (CSV + taxonomía web)';
+}
 
 fs.writeFileSync(catalogPath, JSON.stringify(catalog, null, 2));
 console.log('OK:', catalogPath);
