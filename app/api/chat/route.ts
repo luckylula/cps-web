@@ -328,9 +328,8 @@ INFORMACION DE LA EMPRESA CP MATERIAL DEPORTIVO:
 - Contacto: pedidos@cpmaterialdeportivo.com / 622 61 33 93
 
 ## FORMAS DE PAGO:
-- PayPal
-- Tarjeta debito/credito
-- Bizum
+- Tarjeta de débito/crédito (pasarela Redsys)
+- Transferencia bancaria
 
 ## FACTURA:
 - Durante el checkout hay checkbox "Quiero factura"
