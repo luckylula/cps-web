@@ -9,7 +9,7 @@ import Breadcrumbs from '@/app/components/Breadcrumbs';
 import SubcategoryCard from '@/app/components/SubcategoryCard';
 import { getCategoryName, getSubcategoryName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
-import { convertProductsToClient } from '@/app/lib/productUtils';
+import { convertProductsToClient, attachVariantInfoToProducts } from '@/app/lib/productUtils';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
 import { navigationStructure } from '@/app/lib/navigationStructure';
 import { getCategoryTree } from '@/app/lib/categoryTree';
@@ -123,21 +123,23 @@ async function getProducts(categoriaSlug: string, filters: {
   const variantRows =
     productIds.length > 0
       ? await prisma.productVariant.findMany({
-          where: { productId: { in: productIds } },
-          select: { productId: true, stock: true },
+          where: {
+            productId: { in: productIds },
+            activo: true,
+            visible_web: true,
+          },
+          select: { productId: true, stock: true, price: true },
         })
       : [];
-  const productIdsWithVariants = new Set(variantRows.map((r) => r.productId));
-  const productIdsWithVariantStock = new Set(
-    variantRows.filter((r) => r.stock > 0).map((r) => r.productId)
-  );
 
-  return products.map((p) => ({
-    ...p,
-    hasStock: productIdsWithVariants.has(p.id)
-      ? productIdsWithVariantStock.has(p.id)
-      : p.stock > 0,
-  }));
+  return attachVariantInfoToProducts(
+    products,
+    variantRows.map((r) => ({
+      productId: r.productId,
+      stock: r.stock,
+      price: r.price != null ? Number(r.price) : null,
+    }))
+  );
 }
 
 async function getFilterOptions(categoriaSlug: string) {

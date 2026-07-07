@@ -7,12 +7,15 @@ import { useFavorites } from '@/app/context/FavoritesContext';
 import { useState } from 'react';
 import SafeImage from './SafeImage';
 import { getFirstValidImage } from '@/app/lib/imageUtils';
+import { formatProductPrice } from '@/app/lib/productUtils';
 
 interface ProductCardProps {
   id: number;
   name: string;
   slug: string;
   price: number | null;
+  priceFrom?: boolean;
+  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   marca?: string | null;
@@ -51,7 +54,9 @@ export default function ProductCard({
   id,
   name, 
   slug, 
-  price, 
+  price,
+  priceFrom = false,
+  hasVariants = false,
   images, 
   featured, 
   marca,
@@ -98,6 +103,7 @@ export default function ProductCard({
 
   const hasPrice = price !== null && price !== undefined && price > 0;
   const safeImages = Array.isArray(images) ? images : [];
+  const requiresVariantSelection = hasVariants;
 
   return (
     <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col border border-gray-100">
@@ -172,7 +178,7 @@ export default function ProductCard({
           <div className="mt-auto">
             {hasPrice ? (
               <p className="text-lg font-bold text-gray-900">
-                {Number(price).toFixed(2)}€
+                {formatProductPrice(price, { priceFrom, consultarLabel: 'Consultar precio' })}
               </p>
             ) : (
               <p className="text-lg font-bold text-gray-900">
@@ -184,7 +190,7 @@ export default function ProductCard({
       </Link>
       
       <div className="p-4 pt-0">
-        {hasPrice ? (
+        {hasPrice && !requiresVariantSelection ? (
           <button
             onClick={handleAddToCart}
             disabled={isAdding || !hasStock}

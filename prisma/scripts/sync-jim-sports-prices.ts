@@ -110,6 +110,12 @@ async function applyPrices(pool: Pool, rows: PriceRow[]) {
          WHERE proveedor = 'jim_sports' AND ref_proveedor = $2 AND ref_variante IS NULL`,
         [row.price, row.ref_proveedor]
       );
+      await pool.query(
+        `UPDATE "ProductVariant" SET price = $1, "updatedAt" = NOW()
+         WHERE proveedor = 'jim_sports' AND ref_proveedor = $2
+           AND (price IS NULL OR price = 0)`,
+        [row.price, row.ref_proveedor]
+      );
     }
   }
 }

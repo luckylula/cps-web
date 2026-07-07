@@ -14,12 +14,19 @@ import ImageGallery from "@/app/components/ImageGallery";
 import Navigation from "@/app/components/Navigation";
 import { getSubcategorySlug, getGrupoSlug } from "@/app/lib/navigationMapping";
 import Footer from "@/components/Footer";
+import {
+  findMatchingVariant,
+  getDisplayPriceInfo,
+  getUniqueVariantValues,
+  normalizeVariantPrices,
+} from "@/app/lib/productUtils";
 
 interface ProductVariant {
   id: number;
   color: string | null;
   talla: string | null;
   stock: number;
+  price: number | null;
   images: string[];
   sku_interno: string | null;
 }
@@ -51,6 +58,8 @@ interface RelatedProduct {
   name: string;
   slug: string;
   price: number | null;
+  priceFrom?: boolean;
+  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   marca?: string | null;
@@ -134,7 +143,17 @@ export default function ArticuloPage({ params }: PageProps) {
         
         const data = await response.json();
         console.log('[Page] Product loaded:', data.name);
-        setProduct(data);
+        const basePrice = data.price != null ? Number(data.price) : null;
+        setProduct({
+          ...data,
+          price: basePrice,
+          variants: data.variants
+            ? normalizeVariantPrices(data.variants, basePrice)
+            : data.variants,
+        });
+        setSelectedColor(null);
+        setSelectedTalla(null);
+        setSelectedVariant(null);
 
         // Fetch related products
         const relatedResponse = await fetch(
@@ -190,7 +209,8 @@ export default function ArticuloPage({ params }: PageProps) {
       alert(`Solo puedes añadir ${qtyToAdd} unidad${qtyToAdd === 1 ? '' : 'es'} más (stock disponible: ${stock})`);
     }
 
-    if (product.price === null || product.price === undefined) return;
+    const itemPrice = getDisplayPriceInfo(product, selectedVariant).price;
+    if (itemPrice === null) return;
 
     setIsAdding(true);
     addItemQuantity(
@@ -200,7 +220,7 @@ export default function ArticuloPage({ params }: PageProps) {
         variantId: selectedVariant ? selectedVariant.id : undefined,
         name: product.name,
         slug: product.slug,
-        price: Number(product.price),
+        price: itemPrice,
         images:
           selectedVariant && selectedVariant.images.length > 0
             ? selectedVariant.images
@@ -246,6 +266,21 @@ export default function ArticuloPage({ params }: PageProps) {
     return product.variants.some((v) => v.color === color && v.talla === talla);
   };
 
+  // Auto-seleccionar color/talla cuando solo hay una opción
+  useEffect(() => {
+    if (!product?.variants || product.variants.length === 0) return;
+
+    const colors = getUniqueVariantValues(product.variants, 'color');
+    const tallas = getUniqueVariantValues(product.variants, 'talla');
+
+    if (colors.length === 1 && selectedColor === null) {
+      setSelectedColor(colors[0]);
+    }
+    if (tallas.length === 1 && selectedTalla === null) {
+      setSelectedTalla(tallas[0]);
+    }
+  }, [product, selectedColor, selectedTalla]);
+
   // Actualizar variante seleccionada cuando cambian color/talla
   useEffect(() => {
     if (!product?.variants || product.variants.length === 0) {
@@ -253,11 +288,9 @@ export default function ArticuloPage({ params }: PageProps) {
       return;
     }
 
-    const variant = product.variants.find(v => 
-      v.color === selectedColor && v.talla === selectedTalla
+    setSelectedVariant(
+      findMatchingVariant(product.variants, selectedColor, selectedTalla)
     );
-
-    setSelectedVariant(variant || null);
   }, [selectedColor, selectedTalla, product]);
 
   // Resetear selección cuando cambia el color
@@ -354,8 +387,12 @@ export default function ArticuloPage({ params }: PageProps) {
     );
   }
 
-  const hasPrice = product.price !== null && product.price !== undefined && product.price > 0;
-  const priceWithIVA = hasPrice ? Number(product.price) : 0;
+  const { price: displayPrice, priceFrom: showFromPrice } = getDisplayPriceInfo(
+    product,
+    selectedVariant
+  );
+  const hasPrice = displayPrice !== null;
+  const priceWithIVA = hasPrice ? displayPrice : 0;
   const priceWithoutIVA = hasPrice ? priceWithIVA / 1.21 : 0;
 
   // Stock: si tiene variantes, al menos una con stock > 0; si no, product.stock > 0
@@ -492,27 +529,6 @@ export default function ArticuloPage({ params }: PageProps) {
                 </div>
               )}
               
-              {/* Price */}
-              {hasPrice ? (
-                <>
-                  <p className="text-3xl md:text-4xl font-bold text-gray-900">
-                    {priceWithIVA.toFixed(2)} €
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Precio sin IVA: {priceWithoutIVA.toFixed(2)} € (IVA 21% incluido)
-                  </p>
-                </>
-              ) : (
-                <div>
-                  <p className="text-3xl md:text-4xl font-bold text-gray-900">
-                    Consultar precio
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Contacta con nosotros para obtener un presupuesto
-                  </p>
-                </div>
-              )}
-
               {/* Variantes: Selectores de Color y Talla */}
               {product.variants && product.variants.length > 0 && (
                 <div className="space-y-4">
@@ -586,6 +602,28 @@ export default function ArticuloPage({ params }: PageProps) {
                       )}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Price */}
+              {hasPrice ? (
+                <>
+                  <p className="text-3xl md:text-4xl font-bold text-gray-900">
+                    {showFromPrice && 'Desde '}
+                    {priceWithIVA.toFixed(2)} €
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Precio sin IVA: {priceWithoutIVA.toFixed(2)} € (IVA 21% incluido)
+                  </p>
+                </>
+              ) : (
+                <div>
+                  <p className="text-3xl md:text-4xl font-bold text-gray-900">
+                    Consultar precio
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Contacta con nosotros para obtener un presupuesto
+                  </p>
                 </div>
               )}
 
@@ -666,7 +704,7 @@ export default function ArticuloPage({ params }: PageProps) {
                         id: String(product.id),
                         name: product.name,
                         slug: product.slug,
-                        price: product.price !== null && product.price !== undefined ? Number(product.price) : 0,
+                        price: displayPrice ?? 0,
                         images: product.images,
                       });
                     }
@@ -794,6 +832,8 @@ export default function ArticuloPage({ params }: PageProps) {
                   name={relatedProduct.name}
                   slug={relatedProduct.slug}
                   price={relatedProduct.price}
+                  priceFrom={relatedProduct.priceFrom}
+                  hasVariants={relatedProduct.hasVariants}
                   images={relatedProduct.images}
                   featured={relatedProduct.featured}
                   marca={relatedProduct.marca}

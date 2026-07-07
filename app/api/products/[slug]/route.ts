@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { normalizeImages } from '@/app/lib/imageUtils';
+import { normalizeVariantPrices } from '@/app/lib/productUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,8 +59,13 @@ export async function GET(
       },
     });
 
+    const productPrice = product.price != null ? Number(product.price) : null;
+    const normalizedVariants = normalizeVariantPrices(product.variants, productPrice);
+
     const productWithCategory = {
       ...product,
+      price: productPrice,
+      variants: normalizedVariants,
       images: normalizeImages(product.images ?? []),
       category: category || {
         id: product.categoryId,

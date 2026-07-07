@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/client';
 import { normalizeImages } from '@/app/lib/imageUtils';
 import { sqlAccentInsensitiveContains } from '@/app/lib/searchUtils';
+import {
+  attachVariantInfoToProducts,
+  convertProductsToClient,
+} from '@/app/lib/productUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -178,34 +182,47 @@ export async function GET(request: Request) {
     const variantRows =
       productIds.length > 0
         ? await prisma.productVariant.findMany({
-            where: { productId: { in: productIds } },
-            select: { productId: true, stock: true },
+            where: {
+              productId: { in: productIds },
+              activo: true,
+              visible_web: true,
+            },
+            select: { productId: true, stock: true, price: true },
           })
         : [];
-    const productIdsWithVariants = new Set(variantRows.map((r) => r.productId));
-    const productIdsWithVariantStock = new Set(
-      variantRows.filter((r) => r.stock > 0).map((r) => r.productId)
+
+    const enrichedProducts = attachVariantInfoToProducts(
+      products.map((p) => ({
+        ...p,
+        price: p.price,
+      })),
+      variantRows.map((r) => ({
+        productId: r.productId,
+        stock: r.stock,
+        price: r.price != null ? Number(r.price) : null,
+      }))
     );
 
-    const withHasStock = products.map((p) => {
-      const rawImages = p.images;
-      const images = normalizeImages(rawImages);
-      return {
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        price: p.price != null ? Number(p.price) : null,
-        images,
-        featured: Boolean(p.featured),
-        marca: p.marca ?? null,
-        sku_interno: p.sku_interno ?? null,
-        stock: Number(p.stock),
-        categoryId: p.categoryId,
-        hasStock: productIdsWithVariants.has(p.id)
-          ? productIdsWithVariantStock.has(p.id)
-          : p.stock > 0,
-      };
-    });
+    const withHasStock = convertProductsToClient(
+      enrichedProducts.map((p) => {
+        const rawImages = p.images;
+        const images = normalizeImages(rawImages);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          price: p.price,
+          images,
+          featured: Boolean(p.featured),
+          marca: p.marca ?? null,
+          sku_interno: p.sku_interno ?? null,
+          stock: Number(p.stock),
+          categoryId: p.categoryId,
+          variants: p.variants,
+          hasStock: p.hasStock,
+        };
+      })
+    );
 
     return NextResponse.json(withHasStock);
   } catch (error) {

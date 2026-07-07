@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SafeImage from "./SafeImage";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
+import { formatProductPrice } from "@/app/lib/productUtils";
 
 interface Product {
   id: number;
   name: string;
   slug: string;
   price: number | null;
+  priceFrom?: boolean;
   images: string[];
   categoryId: string;
 }
@@ -119,14 +121,8 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
     el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [selectedIndex, showResults, results.length]);
 
-  const formatPrice = (price: number | null) => {
-    if (price === null || price === undefined) {
-      return "Consultar";
-    }
-    return new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price);
+  const formatPrice = (price: number | null, priceFrom?: boolean) => {
+    return formatProductPrice(price, { priceFrom, consultarLabel: 'Consultar' });
   };
 
   const getCategoryName = (categoryId: string) => {
@@ -216,7 +212,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
                         {getCategoryName(product.categoryId)}
                       </p>
                       <p className="text-sm font-semibold text-[#003366] mt-1">
-                        {formatPrice(product.price)}
+                        {formatPrice(product.price, product.priceFrom)}
                       </p>
                     </div>
                   </Link>
