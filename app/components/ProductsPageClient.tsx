@@ -8,7 +8,6 @@ interface Product {
   slug: string;
   price: number | null;
   priceFrom?: boolean;
-  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   marca?: string | null;
@@ -50,7 +49,6 @@ export default function ProductsPageClient({ products }: ProductsPageClientProps
             slug={product.slug}
             price={product.price}
             priceFrom={product.priceFrom}
-            hasVariants={product.hasVariants}
             images={product.images}
             featured={product.featured}
             marca={product.marca}

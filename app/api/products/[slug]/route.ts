@@ -60,7 +60,12 @@ export async function GET(
     });
 
     const productPrice = product.price != null ? Number(product.price) : null;
-    const normalizedVariants = normalizeVariantPrices(product.variants, productPrice);
+    const normalizedVariants = normalizeVariantPrices(product.variants, productPrice).map(
+      (variant) => ({
+        ...variant,
+        images: normalizeImages(variant.images ?? []),
+      })
+    );
 
     const productWithCategory = {
       ...product,

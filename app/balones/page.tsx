@@ -261,7 +261,6 @@ export default async function BalonesPage({ searchParams }: PageProps) {
                             slug={product.slug}
                             price={product.price}
                             priceFrom={product.priceFrom}
-                            hasVariants={product.hasVariants}
                             images={product.images}
                             featured={product.featured}
                             marca={product.marca}

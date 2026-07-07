@@ -80,6 +80,45 @@ function resolveCategoryId(categoriaPadre, categoriaTexto) {
   return 'deportes';
 }
 
+function isValidImageUrl(url) {
+  return url && String(url).trim().startsWith('http');
+}
+
+function propagateVariantImages(variants) {
+  const byColor = new Map();
+  const byTalla = new Map();
+  for (const v of variants) {
+    if (isValidImageUrl(v.imagen)) {
+      if (v.color) byColor.set(v.color, v.imagen);
+      if (v.talla) byTalla.set(v.talla, v.imagen);
+    }
+  }
+  for (const v of variants) {
+    if (!isValidImageUrl(v.imagen)) {
+      if (v.color && byColor.has(v.color)) v.imagen = byColor.get(v.color);
+      else if (v.talla && byTalla.has(v.talla)) v.imagen = byTalla.get(v.talla);
+    }
+  }
+  const fallback = variants.find((v) => isValidImageUrl(v.imagen))?.imagen;
+  if (fallback) {
+    for (const v of variants) {
+      if (!isValidImageUrl(v.imagen)) v.imagen = fallback;
+    }
+  }
+}
+
+function buildProductGalleryImages(variants) {
+  const seen = new Set();
+  const images = [];
+  for (const v of variants) {
+    if (isValidImageUrl(v.imagen) && !seen.has(v.imagen)) {
+      seen.add(v.imagen);
+      images.push(v.imagen);
+    }
+  }
+  return images;
+}
+
 const groups = new Map();
 
 for (let i = 1; i < lines.length; i++) {
@@ -150,6 +189,13 @@ for (let i = 1; i < lines.length; i++) {
     talla,
     imagen,
   });
+}
+
+for (const g of groups.values()) {
+  propagateVariantImages(g.variants);
+  const gallery = buildProductGalleryImages(g.variants);
+  g.product.imagenes = gallery;
+  g.product.imagen = gallery[0] || g.product.imagen || null;
 }
 
 const out = [];

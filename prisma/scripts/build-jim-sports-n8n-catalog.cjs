@@ -32,11 +32,11 @@ if (!parseNode) {
 
 parseNode.parameters.jsCode = fullCode;
 parseNode.notes =
-  'v5.3: catálogo + taxonomía web (resolveJimSportsTaxonomy, tenis de mesa/canastas). Regenerar con build-jim-sports-n8n-catalog.cjs';
+  'v5.5: propaga imágenes por color/talla y galería en producto. Regenerar con build-jim-sports-n8n-catalog.cjs';
 
 const catalogName = catalog.name || '';
 if (catalogName.includes('v5')) {
-  catalog.name = 'Jim Sports v5.4 - CATALOG (CSV + taxonomía web)';
+  catalog.name = 'Jim Sports v5.5 - CATALOG (CSV + taxonomía web + imágenes)';
 }
 
 fs.writeFileSync(catalogPath, JSON.stringify(catalog, null, 2));

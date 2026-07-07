@@ -11,98 +11,14 @@ OUT = ROOT / "files claude"
 POSTGRES_CRED = {"postgres": {"id": "wum06K40sV6oLIqF", "name": "Postgres account"}}
 
 TAXONOMY_JS = (ROOT / "prisma" / "scripts" / "jim-sports-taxonomy.n8n.js").read_text(encoding="utf-8")
+PARSE_CSV_BODY = (ROOT / "prisma" / "scripts" / "jim-sports-parse-csv.n8n.js").read_text(encoding="utf-8")
+PARSE_CSV_JS = TAXONOMY_JS + "\n" + PARSE_CSV_BODY
 
-PARSE_CSV_JS = TAXONOMY_JS + r"""
-const csvText = items[0].json.data ?? items[0].json.body ?? items[0].json;
-const lines = String(csvText).split(/\r?\n/);
-
-function slugify(str) {
-  return String(str || "")
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function fixEncoding(str) {
-  if (!str) return str;
-  const map = {
-    "\xc3\xb3": "ó", "\xc3\xa1": "á", "\xc3\xa9": "é", "\xc3\xad": "í", "\xc3\xba": "ú", "\xc3\xb1": "ñ",
-    "\xc3\x81": "Á", "\xc3\x89": "É", "\xc3\x8d": "Í", "\xc3\x93": "Ó", "\xc3\x9a": "Ú", "\xc3\x91": "Ñ",
-    "\xc3\xbc": "ü", "\xc3\x9c": "Ü", "\xc3\xa7": "ç", "\xc3\x87": "Ç",
-  };
-  let fixed = str;
-  for (const [bad, good] of Object.entries(map)) fixed = fixed.split(bad).join(good);
-  return fixed;
-}
-
-function resolveCategoryId(categoriaPadre, categoriaTexto) {
-  if (categoriaTexto === "Textil" || ["Calzado","Bañadores"].includes(categoriaTexto) || ["Casual","Equipaciones"].includes(categoriaPadre)) return "textil";
-  if (categoriaPadre === "Equipamiento" || ["Redes","Vestuarios","Equipamiento agua","Colchonetas","Baloncesto","Fútbol 11 y 7","Fútbol sala - Balonmano","Voleibol","Banquillos","Gimnasia","Tenis","Protecciones columnas","Otros deportes","Pádel"].includes(categoriaTexto)) return "instalaciones";
-  if (["Psicomotricidad","Juegos"].includes(categoriaPadre)) return "material-escolar";
-  return "deportes";
-}
-
-const groups = new Map();
-
-for (let i = 1; i < lines.length; i++) {
-  const line = lines[i].trim();
-  if (!line) continue;
-  const fields = line.split(";");
-  const clean = fields.map(f => f.replace(/"/g, "").trim());
-  const refPatron = clean[0] || null;
-  const refVariante = clean[1] || null;
-  const ean = clean[2] || null;
-  const stock = parseInt(clean[3], 10) || 0;
-  const name = fixEncoding(clean[4] || "");
-  const marca = fixEncoding(clean[5] || null);
-  const imagen = clean[6] || null;
-  const categoriaTexto = fixEncoding(clean[7] || null);
-  const categoriaPadre = fixEncoding(clean[8] || null);
-  const color = fixEncoding(clean[9] || null);
-  const talla = fixEncoding(clean[10] || null);
-  if (!refPatron || !name || name.trim() === "") continue;
-  if (!groups.has(refPatron)) {
-    const rawCategoryId = resolveCategoryId(categoriaPadre || "", categoriaTexto || "");
-    const rawSub = `${categoriaPadre || ""} > ${categoriaTexto || ""}`;
-    const mapped = resolveJimSportsTaxonomy(categoriaPadre, categoriaTexto, rawSub, rawCategoryId, name) || {
-      categoryId: rawCategoryId,
-      subcategory: rawSub,
-      grupo: null,
-    };
-    const skuPadre = `J${refPatron}`;
-    const slug = `${slugify(name)}-${slugify(skuPadre)}`;
-    groups.set(refPatron, {
-      product: {
-        proveedor: "jim_sports",
-        ref_proveedor: refPatron,
-        sku_interno: skuPadre,
-        name,
-        marca,
-        imagen,
-        categoryId: mapped.categoryId,
-        subcategory: mapped.subcategory,
-        grupo: mapped.grupo,
-        categoria_padre: categoriaPadre || null,
-        categoria_texto: categoriaTexto || null,
-        slug,
-        published: true,
-        activo: true,
-        visible_web: true,
-      },
-      variants: [],
-    });
-  }
-  const variantSku = refVariante ? `J${refPatron}-${refVariante}` : `J${refPatron}-BASE`;
-  groups.get(refPatron).variants.push({ proveedor: "jim_sports", ref_proveedor: refPatron, ref_variante: refVariante, sku_interno: variantSku, ean, stock, color, talla, imagen });
-}
-
-const out = [];
-for (const g of groups.values()) {
-  out.push({ json: { type: "product", ...g.product } });
-  for (const v of g.variants) out.push({ json: { type: "variant", ...v } });
-}
-return out;"""
+IMAGENES_ARRAY_EXPR = (
+    '{{ Array.isArray($json.imagenes) && $json.imagenes.length > 0 '
+    '? "ARRAY[" + $json.imagenes.map(i => "\'" + String(i).replace(/\'/g, "\'\'") + "\'").join(",") + "]::text[]" '
+    ': ($json.imagen ? "ARRAY[\'" + $json.imagen.replace(/\'/g, "\'\'") + "\']::text[]" : "ARRAY[]::text[]") }}'
+)
 
 EXTRACT_PRICES_JS = r"""function calcularPrecioConMargen(precioBase) {
   const precio = parseFloat(precioBase);
@@ -187,7 +103,7 @@ UPSERT_PRODUCT_CATALOG = (
     'INSERT INTO "Product" (name,slug,description,price,"precioBase",images,stock,"categoryId",subcategory,grupo,published,featured,'
     '"createdAt","updatedAt",proveedor,ref_proveedor,ref_variante,ean,marca,categoria_texto,categoria_padre,color,talla,activo,visible_web,sku_interno) '
     "VALUES ('{{ ($json.name ?? \"\").replace(/'/g, \"''\") }}','{{ ((($json.slug ?? \"\").trim() !== \"\" ? $json.slug : ($json.sku_interno ?? \"producto\"))).replace(/'/g, \"''\") }}','',0,0,"
-    "{{ $json.imagen ? \"ARRAY['\" + $json.imagen.replace(/'/g, \"''\") + \"']::text[]\" : \"ARRAY[]::text[]\" }},0,"
+    f"{IMAGENES_ARRAY_EXPR},0,"
     "'{{ $json.categoryId ?? \"deportes\" }}','{{ ($json.subcategory ?? \"\").replace(/'/g, \"''\") }}',"
     "{{ $json.grupo ? \"'\" + $json.grupo.replace(/'/g, \"''\") + \"'\" : \"NULL\" }},"
     "{{ $json.published === false ? 'false' : 'true' }},false,NOW(),NOW(),"
@@ -229,7 +145,8 @@ UPSERT_VARIANT_CATALOG = (
     'JOIN "Product" p ON p.proveedor=v.proveedor AND p.ref_proveedor=v.ref_proveedor '
     "ORDER BY v.sku_interno, v.ean NULLS LAST "
     "ON CONFLICT (sku_interno) DO UPDATE SET ean=EXCLUDED.ean,color=EXCLUDED.color,talla=EXCLUDED.talla,stock=EXCLUDED.stock,"
-    "images=EXCLUDED.images,activo=EXCLUDED.activo,visible_web=EXCLUDED.visible_web,\"updatedAt\"=NOW();"
+    'images=CASE WHEN array_length(EXCLUDED.images,1)>0 THEN EXCLUDED.images ELSE "ProductVariant".images END,'
+    "activo=EXCLUDED.activo,visible_web=EXCLUDED.visible_web,\"updatedAt\"=NOW();"
 )
 
 UPDATE_PRODUCT_PRICE = (
@@ -281,15 +198,15 @@ def filter_node(name, pos, nid, type_value):
 
 def build_catalog():
     return {
-        "name": "Jim Sports v5.2 - CATALOG (CSV + taxonomía web)",
+        "name": "Jim Sports v5.5 - CATALOG (CSV + taxonomía web + imágenes)",
         "nodes": [
             node("Every 4 hours", "n8n-nodes-base.scheduleTrigger", [0, 0], "trig-cat", typeVersion=1.2, parameters={"rule": {"interval": [{"field": "hours", "hoursInterval": 4}]}}),
             node("Download CSV", "n8n-nodes-base.httpRequest", [220, 0], "dl-cat", typeVersion=4.2, parameters={"url": "https://jimsports.shop/fichero-b2b/integracion_producto.csv", "options": {}}),
-            node("Parse CSV + Fix Encoding", "n8n-nodes-base.code", [440, 0], "parse-cat", parameters={"jsCode": PARSE_CSV_JS}, notes="v5.2: catálogo + taxonomía web (resolveJimSportsTaxonomy). NO API. NO toca precios."),
+            node("Parse CSV + Fix Encoding", "n8n-nodes-base.code", [440, 0], "parse-cat", parameters={"jsCode": PARSE_CSV_JS}, notes="v5.5: propaga imágenes por color/talla y galería en producto. Regenerar con build-jim-sports-v5-workflows.py"),
             node("Loop Batches", "n8n-nodes-base.splitInBatches", [660, 0], "loop-cat", typeVersion=3, parameters={"batchSize": 100, "options": {}}),
             filter_node("Filter Products", [880, -80], "filt-prod", "product"),
             filter_node("Filter Variants", [880, 80], "filt-var", "variant"),
-            node("Upsert Product", "n8n-nodes-base.postgres", [1100, -80], "up-prod-cat", typeVersion=2.5, parameters={"operation": "executeQuery", "query": UPSERT_PRODUCT_CATALOG, "options": {}}, alwaysOutputData=True, credentials=POSTGRES_CRED, notes="v5.2: actualiza categoryId/subcategory/grupo web. No machaca name/images/marca vacíos."),
+            node("Upsert Product", "n8n-nodes-base.postgres", [1100, -80], "up-prod-cat", typeVersion=2.5, parameters={"operation": "executeQuery", "query": UPSERT_PRODUCT_CATALOG, "options": {}}, alwaysOutputData=True, credentials=POSTGRES_CRED, notes="v5.5: galería de imágenes desde variantes. No machaca name/images/marca vacíos."),
             node("Upsert ProductVariant", "n8n-nodes-base.postgres", [1100, 80], "up-var-cat", typeVersion=2.6, parameters={"operation": "executeQuery", "query": UPSERT_VARIANT_CATALOG, "options": {}}, credentials=POSTGRES_CRED),
         ],
         "connections": {

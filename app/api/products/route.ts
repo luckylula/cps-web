@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/client';
 import { normalizeImages } from '@/app/lib/imageUtils';
-import { sqlAccentInsensitiveContains } from '@/app/lib/searchUtils';
+import { buildProductSearchQuery } from '@/app/lib/searchUtils';
 import {
   attachVariantInfoToProducts,
   convertProductsToClient,
@@ -114,48 +114,17 @@ export async function GET(request: Request) {
 
     if (hasSearch) {
       const searchTerm = search!.trim();
-      const conditions: Prisma.Sql[] = [
-        Prisma.sql`published = true`,
-        Prisma.sql`visible_web = true`,
-        Prisma.sql`activo = true`,
-        Prisma.sql`name <> ''`,
-        Prisma.sql`(sku_interno IS NULL OR sku_interno NOT LIKE '%' || '-BASE')`,
-        Prisma.sql`(
-          ${sqlAccentInsensitiveContains('name', searchTerm)}
-          OR ${sqlAccentInsensitiveContains('sku_interno', searchTerm)}
-          OR ${sqlAccentInsensitiveContains('marca', searchTerm)}
-        )`,
-      ];
-
-      if (category) conditions.push(Prisma.sql`"categoryId" = ${category}`);
-      if (subcategory) {
-        conditions.push(Prisma.sql`subcategory = ${decodeURIComponent(subcategory.trim())}`);
-      }
-      if (grupo) conditions.push(Prisma.sql`grupo = ${decodeURIComponent(grupo.trim())}`);
-      if (marca) conditions.push(sqlAccentInsensitiveContains('marca', marca.trim()));
-      if (minPrice) conditions.push(Prisma.sql`price >= ${parseFloat(minPrice)}`);
-      if (maxPrice) conditions.push(Prisma.sql`price <= ${parseFloat(maxPrice)}`);
-      if (minPrice || maxPrice) conditions.push(Prisma.sql`price IS NOT NULL`);
-      if (excludeId) conditions.push(Prisma.sql`id <> ${parseInt(excludeId)}`);
-
-      const limitValue = limit ? parseInt(limit) : null;
-      products = await prisma.$queryRaw<ProductRow[]>`
-        SELECT
-          id,
-          name,
-          slug,
-          price,
-          images,
-          featured,
-          marca,
-          sku_interno,
-          stock,
-          "categoryId"
-        FROM "Product"
-        WHERE ${Prisma.join(conditions, ' AND ')}
-        ORDER BY name ASC
-        ${limitValue ? Prisma.sql`LIMIT ${limitValue}` : Prisma.empty}
-      `;
+      const { sql, params } = buildProductSearchQuery(searchTerm, {
+        category,
+        subcategory,
+        grupo,
+        marca,
+        minPrice,
+        maxPrice,
+        excludeId,
+        limit,
+      });
+      products = await prisma.$queryRawUnsafe<ProductRow[]>(sql, ...params);
     } else {
       products = await prisma.product.findMany({
         where,

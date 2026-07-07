@@ -17,6 +17,7 @@ import Footer from "@/components/Footer";
 import {
   findMatchingVariant,
   getDisplayPriceInfo,
+  getGalleryImages,
   getUniqueVariantValues,
   normalizeVariantPrices,
 } from "@/app/lib/productUtils";
@@ -59,7 +60,6 @@ interface RelatedProduct {
   slug: string;
   price: number | null;
   priceFrom?: boolean;
-  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   marca?: string | null;
@@ -411,6 +411,13 @@ export default function ArticuloPage({ params }: PageProps) {
     }
   };
 
+  const galleryImages = getGalleryImages(
+    product,
+    selectedColor,
+    selectedTalla,
+    selectedVariant
+  );
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -474,11 +481,7 @@ export default function ArticuloPage({ params }: PageProps) {
             {/* Image Section - Left Column */}
             <div className="sticky top-24">
               <ImageGallery 
-                images={
-                  selectedVariant && selectedVariant.images.length > 0
-                    ? selectedVariant.images
-                    : product.images
-                } 
+                images={galleryImages}
                 productName={product.name} 
               />
             </div>
@@ -833,7 +836,6 @@ export default function ArticuloPage({ params }: PageProps) {
                   slug={relatedProduct.slug}
                   price={relatedProduct.price}
                   priceFrom={relatedProduct.priceFrom}
-                  hasVariants={relatedProduct.hasVariants}
                   images={relatedProduct.images}
                   featured={relatedProduct.featured}
                   marca={relatedProduct.marca}

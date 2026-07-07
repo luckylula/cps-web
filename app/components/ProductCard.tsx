@@ -1,6 +1,5 @@
-"use client";
+﻿"use client";
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/app/context/CartContext';
 import { useFavorites } from '@/app/context/FavoritesContext';
@@ -15,75 +14,62 @@ interface ProductCardProps {
   slug: string;
   price: number | null;
   priceFrom?: boolean;
-  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   marca?: string | null;
   sku_interno?: string | null;
   stock: number;
   categoryId: string;
-  /** Si hay stock disponible (producto o al menos una variante). Por defecto true para no romper listados que no lo envían. */
   hasStock?: boolean;
 }
 
-// Función para sanitizar texto (eliminar caracteres problemáticos)
 function sanitizeText(text: string | null | undefined): string {
   if (!text) return '';
-  
-  // Convertir a string y limpiar
+
   let cleaned = String(text)
-    // Eliminar caracteres de control
     .replace(/[\x00-\x1F\x7F]/g, '')
-    // Eliminar tags HTML si los hay
     .replace(/<[^>]+>/g, '')
-    // Limitar longitud
     .trim();
-  
-  // Si después de limpiar está vacío, usar valor por defecto
+
   if (cleaned.length === 0) return 'Producto';
-  
-  // Limitar a 100 caracteres para nombres
+
   if (cleaned.length > 100) {
     cleaned = cleaned.substring(0, 97) + '...';
   }
-  
+
   return cleaned;
 }
 
-export default function ProductCard({ 
+export default function ProductCard({
   id,
-  name, 
-  slug, 
+  name,
+  slug,
   price,
   priceFrom = false,
-  hasVariants = false,
-  images, 
-  featured, 
+  images,
+  featured,
   marca,
   sku_interno,
   stock,
-  categoryId,
   hasStock = true,
 }: ProductCardProps) {
   const { addItemQuantity } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAdding, setIsAdding] = useState(false);
-  
+
   const favorite = isFavorite(String(id));
-  
-  // Sanitizar nombre
   const safeName = sanitizeText(name);
+  const hasPrice = price !== null && price !== undefined && price > 0;
+  const safeImages = Array.isArray(images) ? images : [];
+  const needsOptionSelection = priceFrom;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (!hasStock) return;
-    // Si no hay precio, no permitir añadir al carrito directamente
-    if (price === null || price === undefined) {
-      return;
-    }
-    
+
+    if (!hasStock || needsOptionSelection) return;
+    if (price === null || price === undefined) return;
+
     setIsAdding(true);
     addItemQuantity(
       {
@@ -97,20 +83,13 @@ export default function ProductCard({
       1,
       stock > 0 ? stock : undefined
     );
-    
+
     setTimeout(() => setIsAdding(false), 300);
   };
 
-  const hasPrice = price !== null && price !== undefined && price > 0;
-  const safeImages = Array.isArray(images) ? images : [];
-  const requiresVariantSelection = hasVariants;
-
   return (
     <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col border border-gray-100">
-      <Link 
-        href={`/articulos/${slug}`}
-        className="flex-1 flex flex-col"
-      >
+      <Link href={`/articulos/${slug}`} className="flex-1 flex flex-col">
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <SafeImage
             src={getFirstValidImage(safeImages) || ''}
@@ -143,7 +122,7 @@ export default function ProductCard({
               });
             }}
             className="absolute top-2 left-2 bg-white/90 hover:bg-white p-2 rounded-full transition-colors shadow-sm z-10"
-            aria-label={favorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+            aria-label={favorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
           >
             <svg
               className={`w-4 h-4 transition-colors ${favorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`}
@@ -160,19 +139,18 @@ export default function ProductCard({
             </svg>
           </button>
         </div>
-        
+
         <div className="p-4 flex-1 flex flex-col">
           {sku_interno && (
-            <p className="text-xs text-gray-400 mb-1 font-mono">
-              {sku_interno}
-            </p>
+            <p className="text-xs text-gray-400 mb-1 font-mono">{sku_interno}</p>
           )}
           {marca && (
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-              {marca}
-            </p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{marca}</p>
           )}
-          <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 leading-tight" title={safeName}>
+          <h3
+            className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 leading-tight"
+            title={safeName}
+          >
             {safeName}
           </h3>
           <div className="mt-auto">
@@ -181,16 +159,21 @@ export default function ProductCard({
                 {formatProductPrice(price, { priceFrom, consultarLabel: 'Consultar precio' })}
               </p>
             ) : (
-              <p className="text-lg font-bold text-gray-900">
-                Consultar precio
-              </p>
+              <p className="text-lg font-bold text-gray-900">Consultar precio</p>
             )}
           </div>
         </div>
       </Link>
-      
+
       <div className="p-4 pt-0">
-        {hasPrice && !requiresVariantSelection ? (
+        {hasPrice && needsOptionSelection ? (
+          <Link
+            href={`/articulos/${slug}`}
+            className="w-full border-2 border-gray-300 hover:border-gray-900 bg-white hover:bg-gray-50 text-gray-800 font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+          >
+            Seleccionar opciones
+          </Link>
+        ) : hasPrice ? (
           <button
             onClick={handleAddToCart}
             disabled={isAdding || !hasStock}
@@ -198,16 +181,37 @@ export default function ProductCard({
           >
             {isAdding ? (
               <>
-                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Añadiendo...
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
                 </svg>
                 Añadir a la cesta
               </>

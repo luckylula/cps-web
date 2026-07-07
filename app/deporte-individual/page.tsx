@@ -18,7 +18,6 @@ interface Product {
   slug: string;
   price: number | null;
   priceFrom?: boolean;
-  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   categoryId: string;
@@ -232,7 +231,6 @@ export default function DeporteIndividualPage() {
                     slug={product.slug}
                     price={product.price}
                     priceFrom={product.priceFrom}
-                    hasVariants={product.hasVariants}
                     images={product.images}
                     featured={product.featured}
                     categoryId={product.categoryId}

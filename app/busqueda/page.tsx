@@ -14,7 +14,6 @@ interface Product {
   slug: string;
   price: number | null;
   priceFrom?: boolean;
-  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   marca?: string | null;
@@ -122,7 +121,6 @@ function BusquedaContent() {
                   slug={product.slug}
                   price={product.price}
                   priceFrom={product.priceFrom}
-                  hasVariants={product.hasVariants}
                   images={product.images ?? []}
                   featured={product.featured ?? false}
                   marca={product.marca}

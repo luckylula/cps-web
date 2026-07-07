@@ -32,8 +32,8 @@ export interface ClientProduct {
   name: string;
   slug: string;
   price: number | null;
+  /** true cuando hay variantes con precios distintos (mostrar "Desde" y "Seleccionar opciones") */
   priceFrom?: boolean;
-  hasVariants?: boolean;
   images: string[];
   featured: boolean;
   marca?: string | null;
@@ -164,6 +164,63 @@ export function findMatchingVariant<
   return null;
 }
 
+/** Imágenes de galería según color/talla seleccionados (preview parcial si falta una opción). */
+export function getGalleryImages<
+  T extends { images?: string[]; color: string | null; talla: string | null },
+>(
+  product: { images: string[]; variants?: T[] },
+  selectedColor: string | null,
+  selectedTalla: string | null,
+  selectedVariant?: T | null
+): string[] {
+  if (selectedVariant?.images && selectedVariant.images.length > 0) {
+    return selectedVariant.images;
+  }
+
+  const variants = product.variants ?? [];
+  if (variants.length === 0) return product.images;
+
+  if (selectedColor !== null && selectedTalla !== null) {
+    const exact = variants.find(
+      (v) => v.color === selectedColor && v.talla === selectedTalla
+    );
+    if (exact?.images && exact.images.length > 0) return exact.images;
+  }
+
+  if (selectedColor !== null) {
+    const byColor = variants.find(
+      (v) => v.color === selectedColor && v.images && v.images.length > 0
+    );
+    if (byColor?.images) return byColor.images;
+  }
+
+  if (selectedTalla !== null) {
+    const byTalla = variants.find(
+      (v) => v.talla === selectedTalla && v.images && v.images.length > 0
+    );
+    if (byTalla?.images) return byTalla.images;
+  }
+
+  return product.images;
+}
+
+/**
+ * Precio y flags para tarjetas de listado (solo "Desde" si los precios de variantes difieren).
+ */
+export function getListingProductInfo(product: {
+  price: number | null;
+  variants?: { price: number | null }[];
+}): { price: number | null; priceFrom: boolean } {
+  const basePrice = product.price;
+  const variants = product.variants ?? [];
+  const price = getEffectivePrice({ price: basePrice, variants }, null);
+  const priceFrom =
+    variants.length > 0 &&
+    variantPricesDiffer(variants, basePrice) &&
+    price !== null;
+  return { price, priceFrom };
+}
+
 export function formatProductPrice(
   price: number | null | undefined,
   options?: { priceFrom?: boolean; consultarLabel?: string }
@@ -238,9 +295,9 @@ export function convertProductsToClient(products: PrismaProduct[]): ClientProduc
         ? product.hasStock
         : productHasStock(product);
     const basePrice = product.price != null ? Number(product.price) : null;
-    const { price, priceFrom, hasVariants } = getDisplayPriceInfo({
+    const { price, priceFrom } = getListingProductInfo({
       price: basePrice,
-      variants: product.variants,
+      variants: product.variants?.map((v) => ({ price: v.price ?? null })),
     });
 
     return {
@@ -249,7 +306,6 @@ export function convertProductsToClient(products: PrismaProduct[]): ClientProduc
       slug: product.slug,
       price,
       priceFrom,
-      hasVariants,
       images,
       featured: Boolean(product.featured),
       marca: product.marca ?? null,
