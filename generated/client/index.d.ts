@@ -24,6 +24,11 @@ export type Category = $Result.DefaultSelection<Prisma.$CategoryPayload>
  */
 export type Product = $Result.DefaultSelection<Prisma.$ProductPayload>
 /**
+ * Model StockAlert
+ * 
+ */
+export type StockAlert = $Result.DefaultSelection<Prisma.$StockAlertPayload>
+/**
  * Model ProductVariant
  * 
  */
@@ -211,6 +216,16 @@ export class PrismaClient<
     * ```
     */
   get product(): Prisma.ProductDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.stockAlert`: Exposes CRUD operations for the **StockAlert** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StockAlerts
+    * const stockAlerts = await prisma.stockAlert.findMany()
+    * ```
+    */
+  get stockAlert(): Prisma.StockAlertDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.productVariant`: Exposes CRUD operations for the **ProductVariant** model.
@@ -707,6 +722,7 @@ export namespace Prisma {
   export const ModelName: {
     Category: 'Category',
     Product: 'Product',
+    StockAlert: 'StockAlert',
     ProductVariant: 'ProductVariant',
     Order: 'Order',
     OrderItem: 'OrderItem',
@@ -728,7 +744,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "category" | "product" | "productVariant" | "order" | "orderItem" | "coupon" | "categoryMap" | "contactMessage"
+      modelProps: "category" | "product" | "stockAlert" | "productVariant" | "order" | "orderItem" | "coupon" | "categoryMap" | "contactMessage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -877,6 +893,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ProductCountArgs<ExtArgs>
             result: $Utils.Optional<ProductCountAggregateOutputType> | number
+          }
+        }
+      }
+      StockAlert: {
+        payload: Prisma.$StockAlertPayload<ExtArgs>
+        fields: Prisma.StockAlertFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StockAlertFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StockAlertFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>
+          }
+          findFirst: {
+            args: Prisma.StockAlertFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StockAlertFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>
+          }
+          findMany: {
+            args: Prisma.StockAlertFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>[]
+          }
+          create: {
+            args: Prisma.StockAlertCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>
+          }
+          createMany: {
+            args: Prisma.StockAlertCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StockAlertCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>[]
+          }
+          delete: {
+            args: Prisma.StockAlertDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>
+          }
+          update: {
+            args: Prisma.StockAlertUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>
+          }
+          deleteMany: {
+            args: Prisma.StockAlertDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StockAlertUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StockAlertUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>[]
+          }
+          upsert: {
+            args: Prisma.StockAlertUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockAlertPayload>
+          }
+          aggregate: {
+            args: Prisma.StockAlertAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStockAlert>
+          }
+          groupBy: {
+            args: Prisma.StockAlertGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StockAlertGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StockAlertCountArgs<ExtArgs>
+            result: $Utils.Optional<StockAlertCountAggregateOutputType> | number
           }
         }
       }
@@ -1434,6 +1524,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     category?: CategoryOmit
     product?: ProductOmit
+    stockAlert?: StockAlertOmit
     productVariant?: ProductVariantOmit
     order?: OrderOmit
     orderItem?: OrderItemOmit
@@ -1522,11 +1613,13 @@ export namespace Prisma {
   export type ProductCountOutputType = {
     orderItems: number
     variants: number
+    stockAlerts: number
   }
 
   export type ProductCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | ProductCountOutputTypeCountOrderItemsArgs
     variants?: boolean | ProductCountOutputTypeCountVariantsArgs
+    stockAlerts?: boolean | ProductCountOutputTypeCountStockAlertsArgs
   }
 
   // Custom InputTypes
@@ -1552,6 +1645,13 @@ export namespace Prisma {
    */
   export type ProductCountOutputTypeCountVariantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProductVariantWhereInput
+  }
+
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeCountStockAlertsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockAlertWhereInput
   }
 
 
@@ -3003,6 +3103,7 @@ export namespace Prisma {
     tipo_producto?: boolean
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     variants?: boolean | Product$variantsArgs<ExtArgs>
+    stockAlerts?: boolean | Product$stockAlertsArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -3103,6 +3204,7 @@ export namespace Prisma {
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     variants?: boolean | Product$variantsArgs<ExtArgs>
+    stockAlerts?: boolean | Product$stockAlertsArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3113,6 +3215,7 @@ export namespace Prisma {
     objects: {
       orderItems: Prisma.$OrderItemPayload<ExtArgs>[]
       variants: Prisma.$ProductVariantPayload<ExtArgs>[]
+      stockAlerts: Prisma.$StockAlertPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       name: string
@@ -3539,6 +3642,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     orderItems<T extends Product$orderItemsArgs<ExtArgs> = {}>(args?: Subset<T, Product$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     variants<T extends Product$variantsArgs<ExtArgs> = {}>(args?: Subset<T, Product$variantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stockAlerts<T extends Product$stockAlertsArgs<ExtArgs> = {}>(args?: Subset<T, Product$stockAlertsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4032,6 +4136,30 @@ export namespace Prisma {
   }
 
   /**
+   * Product.stockAlerts
+   */
+  export type Product$stockAlertsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    where?: StockAlertWhereInput
+    orderBy?: StockAlertOrderByWithRelationInput | StockAlertOrderByWithRelationInput[]
+    cursor?: StockAlertWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StockAlertScalarFieldEnum | StockAlertScalarFieldEnum[]
+  }
+
+  /**
    * Product without action
    */
   export type ProductDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4047,6 +4175,1124 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProductInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StockAlert
+   */
+
+  export type AggregateStockAlert = {
+    _count: StockAlertCountAggregateOutputType | null
+    _avg: StockAlertAvgAggregateOutputType | null
+    _sum: StockAlertSumAggregateOutputType | null
+    _min: StockAlertMinAggregateOutputType | null
+    _max: StockAlertMaxAggregateOutputType | null
+  }
+
+  export type StockAlertAvgAggregateOutputType = {
+    productId: number | null
+  }
+
+  export type StockAlertSumAggregateOutputType = {
+    productId: number | null
+  }
+
+  export type StockAlertMinAggregateOutputType = {
+    id: string | null
+    productId: number | null
+    email: string | null
+    active: boolean | null
+    notifiedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StockAlertMaxAggregateOutputType = {
+    id: string | null
+    productId: number | null
+    email: string | null
+    active: boolean | null
+    notifiedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StockAlertCountAggregateOutputType = {
+    id: number
+    productId: number
+    email: number
+    active: number
+    notifiedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type StockAlertAvgAggregateInputType = {
+    productId?: true
+  }
+
+  export type StockAlertSumAggregateInputType = {
+    productId?: true
+  }
+
+  export type StockAlertMinAggregateInputType = {
+    id?: true
+    productId?: true
+    email?: true
+    active?: true
+    notifiedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StockAlertMaxAggregateInputType = {
+    id?: true
+    productId?: true
+    email?: true
+    active?: true
+    notifiedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StockAlertCountAggregateInputType = {
+    id?: true
+    productId?: true
+    email?: true
+    active?: true
+    notifiedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type StockAlertAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockAlert to aggregate.
+     */
+    where?: StockAlertWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockAlerts to fetch.
+     */
+    orderBy?: StockAlertOrderByWithRelationInput | StockAlertOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StockAlertWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockAlerts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockAlerts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StockAlerts
+    **/
+    _count?: true | StockAlertCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: StockAlertAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: StockAlertSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StockAlertMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StockAlertMaxAggregateInputType
+  }
+
+  export type GetStockAlertAggregateType<T extends StockAlertAggregateArgs> = {
+        [P in keyof T & keyof AggregateStockAlert]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStockAlert[P]>
+      : GetScalarType<T[P], AggregateStockAlert[P]>
+  }
+
+
+
+
+  export type StockAlertGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockAlertWhereInput
+    orderBy?: StockAlertOrderByWithAggregationInput | StockAlertOrderByWithAggregationInput[]
+    by: StockAlertScalarFieldEnum[] | StockAlertScalarFieldEnum
+    having?: StockAlertScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StockAlertCountAggregateInputType | true
+    _avg?: StockAlertAvgAggregateInputType
+    _sum?: StockAlertSumAggregateInputType
+    _min?: StockAlertMinAggregateInputType
+    _max?: StockAlertMaxAggregateInputType
+  }
+
+  export type StockAlertGroupByOutputType = {
+    id: string
+    productId: number
+    email: string
+    active: boolean
+    notifiedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: StockAlertCountAggregateOutputType | null
+    _avg: StockAlertAvgAggregateOutputType | null
+    _sum: StockAlertSumAggregateOutputType | null
+    _min: StockAlertMinAggregateOutputType | null
+    _max: StockAlertMaxAggregateOutputType | null
+  }
+
+  type GetStockAlertGroupByPayload<T extends StockAlertGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StockAlertGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StockAlertGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StockAlertGroupByOutputType[P]>
+            : GetScalarType<T[P], StockAlertGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StockAlertSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    email?: boolean
+    active?: boolean
+    notifiedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stockAlert"]>
+
+  export type StockAlertSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    email?: boolean
+    active?: boolean
+    notifiedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stockAlert"]>
+
+  export type StockAlertSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    email?: boolean
+    active?: boolean
+    notifiedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stockAlert"]>
+
+  export type StockAlertSelectScalar = {
+    id?: boolean
+    productId?: boolean
+    email?: boolean
+    active?: boolean
+    notifiedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type StockAlertOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "email" | "active" | "notifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["stockAlert"]>
+  export type StockAlertInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type StockAlertIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type StockAlertIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+
+  export type $StockAlertPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StockAlert"
+    objects: {
+      product: Prisma.$ProductPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      productId: number
+      email: string
+      active: boolean
+      notifiedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["stockAlert"]>
+    composites: {}
+  }
+
+  type StockAlertGetPayload<S extends boolean | null | undefined | StockAlertDefaultArgs> = $Result.GetResult<Prisma.$StockAlertPayload, S>
+
+  type StockAlertCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StockAlertFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StockAlertCountAggregateInputType | true
+    }
+
+  export interface StockAlertDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StockAlert'], meta: { name: 'StockAlert' } }
+    /**
+     * Find zero or one StockAlert that matches the filter.
+     * @param {StockAlertFindUniqueArgs} args - Arguments to find a StockAlert
+     * @example
+     * // Get one StockAlert
+     * const stockAlert = await prisma.stockAlert.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StockAlertFindUniqueArgs>(args: SelectSubset<T, StockAlertFindUniqueArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StockAlert that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StockAlertFindUniqueOrThrowArgs} args - Arguments to find a StockAlert
+     * @example
+     * // Get one StockAlert
+     * const stockAlert = await prisma.stockAlert.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StockAlertFindUniqueOrThrowArgs>(args: SelectSubset<T, StockAlertFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StockAlert that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockAlertFindFirstArgs} args - Arguments to find a StockAlert
+     * @example
+     * // Get one StockAlert
+     * const stockAlert = await prisma.stockAlert.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StockAlertFindFirstArgs>(args?: SelectSubset<T, StockAlertFindFirstArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StockAlert that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockAlertFindFirstOrThrowArgs} args - Arguments to find a StockAlert
+     * @example
+     * // Get one StockAlert
+     * const stockAlert = await prisma.stockAlert.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StockAlertFindFirstOrThrowArgs>(args?: SelectSubset<T, StockAlertFindFirstOrThrowArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StockAlerts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockAlertFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StockAlerts
+     * const stockAlerts = await prisma.stockAlert.findMany()
+     * 
+     * // Get first 10 StockAlerts
+     * const stockAlerts = await prisma.stockAlert.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stockAlertWithIdOnly = await prisma.stockAlert.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StockAlertFindManyArgs>(args?: SelectSubset<T, StockAlertFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StockAlert.
+     * @param {StockAlertCreateArgs} args - Arguments to create a StockAlert.
+     * @example
+     * // Create one StockAlert
+     * const StockAlert = await prisma.stockAlert.create({
+     *   data: {
+     *     // ... data to create a StockAlert
+     *   }
+     * })
+     * 
+     */
+    create<T extends StockAlertCreateArgs>(args: SelectSubset<T, StockAlertCreateArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StockAlerts.
+     * @param {StockAlertCreateManyArgs} args - Arguments to create many StockAlerts.
+     * @example
+     * // Create many StockAlerts
+     * const stockAlert = await prisma.stockAlert.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StockAlertCreateManyArgs>(args?: SelectSubset<T, StockAlertCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StockAlerts and returns the data saved in the database.
+     * @param {StockAlertCreateManyAndReturnArgs} args - Arguments to create many StockAlerts.
+     * @example
+     * // Create many StockAlerts
+     * const stockAlert = await prisma.stockAlert.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StockAlerts and only return the `id`
+     * const stockAlertWithIdOnly = await prisma.stockAlert.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StockAlertCreateManyAndReturnArgs>(args?: SelectSubset<T, StockAlertCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StockAlert.
+     * @param {StockAlertDeleteArgs} args - Arguments to delete one StockAlert.
+     * @example
+     * // Delete one StockAlert
+     * const StockAlert = await prisma.stockAlert.delete({
+     *   where: {
+     *     // ... filter to delete one StockAlert
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StockAlertDeleteArgs>(args: SelectSubset<T, StockAlertDeleteArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StockAlert.
+     * @param {StockAlertUpdateArgs} args - Arguments to update one StockAlert.
+     * @example
+     * // Update one StockAlert
+     * const stockAlert = await prisma.stockAlert.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StockAlertUpdateArgs>(args: SelectSubset<T, StockAlertUpdateArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StockAlerts.
+     * @param {StockAlertDeleteManyArgs} args - Arguments to filter StockAlerts to delete.
+     * @example
+     * // Delete a few StockAlerts
+     * const { count } = await prisma.stockAlert.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StockAlertDeleteManyArgs>(args?: SelectSubset<T, StockAlertDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StockAlerts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockAlertUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StockAlerts
+     * const stockAlert = await prisma.stockAlert.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StockAlertUpdateManyArgs>(args: SelectSubset<T, StockAlertUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StockAlerts and returns the data updated in the database.
+     * @param {StockAlertUpdateManyAndReturnArgs} args - Arguments to update many StockAlerts.
+     * @example
+     * // Update many StockAlerts
+     * const stockAlert = await prisma.stockAlert.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more StockAlerts and only return the `id`
+     * const stockAlertWithIdOnly = await prisma.stockAlert.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StockAlertUpdateManyAndReturnArgs>(args: SelectSubset<T, StockAlertUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StockAlert.
+     * @param {StockAlertUpsertArgs} args - Arguments to update or create a StockAlert.
+     * @example
+     * // Update or create a StockAlert
+     * const stockAlert = await prisma.stockAlert.upsert({
+     *   create: {
+     *     // ... data to create a StockAlert
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StockAlert we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StockAlertUpsertArgs>(args: SelectSubset<T, StockAlertUpsertArgs<ExtArgs>>): Prisma__StockAlertClient<$Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StockAlerts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockAlertCountArgs} args - Arguments to filter StockAlerts to count.
+     * @example
+     * // Count the number of StockAlerts
+     * const count = await prisma.stockAlert.count({
+     *   where: {
+     *     // ... the filter for the StockAlerts we want to count
+     *   }
+     * })
+    **/
+    count<T extends StockAlertCountArgs>(
+      args?: Subset<T, StockAlertCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StockAlertCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StockAlert.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockAlertAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StockAlertAggregateArgs>(args: Subset<T, StockAlertAggregateArgs>): Prisma.PrismaPromise<GetStockAlertAggregateType<T>>
+
+    /**
+     * Group by StockAlert.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockAlertGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StockAlertGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StockAlertGroupByArgs['orderBy'] }
+        : { orderBy?: StockAlertGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StockAlertGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStockAlertGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StockAlert model
+   */
+  readonly fields: StockAlertFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StockAlert.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StockAlertClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    product<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StockAlert model
+   */
+  interface StockAlertFieldRefs {
+    readonly id: FieldRef<"StockAlert", 'String'>
+    readonly productId: FieldRef<"StockAlert", 'Int'>
+    readonly email: FieldRef<"StockAlert", 'String'>
+    readonly active: FieldRef<"StockAlert", 'Boolean'>
+    readonly notifiedAt: FieldRef<"StockAlert", 'DateTime'>
+    readonly createdAt: FieldRef<"StockAlert", 'DateTime'>
+    readonly updatedAt: FieldRef<"StockAlert", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StockAlert findUnique
+   */
+  export type StockAlertFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * Filter, which StockAlert to fetch.
+     */
+    where: StockAlertWhereUniqueInput
+  }
+
+  /**
+   * StockAlert findUniqueOrThrow
+   */
+  export type StockAlertFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * Filter, which StockAlert to fetch.
+     */
+    where: StockAlertWhereUniqueInput
+  }
+
+  /**
+   * StockAlert findFirst
+   */
+  export type StockAlertFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * Filter, which StockAlert to fetch.
+     */
+    where?: StockAlertWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockAlerts to fetch.
+     */
+    orderBy?: StockAlertOrderByWithRelationInput | StockAlertOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockAlerts.
+     */
+    cursor?: StockAlertWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockAlerts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockAlerts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockAlerts.
+     */
+    distinct?: StockAlertScalarFieldEnum | StockAlertScalarFieldEnum[]
+  }
+
+  /**
+   * StockAlert findFirstOrThrow
+   */
+  export type StockAlertFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * Filter, which StockAlert to fetch.
+     */
+    where?: StockAlertWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockAlerts to fetch.
+     */
+    orderBy?: StockAlertOrderByWithRelationInput | StockAlertOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockAlerts.
+     */
+    cursor?: StockAlertWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockAlerts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockAlerts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockAlerts.
+     */
+    distinct?: StockAlertScalarFieldEnum | StockAlertScalarFieldEnum[]
+  }
+
+  /**
+   * StockAlert findMany
+   */
+  export type StockAlertFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * Filter, which StockAlerts to fetch.
+     */
+    where?: StockAlertWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockAlerts to fetch.
+     */
+    orderBy?: StockAlertOrderByWithRelationInput | StockAlertOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StockAlerts.
+     */
+    cursor?: StockAlertWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockAlerts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockAlerts.
+     */
+    skip?: number
+    distinct?: StockAlertScalarFieldEnum | StockAlertScalarFieldEnum[]
+  }
+
+  /**
+   * StockAlert create
+   */
+  export type StockAlertCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StockAlert.
+     */
+    data: XOR<StockAlertCreateInput, StockAlertUncheckedCreateInput>
+  }
+
+  /**
+   * StockAlert createMany
+   */
+  export type StockAlertCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StockAlerts.
+     */
+    data: StockAlertCreateManyInput | StockAlertCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StockAlert createManyAndReturn
+   */
+  export type StockAlertCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * The data used to create many StockAlerts.
+     */
+    data: StockAlertCreateManyInput | StockAlertCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StockAlert update
+   */
+  export type StockAlertUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StockAlert.
+     */
+    data: XOR<StockAlertUpdateInput, StockAlertUncheckedUpdateInput>
+    /**
+     * Choose, which StockAlert to update.
+     */
+    where: StockAlertWhereUniqueInput
+  }
+
+  /**
+   * StockAlert updateMany
+   */
+  export type StockAlertUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StockAlerts.
+     */
+    data: XOR<StockAlertUpdateManyMutationInput, StockAlertUncheckedUpdateManyInput>
+    /**
+     * Filter which StockAlerts to update
+     */
+    where?: StockAlertWhereInput
+    /**
+     * Limit how many StockAlerts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StockAlert updateManyAndReturn
+   */
+  export type StockAlertUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * The data used to update StockAlerts.
+     */
+    data: XOR<StockAlertUpdateManyMutationInput, StockAlertUncheckedUpdateManyInput>
+    /**
+     * Filter which StockAlerts to update
+     */
+    where?: StockAlertWhereInput
+    /**
+     * Limit how many StockAlerts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StockAlert upsert
+   */
+  export type StockAlertUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StockAlert to update in case it exists.
+     */
+    where: StockAlertWhereUniqueInput
+    /**
+     * In case the StockAlert found by the `where` argument doesn't exist, create a new StockAlert with this data.
+     */
+    create: XOR<StockAlertCreateInput, StockAlertUncheckedCreateInput>
+    /**
+     * In case the StockAlert was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StockAlertUpdateInput, StockAlertUncheckedUpdateInput>
+  }
+
+  /**
+   * StockAlert delete
+   */
+  export type StockAlertDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
+    /**
+     * Filter which StockAlert to delete.
+     */
+    where: StockAlertWhereUniqueInput
+  }
+
+  /**
+   * StockAlert deleteMany
+   */
+  export type StockAlertDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockAlerts to delete
+     */
+    where?: StockAlertWhereInput
+    /**
+     * Limit how many StockAlerts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StockAlert without action
+   */
+  export type StockAlertDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockAlert
+     */
+    select?: StockAlertSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockAlert
+     */
+    omit?: StockAlertOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockAlertInclude<ExtArgs> | null
   }
 
 
@@ -11232,6 +12478,19 @@ export namespace Prisma {
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
+  export const StockAlertScalarFieldEnum: {
+    id: 'id',
+    productId: 'productId',
+    email: 'email',
+    active: 'active',
+    notifiedAt: 'notifiedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type StockAlertScalarFieldEnum = (typeof StockAlertScalarFieldEnum)[keyof typeof StockAlertScalarFieldEnum]
+
+
   export const ProductVariantScalarFieldEnum: {
     id: 'id',
     productId: 'productId',
@@ -11571,6 +12830,7 @@ export namespace Prisma {
     tipo_producto?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
     variants?: ProductVariantListRelationFilter
+    stockAlerts?: StockAlertListRelationFilter
   }
 
   export type ProductOrderByWithRelationInput = {
@@ -11604,6 +12864,7 @@ export namespace Prisma {
     tipo_producto?: SortOrderInput | SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
     variants?: ProductVariantOrderByRelationAggregateInput
+    stockAlerts?: StockAlertOrderByRelationAggregateInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -11641,6 +12902,7 @@ export namespace Prisma {
     tipo_producto?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
     variants?: ProductVariantListRelationFilter
+    stockAlerts?: StockAlertListRelationFilter
   }, "id" | "slug" | "sku_interno" | "proveedor_ref_proveedor">
 
   export type ProductOrderByWithAggregationInput = {
@@ -11711,6 +12973,74 @@ export namespace Prisma {
     grupo?: StringNullableWithAggregatesFilter<"Product"> | string | null
     precioBase?: DecimalNullableWithAggregatesFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     tipo_producto?: StringNullableWithAggregatesFilter<"Product"> | string | null
+  }
+
+  export type StockAlertWhereInput = {
+    AND?: StockAlertWhereInput | StockAlertWhereInput[]
+    OR?: StockAlertWhereInput[]
+    NOT?: StockAlertWhereInput | StockAlertWhereInput[]
+    id?: StringFilter<"StockAlert"> | string
+    productId?: IntFilter<"StockAlert"> | number
+    email?: StringFilter<"StockAlert"> | string
+    active?: BoolFilter<"StockAlert"> | boolean
+    notifiedAt?: DateTimeNullableFilter<"StockAlert"> | Date | string | null
+    createdAt?: DateTimeFilter<"StockAlert"> | Date | string
+    updatedAt?: DateTimeFilter<"StockAlert"> | Date | string
+    product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+  }
+
+  export type StockAlertOrderByWithRelationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    email?: SortOrder
+    active?: SortOrder
+    notifiedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    product?: ProductOrderByWithRelationInput
+  }
+
+  export type StockAlertWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    productId_email_active?: StockAlertProductIdEmailActiveCompoundUniqueInput
+    AND?: StockAlertWhereInput | StockAlertWhereInput[]
+    OR?: StockAlertWhereInput[]
+    NOT?: StockAlertWhereInput | StockAlertWhereInput[]
+    productId?: IntFilter<"StockAlert"> | number
+    email?: StringFilter<"StockAlert"> | string
+    active?: BoolFilter<"StockAlert"> | boolean
+    notifiedAt?: DateTimeNullableFilter<"StockAlert"> | Date | string | null
+    createdAt?: DateTimeFilter<"StockAlert"> | Date | string
+    updatedAt?: DateTimeFilter<"StockAlert"> | Date | string
+    product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+  }, "id" | "productId_email_active">
+
+  export type StockAlertOrderByWithAggregationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    email?: SortOrder
+    active?: SortOrder
+    notifiedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: StockAlertCountOrderByAggregateInput
+    _avg?: StockAlertAvgOrderByAggregateInput
+    _max?: StockAlertMaxOrderByAggregateInput
+    _min?: StockAlertMinOrderByAggregateInput
+    _sum?: StockAlertSumOrderByAggregateInput
+  }
+
+  export type StockAlertScalarWhereWithAggregatesInput = {
+    AND?: StockAlertScalarWhereWithAggregatesInput | StockAlertScalarWhereWithAggregatesInput[]
+    OR?: StockAlertScalarWhereWithAggregatesInput[]
+    NOT?: StockAlertScalarWhereWithAggregatesInput | StockAlertScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StockAlert"> | string
+    productId?: IntWithAggregatesFilter<"StockAlert"> | number
+    email?: StringWithAggregatesFilter<"StockAlert"> | string
+    active?: BoolWithAggregatesFilter<"StockAlert"> | boolean
+    notifiedAt?: DateTimeNullableWithAggregatesFilter<"StockAlert"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"StockAlert"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"StockAlert"> | Date | string
   }
 
   export type ProductVariantWhereInput = {
@@ -12419,6 +13749,7 @@ export namespace Prisma {
     tipo_producto?: string | null
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
+    stockAlerts?: StockAlertCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateInput = {
@@ -12452,6 +13783,7 @@ export namespace Prisma {
     tipo_producto?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
+    stockAlerts?: StockAlertUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductUpdateInput = {
@@ -12484,6 +13816,7 @@ export namespace Prisma {
     tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
+    stockAlerts?: StockAlertUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateInput = {
@@ -12517,6 +13850,7 @@ export namespace Prisma {
     tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+    stockAlerts?: StockAlertUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type ProductCreateManyInput = {
@@ -12609,6 +13943,75 @@ export namespace Prisma {
     grupo?: NullableStringFieldUpdateOperationsInput | string | null
     precioBase?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type StockAlertCreateInput = {
+    id?: string
+    email: string
+    active?: boolean
+    notifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    product: ProductCreateNestedOneWithoutStockAlertsInput
+  }
+
+  export type StockAlertUncheckedCreateInput = {
+    id?: string
+    productId: number
+    email: string
+    active?: boolean
+    notifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StockAlertUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    product?: ProductUpdateOneRequiredWithoutStockAlertsNestedInput
+  }
+
+  export type StockAlertUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockAlertCreateManyInput = {
+    id?: string
+    productId: number
+    email: string
+    active?: boolean
+    notifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StockAlertUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockAlertUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductVariantCreateInput = {
@@ -13490,11 +14893,21 @@ export namespace Prisma {
     none?: ProductVariantWhereInput
   }
 
+  export type StockAlertListRelationFilter = {
+    every?: StockAlertWhereInput
+    some?: StockAlertWhereInput
+    none?: StockAlertWhereInput
+  }
+
   export type OrderItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type ProductVariantOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StockAlertOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -13648,9 +15061,78 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type ProductScalarRelationFilter = {
     is?: ProductWhereInput
     isNot?: ProductWhereInput
+  }
+
+  export type StockAlertProductIdEmailActiveCompoundUniqueInput = {
+    productId: number
+    email: string
+    active: boolean
+  }
+
+  export type StockAlertCountOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    email?: SortOrder
+    active?: SortOrder
+    notifiedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StockAlertAvgOrderByAggregateInput = {
+    productId?: SortOrder
+  }
+
+  export type StockAlertMaxOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    email?: SortOrder
+    active?: SortOrder
+    notifiedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StockAlertMinOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    email?: SortOrder
+    active?: SortOrder
+    notifiedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StockAlertSumOrderByAggregateInput = {
+    productId?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type ProductVariantCountOrderByAggregateInput = {
@@ -13952,17 +15434,6 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type CouponCountOrderByAggregateInput = {
     id?: SortOrder
     code?: SortOrder
@@ -14002,20 +15473,6 @@ export namespace Prisma {
 
   export type CouponSumOrderByAggregateInput = {
     discountPercent?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type CategoryMapCountOrderByAggregateInput = {
@@ -14169,6 +15626,13 @@ export namespace Prisma {
     connect?: ProductVariantWhereUniqueInput | ProductVariantWhereUniqueInput[]
   }
 
+  export type StockAlertCreateNestedManyWithoutProductInput = {
+    create?: XOR<StockAlertCreateWithoutProductInput, StockAlertUncheckedCreateWithoutProductInput> | StockAlertCreateWithoutProductInput[] | StockAlertUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: StockAlertCreateOrConnectWithoutProductInput | StockAlertCreateOrConnectWithoutProductInput[]
+    createMany?: StockAlertCreateManyProductInputEnvelope
+    connect?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+  }
+
   export type OrderItemUncheckedCreateNestedManyWithoutProductInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
@@ -14181,6 +15645,13 @@ export namespace Prisma {
     connectOrCreate?: ProductVariantCreateOrConnectWithoutProductInput | ProductVariantCreateOrConnectWithoutProductInput[]
     createMany?: ProductVariantCreateManyProductInputEnvelope
     connect?: ProductVariantWhereUniqueInput | ProductVariantWhereUniqueInput[]
+  }
+
+  export type StockAlertUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<StockAlertCreateWithoutProductInput, StockAlertUncheckedCreateWithoutProductInput> | StockAlertCreateWithoutProductInput[] | StockAlertUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: StockAlertCreateOrConnectWithoutProductInput | StockAlertCreateOrConnectWithoutProductInput[]
+    createMany?: StockAlertCreateManyProductInputEnvelope
+    connect?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
   }
 
   export type NullableDecimalFieldUpdateOperationsInput = {
@@ -14236,6 +15707,20 @@ export namespace Prisma {
     deleteMany?: ProductVariantScalarWhereInput | ProductVariantScalarWhereInput[]
   }
 
+  export type StockAlertUpdateManyWithoutProductNestedInput = {
+    create?: XOR<StockAlertCreateWithoutProductInput, StockAlertUncheckedCreateWithoutProductInput> | StockAlertCreateWithoutProductInput[] | StockAlertUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: StockAlertCreateOrConnectWithoutProductInput | StockAlertCreateOrConnectWithoutProductInput[]
+    upsert?: StockAlertUpsertWithWhereUniqueWithoutProductInput | StockAlertUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: StockAlertCreateManyProductInputEnvelope
+    set?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    disconnect?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    delete?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    connect?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    update?: StockAlertUpdateWithWhereUniqueWithoutProductInput | StockAlertUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: StockAlertUpdateManyWithWhereWithoutProductInput | StockAlertUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: StockAlertScalarWhereInput | StockAlertScalarWhereInput[]
+  }
+
   export type OrderItemUncheckedUpdateManyWithoutProductNestedInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
@@ -14262,6 +15747,38 @@ export namespace Prisma {
     update?: ProductVariantUpdateWithWhereUniqueWithoutProductInput | ProductVariantUpdateWithWhereUniqueWithoutProductInput[]
     updateMany?: ProductVariantUpdateManyWithWhereWithoutProductInput | ProductVariantUpdateManyWithWhereWithoutProductInput[]
     deleteMany?: ProductVariantScalarWhereInput | ProductVariantScalarWhereInput[]
+  }
+
+  export type StockAlertUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<StockAlertCreateWithoutProductInput, StockAlertUncheckedCreateWithoutProductInput> | StockAlertCreateWithoutProductInput[] | StockAlertUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: StockAlertCreateOrConnectWithoutProductInput | StockAlertCreateOrConnectWithoutProductInput[]
+    upsert?: StockAlertUpsertWithWhereUniqueWithoutProductInput | StockAlertUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: StockAlertCreateManyProductInputEnvelope
+    set?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    disconnect?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    delete?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    connect?: StockAlertWhereUniqueInput | StockAlertWhereUniqueInput[]
+    update?: StockAlertUpdateWithWhereUniqueWithoutProductInput | StockAlertUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: StockAlertUpdateManyWithWhereWithoutProductInput | StockAlertUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: StockAlertScalarWhereInput | StockAlertScalarWhereInput[]
+  }
+
+  export type ProductCreateNestedOneWithoutStockAlertsInput = {
+    create?: XOR<ProductCreateWithoutStockAlertsInput, ProductUncheckedCreateWithoutStockAlertsInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutStockAlertsInput
+    connect?: ProductWhereUniqueInput
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type ProductUpdateOneRequiredWithoutStockAlertsNestedInput = {
+    create?: XOR<ProductCreateWithoutStockAlertsInput, ProductUncheckedCreateWithoutStockAlertsInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutStockAlertsInput
+    upsert?: ProductUpsertWithoutStockAlertsInput
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutStockAlertsInput, ProductUpdateWithoutStockAlertsInput>, ProductUncheckedUpdateWithoutStockAlertsInput>
   }
 
   export type ProductVariantCreateimagesInput = {
@@ -14375,10 +15892,6 @@ export namespace Prisma {
     upsert?: ProductUpsertWithoutOrderItemsInput
     connect?: ProductWhereUniqueInput
     update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutOrderItemsInput, ProductUpdateWithoutOrderItemsInput>, ProductUncheckedUpdateWithoutOrderItemsInput>
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -14561,6 +16074,31 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -14630,31 +16168,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
@@ -14753,6 +16266,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StockAlertCreateWithoutProductInput = {
+    id?: string
+    email: string
+    active?: boolean
+    notifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StockAlertUncheckedCreateWithoutProductInput = {
+    id?: string
+    email: string
+    active?: boolean
+    notifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StockAlertCreateOrConnectWithoutProductInput = {
+    where: StockAlertWhereUniqueInput
+    create: XOR<StockAlertCreateWithoutProductInput, StockAlertUncheckedCreateWithoutProductInput>
+  }
+
+  export type StockAlertCreateManyProductInputEnvelope = {
+    data: StockAlertCreateManyProductInput | StockAlertCreateManyProductInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrderItemUpsertWithWhereUniqueWithoutProductInput = {
     where: OrderItemWhereUniqueInput
     update: XOR<OrderItemUpdateWithoutProductInput, OrderItemUncheckedUpdateWithoutProductInput>
@@ -14825,6 +16366,181 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ProductVariant"> | Date | string
   }
 
+  export type StockAlertUpsertWithWhereUniqueWithoutProductInput = {
+    where: StockAlertWhereUniqueInput
+    update: XOR<StockAlertUpdateWithoutProductInput, StockAlertUncheckedUpdateWithoutProductInput>
+    create: XOR<StockAlertCreateWithoutProductInput, StockAlertUncheckedCreateWithoutProductInput>
+  }
+
+  export type StockAlertUpdateWithWhereUniqueWithoutProductInput = {
+    where: StockAlertWhereUniqueInput
+    data: XOR<StockAlertUpdateWithoutProductInput, StockAlertUncheckedUpdateWithoutProductInput>
+  }
+
+  export type StockAlertUpdateManyWithWhereWithoutProductInput = {
+    where: StockAlertScalarWhereInput
+    data: XOR<StockAlertUpdateManyMutationInput, StockAlertUncheckedUpdateManyWithoutProductInput>
+  }
+
+  export type StockAlertScalarWhereInput = {
+    AND?: StockAlertScalarWhereInput | StockAlertScalarWhereInput[]
+    OR?: StockAlertScalarWhereInput[]
+    NOT?: StockAlertScalarWhereInput | StockAlertScalarWhereInput[]
+    id?: StringFilter<"StockAlert"> | string
+    productId?: IntFilter<"StockAlert"> | number
+    email?: StringFilter<"StockAlert"> | string
+    active?: BoolFilter<"StockAlert"> | boolean
+    notifiedAt?: DateTimeNullableFilter<"StockAlert"> | Date | string | null
+    createdAt?: DateTimeFilter<"StockAlert"> | Date | string
+    updatedAt?: DateTimeFilter<"StockAlert"> | Date | string
+  }
+
+  export type ProductCreateWithoutStockAlertsInput = {
+    name: string
+    slug: string
+    description?: string | null
+    price?: Decimal | DecimalJsLike | number | string | null
+    images?: ProductCreateimagesInput | string[]
+    stock?: number
+    categoryId: string
+    published?: boolean
+    featured?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subcategory?: string | null
+    proveedor?: string | null
+    ref_proveedor?: string | null
+    ref_variante?: string | null
+    sku_interno?: string | null
+    ean?: string | null
+    marca?: string | null
+    categoria_texto?: string | null
+    categoria_padre?: string | null
+    color?: string | null
+    talla?: string | null
+    activo?: boolean
+    visible_web?: boolean
+    grupo?: string | null
+    precioBase?: Decimal | DecimalJsLike | number | string | null
+    tipo_producto?: string | null
+    orderItems?: OrderItemCreateNestedManyWithoutProductInput
+    variants?: ProductVariantCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutStockAlertsInput = {
+    name: string
+    slug: string
+    description?: string | null
+    price?: Decimal | DecimalJsLike | number | string | null
+    images?: ProductCreateimagesInput | string[]
+    stock?: number
+    categoryId: string
+    published?: boolean
+    featured?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subcategory?: string | null
+    proveedor?: string | null
+    ref_proveedor?: string | null
+    ref_variante?: string | null
+    sku_interno?: string | null
+    ean?: string | null
+    marca?: string | null
+    categoria_texto?: string | null
+    categoria_padre?: string | null
+    color?: string | null
+    talla?: string | null
+    activo?: boolean
+    visible_web?: boolean
+    id?: number
+    grupo?: string | null
+    precioBase?: Decimal | DecimalJsLike | number | string | null
+    tipo_producto?: string | null
+    orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductCreateOrConnectWithoutStockAlertsInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutStockAlertsInput, ProductUncheckedCreateWithoutStockAlertsInput>
+  }
+
+  export type ProductUpsertWithoutStockAlertsInput = {
+    update: XOR<ProductUpdateWithoutStockAlertsInput, ProductUncheckedUpdateWithoutStockAlertsInput>
+    create: XOR<ProductCreateWithoutStockAlertsInput, ProductUncheckedCreateWithoutStockAlertsInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutStockAlertsInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutStockAlertsInput, ProductUncheckedUpdateWithoutStockAlertsInput>
+  }
+
+  export type ProductUpdateWithoutStockAlertsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    images?: ProductUpdateimagesInput | string[]
+    stock?: IntFieldUpdateOperationsInput | number
+    categoryId?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    featured?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
+    proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    ref_proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    ref_variante?: NullableStringFieldUpdateOperationsInput | string | null
+    sku_interno?: NullableStringFieldUpdateOperationsInput | string | null
+    ean?: NullableStringFieldUpdateOperationsInput | string | null
+    marca?: NullableStringFieldUpdateOperationsInput | string | null
+    categoria_texto?: NullableStringFieldUpdateOperationsInput | string | null
+    categoria_padre?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    talla?: NullableStringFieldUpdateOperationsInput | string | null
+    activo?: BoolFieldUpdateOperationsInput | boolean
+    visible_web?: BoolFieldUpdateOperationsInput | boolean
+    grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    precioBase?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
+    orderItems?: OrderItemUpdateManyWithoutProductNestedInput
+    variants?: ProductVariantUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutStockAlertsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    images?: ProductUpdateimagesInput | string[]
+    stock?: IntFieldUpdateOperationsInput | number
+    categoryId?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    featured?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: NullableStringFieldUpdateOperationsInput | string | null
+    proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    ref_proveedor?: NullableStringFieldUpdateOperationsInput | string | null
+    ref_variante?: NullableStringFieldUpdateOperationsInput | string | null
+    sku_interno?: NullableStringFieldUpdateOperationsInput | string | null
+    ean?: NullableStringFieldUpdateOperationsInput | string | null
+    marca?: NullableStringFieldUpdateOperationsInput | string | null
+    categoria_texto?: NullableStringFieldUpdateOperationsInput | string | null
+    categoria_padre?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    talla?: NullableStringFieldUpdateOperationsInput | string | null
+    activo?: BoolFieldUpdateOperationsInput | boolean
+    visible_web?: BoolFieldUpdateOperationsInput | boolean
+    id?: IntFieldUpdateOperationsInput | number
+    grupo?: NullableStringFieldUpdateOperationsInput | string | null
+    precioBase?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
+    orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+  }
+
   export type ProductCreateWithoutVariantsInput = {
     name: string
     slug: string
@@ -14854,6 +16570,7 @@ export namespace Prisma {
     precioBase?: Decimal | DecimalJsLike | number | string | null
     tipo_producto?: string | null
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
+    stockAlerts?: StockAlertCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutVariantsInput = {
@@ -14886,6 +16603,7 @@ export namespace Prisma {
     precioBase?: Decimal | DecimalJsLike | number | string | null
     tipo_producto?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    stockAlerts?: StockAlertUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutVariantsInput = {
@@ -14933,6 +16651,7 @@ export namespace Prisma {
     precioBase?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
+    stockAlerts?: StockAlertUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutVariantsInput = {
@@ -14965,6 +16684,7 @@ export namespace Prisma {
     precioBase?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    stockAlerts?: StockAlertUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type OrderItemCreateWithoutOrderInput = {
@@ -15109,6 +16829,7 @@ export namespace Prisma {
     precioBase?: Decimal | DecimalJsLike | number | string | null
     tipo_producto?: string | null
     variants?: ProductVariantCreateNestedManyWithoutProductInput
+    stockAlerts?: StockAlertCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutOrderItemsInput = {
@@ -15141,6 +16862,7 @@ export namespace Prisma {
     precioBase?: Decimal | DecimalJsLike | number | string | null
     tipo_producto?: string | null
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
+    stockAlerts?: StockAlertUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutOrderItemsInput = {
@@ -15253,6 +16975,7 @@ export namespace Prisma {
     precioBase?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
+    stockAlerts?: StockAlertUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutOrderItemsInput = {
@@ -15285,6 +17008,7 @@ export namespace Prisma {
     precioBase?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     tipo_producto?: NullableStringFieldUpdateOperationsInput | string | null
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+    stockAlerts?: StockAlertUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type OrderItemCreateManyProductInput = {
@@ -15315,6 +17039,15 @@ export namespace Prisma {
     images?: ProductVariantCreateimagesInput | string[]
     activo?: boolean
     visible_web?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StockAlertCreateManyProductInput = {
+    id?: string
+    email: string
+    active?: boolean
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15410,6 +17143,33 @@ export namespace Prisma {
     images?: ProductVariantUpdateimagesInput | string[]
     activo?: BoolFieldUpdateOperationsInput | boolean
     visible_web?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockAlertUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockAlertUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockAlertUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

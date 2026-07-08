@@ -161,6 +161,16 @@ exports.Prisma.ProductScalarFieldEnum = {
   tipo_producto: 'tipo_producto'
 };
 
+exports.Prisma.StockAlertScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  email: 'email',
+  active: 'active',
+  notifiedAt: 'notifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ProductVariantScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
@@ -289,6 +299,7 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
 exports.Prisma.ModelName = {
   Category: 'Category',
   Product: 'Product',
+  StockAlert: 'StockAlert',
   ProductVariant: 'ProductVariant',
   Order: 'Order',
   OrderItem: 'OrderItem',

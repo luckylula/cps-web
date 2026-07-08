@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { notifyStockAlertsIfBackInStock } from '@/app/lib/stockAlerts';
 
 // Validar el token de autenticación
 function validateAuthToken(request: Request): boolean {
@@ -196,6 +197,11 @@ export async function POST(request: Request) {
           images: productData.images || [],
         };
 
+        const existingProduct = await prisma.product.findUnique({
+          where: { slug: productToCreate.slug },
+          select: { id: true, stock: true },
+        });
+
         // Crear o actualizar el producto (upsert)
         console.log('[API Admin] Creando/actualizando producto con stock:', stockValue);
 
@@ -220,6 +226,14 @@ export async function POST(request: Request) {
           name: product.name,
           stock: product.stock,
         });
+
+        // Si el producto pasó de sin stock a con stock, enviar avisos pendientes
+        if (existingProduct && existingProduct.stock <= 0 && product.stock > 0) {
+          const alertResult = await notifyStockAlertsIfBackInStock(product.id);
+          if (alertResult.notified > 0) {
+            console.log(`[API Admin] Avisos de stock enviados: ${alertResult.notified} para ${product.slug}`);
+          }
+        }
 
         results.push({
           success: true,

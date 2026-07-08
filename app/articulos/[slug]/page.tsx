@@ -108,6 +108,9 @@ export default function ArticuloPage({ params }: PageProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedTalla, setSelectedTalla] = useState<string | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
+  const [stockAlertEmail, setStockAlertEmail] = useState('');
+  const [isSubmittingStockAlert, setIsSubmittingStockAlert] = useState(false);
+  const [stockAlertMessage, setStockAlertMessage] = useState<{ type: 'ok' | 'error'; text: string } | null>(null);
 
   // Resolver params (puede ser Promise en Next.js 15)
   useEffect(() => {
@@ -235,6 +238,48 @@ export default function ArticuloPage({ params }: PageProps) {
       setIsAdding(false);
       setQuantity(1);
     }, 500);
+  };
+
+  const handleStockAlertSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!product) return;
+
+    const email = stockAlertEmail.trim().toLowerCase();
+    if (!email) {
+      setStockAlertMessage({ type: 'error', text: 'Introduce un email válido' });
+      return;
+    }
+
+    setIsSubmittingStockAlert(true);
+    setStockAlertMessage(null);
+    try {
+      const response = await fetch('/api/stock-alerts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          email,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'No se pudo registrar el aviso');
+      }
+
+      setStockAlertMessage({
+        type: 'ok',
+        text: data?.message || 'Te avisaremos cuando vuelva a estar disponible',
+      });
+      setStockAlertEmail('');
+    } catch (error: any) {
+      setStockAlertMessage({
+        type: 'error',
+        text: error?.message || 'No se pudo guardar el aviso',
+      });
+    } finally {
+      setIsSubmittingStockAlert(false);
+    }
   };
 
   // Obtener colores únicos de las variantes
@@ -820,6 +865,36 @@ export default function ArticuloPage({ params }: PageProps) {
                   </a>
                 )}
               </div>
+
+              {!hasVariantStock && (
+                <div className="mt-3 p-3 rounded-lg border border-gray-200 bg-gray-50">
+                  <p className="text-sm text-gray-700 mb-2">
+                    Este producto está sin stock. Te avisamos por email cuando vuelva a estar disponible.
+                  </p>
+                  <form onSubmit={handleStockAlertSubmit} className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="email"
+                      value={stockAlertEmail}
+                      onChange={(e) => setStockAlertEmail(e.target.value)}
+                      placeholder="tu@email.com"
+                      required
+                      className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isSubmittingStockAlert}
+                      className="rounded bg-gray-900 text-white px-3 py-2 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isSubmittingStockAlert ? 'Enviando...' : 'Avísame'}
+                    </button>
+                  </form>
+                  {stockAlertMessage && (
+                    <p className={`mt-2 text-sm ${stockAlertMessage.type === 'ok' ? 'text-green-700' : 'text-red-600'}`}>
+                      {stockAlertMessage.text}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Technical Description */}
               <div>

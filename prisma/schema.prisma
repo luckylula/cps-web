@@ -48,6 +48,7 @@ model Product {
   tipo_producto   String?          @db.VarChar(100)
   orderItems      OrderItem[]
   variants        ProductVariant[]
+  stockAlerts     StockAlert[]
 
   @@unique([proveedor, ref_proveedor], map: "product_unique_proveedor_ref")
   @@index([categoryId])
@@ -58,6 +59,21 @@ model Product {
   @@index([subcategory])
   @@index([grupo], map: "idx_product_grupo")
   @@index([precioBase], map: "idx_product_precio_base")
+}
+
+model StockAlert {
+  id         String   @id @default(cuid())
+  productId  Int
+  email      String
+  active     Boolean  @default(true)
+  notifiedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, active])
+  @@index([email, active])
+  @@unique([productId, email, active], map: "stockalert_product_email_active_unique")
 }
 
 model ProductVariant {
