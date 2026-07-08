@@ -13,16 +13,26 @@ import { convertProductsToClient, attachVariantInfoToProducts } from '@/app/lib/
 import ProductsPageClient from '@/app/components/ProductsPageClient';
 import { navigationStructure } from '@/app/lib/navigationStructure';
 import { getCategoryTree } from '@/app/lib/categoryTree';
+import {
+  generateStaticNavCategoryParams,
+  getNavCategoryDisplay,
+  isNavCategoryLanding,
+  NAV_CATEGORY_SLUGS,
+} from '@/app/lib/staticCategory';
 import Footer from '@/components/Footer';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return generateStaticNavCategoryParams();
+}
 
 interface PageProps {
   params: Promise<{ categoria: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const NAV_SLUGS = navigationStructure.map((c) => c.slug);
+const NAV_SLUGS = NAV_CATEGORY_SLUGS;
 
 async function getCategory(slug: string) {
   let category = await prisma.category.findUnique({
@@ -197,9 +207,16 @@ async function getFilterOptions(categoriaSlug: string) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categoria } = await params;
+
+  if (isNavCategoryLanding(categoria)) {
+    const navCategory = getNavCategoryDisplay(categoria);
+    return generateCategoryMetadata({
+      categoria,
+      categoryDescription: navCategory?.description,
+    });
+  }
+
   const category = await getCategory(categoria);
-  
-  // Obtener conteo de productos para la descripción
   const productCount = await prisma.product.count({
     where: {
       categoryId: categoria,
@@ -284,22 +301,24 @@ async function getSubcategoriesForCategory(categoriaSlug: string): Promise<{ nom
   return subcategoriesWithProducts.filter((s) => s.hasProducts).map((s) => ({ nombre: s.nombre, slug: s.slug }));
 }
 
+function getSiteBaseUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://cpmaterialdeportivo.com')
+  );
+}
+
 export default async function CategoriaPage({ params, searchParams }: PageProps) {
   const { categoria } = await params;
   const filters = await searchParams;
-  
-  const category = await getCategory(categoria);
-  if (!category) {
-    notFound();
-  }
 
-  const categoryName = getCategoryName(categoria) || category.name;
-  
-  // Obtener subcategorías de esta categoría
-  const subcategories = await getSubcategoriesForCategory(categoria);
-  
-  // Si hay subcategorías, mostrar la vista de subcategorías (como Material Escolar)
-  if (subcategories.length > 0) {
+  const navCategory = isNavCategoryLanding(categoria) ? getNavCategoryDisplay(categoria) : null;
+  const subcategories = navCategory
+    ? navCategory.subcategories.map((s) => ({ nombre: s.nombre, slug: s.slug }))
+    : await getSubcategoriesForCategory(categoria);
+
+  if (navCategory && subcategories.length > 0) {
     return (
       <div className="min-h-screen bg-white">
         <Navigation />
@@ -309,9 +328,7 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
             <Breadcrumbs 
               items={generateBreadcrumbs({ categoria })} 
-              baseUrl={process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
-                ? `https://${process.env.VERCEL_URL}` 
-                : 'https://cpsmaterialdeportivo.es'}
+              baseUrl={getSiteBaseUrl()}
             />
           </div>
         </div>
@@ -320,11 +337,11 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
         <section className="pt-16 pb-12 px-8 bg-white">
           <div className="max-w-6xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-4 tracking-tight">
-              {categoryName}
+              {navCategory.name}
             </h1>
-            {category.description && (
+            {navCategory.description && (
               <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-                {category.description}
+                {navCategory.description}
               </p>
             )}
           </div>
@@ -346,6 +363,59 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
         </section>
 
         {/* Footer */}
+        <Footer />
+      </div>
+    );
+  }
+
+  const category = await getCategory(categoria);
+  if (!category) {
+    notFound();
+  }
+
+  const categoryName = getCategoryName(categoria) || category.name;
+
+  if (subcategories.length > 0) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+            <Breadcrumbs
+              items={generateBreadcrumbs({ categoria })}
+              baseUrl={getSiteBaseUrl()}
+            />
+          </div>
+        </div>
+
+        <section className="pt-16 pb-12 px-8 bg-white">
+          <div className="max-w-6xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-4 tracking-tight">
+              {categoryName}
+            </h1>
+            {category.description && (
+              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+                {category.description}
+              </p>
+            )}
+          </div>
+        </section>
+
+        <section className="py-16 px-4 md:px-8 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {subcategories.map((subcategory) => (
+                <SubcategoryCard
+                  key={subcategory.slug}
+                  subcategory={subcategory}
+                  categoriaSlug={categoria}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
         <Footer />
       </div>
     );
@@ -376,9 +446,7 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
           <Breadcrumbs 
             items={generateBreadcrumbs({ categoria })} 
-            baseUrl={process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
-              ? `https://${process.env.VERCEL_URL}` 
-              : 'https://cpsmaterialdeportivo.es'}
+            baseUrl={getSiteBaseUrl()}
           />
         </div>
       </div>

@@ -6,16 +6,31 @@ import Navigation from '@/app/components/Navigation';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import GroupCard from '@/app/components/GroupCard';
 import ProductsPageClient from '@/app/components/ProductsPageClient';
+import SubcategoryProductsLoader from '@/app/components/SubcategoryProductsLoader';
 import JuegosAlternativosFilter from '@/app/components/JuegosAlternativosFilter';
 import { getSubcategoryDisplayName, getSubcategoryName, getCategoryName, getGrupoName } from '@/app/lib/navigationMapping';
 import { generateCategoryMetadata, generateBreadcrumbs } from '@/app/lib/seoUtils';
 import { convertProductsToClient, attachVariantInfoToProducts } from '@/app/lib/productUtils';
 import { navigationStructure } from '@/app/lib/navigationStructure';
 import { getSubcategoryNameFromSlug } from '@/app/lib/categoryTree';
-import { resolveProductImageUrl } from '@/app/lib/imageUtils';
+import {
+  getNavCategoryDisplay,
+  getNavSubcategory,
+  getStaticGroupsForSubcategory,
+  NAV_CATEGORY_SLUGS,
+} from '@/app/lib/staticCategory';
 import Footer from '@/components/Footer';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return navigationStructure.flatMap((categoria) =>
+    categoria.subcategorias.map((subcategory) => ({
+      categoria: categoria.slug,
+      subcategory: subcategory.slug,
+    }))
+  );
+}
 
 /**
  * Para deportes: en BD grupo = deporte (Fútbol, Fitness...), subcategory = Colectivos/Individual/Raqueta.
@@ -35,7 +50,15 @@ interface PageProps {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const NAV_SLUGS = navigationStructure.map((c) => c.slug);
+const NAV_SLUGS = NAV_CATEGORY_SLUGS;
+
+function getSiteBaseUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://cpmaterialdeportivo.com')
+  );
+}
 
 async function getCategory(slug: string) {
   let category = await prisma.category.findUnique({
@@ -50,73 +73,6 @@ async function getCategory(slug: string) {
     });
   }
   return category;
-}
-
-async function getGroupsForSubcategory(categoriaSlug: string, subcategorySlug: string) {
-  const subcategoryName = getSubcategoryName(categoriaSlug, subcategorySlug);
-  
-  // Obtener grupos desde la estructura de navegación
-  const categoria = navigationStructure.find(c => c.slug === categoriaSlug);
-  const subcategoria = categoria?.subcategorias.find(s => s.slug === subcategorySlug);
-  
-  if (!subcategoria || subcategoria.grupos.length === 0) {
-    return [];
-  }
-
-  // Obtener información de cada grupo desde la BD
-  const groupsWithData = await Promise.all(
-    subcategoria.grupos.map(async (grupo) => {
-      const grupoName = getGrupoName(categoriaSlug, subcategorySlug, grupo.slug) || grupo.nombre;
-      const { dbGrupo, dbSubcategory } = getDbGrupoAndSubcategoryForDeportes(
-        categoriaSlug,
-        subcategoryName,
-        grupoName
-      );
-
-      const productWhere = {
-        categoryId: categoriaSlug,
-        subcategory: dbSubcategory || undefined,
-        grupo: dbGrupo || undefined,
-        published: true,
-        visible_web: true,
-        activo: true,
-      };
-
-      const count = await prisma.product.count({
-        where: productWhere,
-      });
-
-      const sampleProduct = await prisma.product.findFirst({
-        where: {
-          ...productWhere,
-          images: {
-            isEmpty: false,
-          },
-        },
-        select: {
-          images: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-
-      const rawGroupImage = sampleProduct?.images && sampleProduct.images.length > 0
-        ? sampleProduct.images[0]
-        : null;
-      const groupImage = rawGroupImage ? resolveProductImageUrl(rawGroupImage) || null : null;
-
-      return {
-        nombre: grupo.nombre,
-        slug: grupo.slug,
-        count,
-        image: groupImage,
-      };
-    })
-  );
-
-  // Filtrar solo grupos que tienen productos
-  return groupsWithData.filter(g => g.count > 0);
 }
 
 // Mapeo tipo URL -> grupo en BD para Juegos alternativos
@@ -196,12 +152,22 @@ async function getProductsForSubcategory(
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categoria, subcategory } = await params;
+  const navSubcategory = getNavSubcategory(categoria, subcategory);
+
+  if (navSubcategory) {
+    const navCategory = getNavCategoryDisplay(categoria);
+    return generateCategoryMetadata({
+      categoria,
+      subcategory,
+      categoryDescription: navCategory?.description,
+    });
+  }
+
   const category = await getCategory(categoria);
   const subcategoryName =
     getSubcategoryName(categoria, subcategory) || (await getSubcategoryNameFromSlug(categoria, subcategory));
 
-  // En BD deportes: subcategory=Colectivos/Individual/Raqueta, grupo=Fútbol/Fitness...
-  const countWhere: any = {
+  const countWhere: Record<string, unknown> = {
     categoryId: categoria,
     published: true,
     visible_web: true,
@@ -227,24 +193,33 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
   const { categoria, subcategory } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : {};
 
-  const category = await getCategory(categoria);
-  if (!category) {
+  const navCategory = getNavCategoryDisplay(categoria);
+  const navSubcategory = getNavSubcategory(categoria, subcategory);
+  if (!navSubcategory && !NAV_SLUGS.includes(categoria)) {
     notFound();
   }
 
-  const categoryName = getCategoryName(categoria) || category.name;
+  const category = navCategory
+    ? null
+    : await getCategory(categoria);
+  if (!navCategory && !category) {
+    notFound();
+  }
+
+  const categoryName = navCategory?.name || getCategoryName(categoria) || category!.name;
 
   // Nombre real de BD (se usa para filtrar productos).
-  const subcategoryFilterName =
-    getSubcategoryName(categoria, subcategory) ||
-    (await getSubcategoryNameFromSlug(categoria, subcategory)) ||
-    subcategory;
+  const subcategoryFilterName = navSubcategory
+    ? getSubcategoryName(categoria, subcategory) || navSubcategory.nombre
+    : getSubcategoryName(categoria, subcategory) ||
+      (await getSubcategoryNameFromSlug(categoria, subcategory)) ||
+      subcategory;
 
   // Nombre para UI/SEO.
   const subcategoryDisplayName =
     getSubcategoryDisplayName(categoria, subcategory) || subcategoryFilterName || subcategory;
 
-  const groups = await getGroupsForSubcategory(categoria, subcategory);
+  const groups = getStaticGroupsForSubcategory(categoria, subcategory);
 
   // Para Juegos alternativos: filtro por tipo (exterior, mesa, acuáticos)
   const isJuegosAlternativos = categoria === 'material-escolar' && subcategory === 'juegos-alternativos';
@@ -253,8 +228,10 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
     ? JUEGOS_ALTERNATIVOS_GRUPO_MAP[tipoParam]
     : undefined;
 
-  const productsForSubcategory =
-    groups.length === 0
+  const useClientProductLoader = !!navSubcategory && groups.length === 0;
+  const productsForSubcategory = useClientProductLoader
+    ? []
+    : groups.length === 0
       ? await getProductsForSubcategory(categoria, subcategoryFilterName, grupoFilter ? { grupoFilter } : undefined)
       : [];
 
@@ -267,9 +244,7 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
           <Breadcrumbs 
             items={generateBreadcrumbs({ categoria, subcategory })} 
-            baseUrl={process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
-              ? `https://${process.env.VERCEL_URL}` 
-              : 'https://cpsmaterialdeportivo.es'}
+            baseUrl={getSiteBaseUrl()}
           />
         </div>
       </div>
@@ -290,7 +265,20 @@ export default async function SubcategoryPage({ params, searchParams }: PageProp
           </div>
 
           {groups.length === 0 ? (
-            productsForSubcategory.length === 0 ? (
+            useClientProductLoader ? (
+              <>
+                {isJuegosAlternativos && (
+                  <Suspense fallback={<div className="mb-6 h-12 bg-gray-100 rounded animate-pulse" />}>
+                    <JuegosAlternativosFilter />
+                  </Suspense>
+                )}
+                <SubcategoryProductsLoader
+                  category={categoria}
+                  subcategory={subcategoryFilterName}
+                  grupo={grupoFilter}
+                />
+              </>
+            ) : productsForSubcategory.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-600 text-lg">No hay grupos ni productos en esta subcategoría</p>
               </div>

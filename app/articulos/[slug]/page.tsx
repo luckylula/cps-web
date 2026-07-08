@@ -182,7 +182,7 @@ export default function ArticuloPage({ params }: PageProps) {
   const handleAddToCart = () => {
     if (!product) return;
 
-    if (product.variants && product.variants.length > 0 && !selectedVariant) {
+    if (product.variants && product.variants.length > 0 && requiresVariantSelection() && !selectedVariant) {
       alert('Por favor, selecciona una combinación de color y talla disponible');
       return;
     }
@@ -261,6 +261,13 @@ export default function ArticuloPage({ params }: PageProps) {
     return Array.from(tallas);
   };
 
+  const requiresVariantSelection = (): boolean => {
+    if (!product?.variants || product.variants.length === 0) return false;
+    const colors = getUniqueVariantValues(product.variants, "color");
+    const tallas = getUniqueVariantValues(product.variants, "talla");
+    return colors.length > 0 || tallas.length > 0;
+  };
+
   const variantExists = (color: string | null, talla: string | null): boolean => {
     if (!product?.variants) return false;
     return product.variants.some((v) => v.color === color && v.talla === talla);
@@ -288,9 +295,24 @@ export default function ArticuloPage({ params }: PageProps) {
       return;
     }
 
-    setSelectedVariant(
-      findMatchingVariant(product.variants, selectedColor, selectedTalla)
+    const matchedVariant = findMatchingVariant(
+      product.variants,
+      selectedColor,
+      selectedTalla
     );
+    if (matchedVariant) {
+      setSelectedVariant(matchedVariant);
+      return;
+    }
+
+    // Fallback: variantes sin selectores (sin color/talla) deben poder añadirse.
+    if (!requiresVariantSelection()) {
+      const firstAvailable = product.variants.find((v) => v.stock > 0);
+      setSelectedVariant(firstAvailable ?? product.variants[0] ?? null);
+      return;
+    }
+
+    setSelectedVariant(null);
   }, [selectedColor, selectedTalla, product]);
 
   // Resetear selección cuando cambia el color
@@ -316,6 +338,8 @@ export default function ArticuloPage({ params }: PageProps) {
     ? items.find((i) => i.id === cartLineId)?.quantity ?? 0
     : 0;
   const maxAddableQty = Math.max(0, availableStock - inCartQty);
+  const shouldSelectVariantFirst =
+    !!product?.variants?.length && requiresVariantSelection() && !selectedVariant;
 
   useEffect(() => {
     if (maxAddableQty <= 0) {
@@ -740,7 +764,7 @@ export default function ArticuloPage({ params }: PageProps) {
                       isAdding ||
                       !hasVariantStock ||
                       maxAddableQty <= 0 ||
-                      (product.variants && product.variants.length > 0 && !selectedVariant)
+                      shouldSelectVariantFirst
                     }
                     className="bg-black hover:bg-gray-900 text-white font-normal py-1.5 px-3 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                   >
