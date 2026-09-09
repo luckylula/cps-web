@@ -1,17 +1,21 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
 
 function ConfirmacionContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order");
   const method = searchParams.get("method") || "transferencia";
   const { clearCart } = useCart();
+  const clearedRef = useRef(false);
 
   useEffect(() => {
+    if (clearedRef.current) return;
+    clearedRef.current = true;
     clearCart();
   }, [clearCart]);
 
@@ -78,12 +82,13 @@ function ConfirmacionContent() {
           Te hemos enviado un email de confirmación con los detalles del pedido.
         </p>
 
-        <Link
-          href="/"
+        <button
+          type="button"
+          onClick={() => router.push("/")}
           className="inline-block bg-black hover:bg-gray-900 text-white font-semibold py-2.5 px-6 rounded-lg transition-colors"
         >
           Volver a la tienda
-        </Link>
+        </button>
       </div>
     </div>
   );
