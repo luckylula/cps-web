@@ -999,6 +999,38 @@ function CheckoutForm() {
                       </div>
                     </label>
 
+                    <label
+                      className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-colors group ${
+                        formData.paymentMethod === "val_escolar"
+                          ? "border-orange-400 bg-orange-50/40"
+                          : "border-gray-200 hover:border-orange-400"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="val_escolar"
+                        checked={formData.paymentMethod === "val_escolar"}
+                        onChange={handleInputChange}
+                        className="mt-1 mr-3 w-4 h-4 text-orange-500 focus:ring-orange-500"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col items-start gap-2">
+                          <img
+                            src="/pagos/val-escolar.png"
+                            alt="Logotipo Val Escolar formado por materiales escolares"
+                            className="h-14 w-auto max-w-[200px] object-contain rounded-md border border-gray-200 bg-[#d8e4d4]"
+                          />
+                          <span className="font-medium text-gray-900 group-hover:text-orange-600">
+                            VAL ESCOLAR
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                          Nos pondremos en contacto para tramitar el pedido mediante plataforma centro VAL ESCOLAR
+                        </p>
+                      </div>
+                    </label>
+
                     <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-orange-400 transition-colors group">
                       <input
                         type="radio"
@@ -1029,6 +1061,22 @@ function CheckoutForm() {
                   {formData.paymentMethod === "redsys" && redsysError && (
                     <div className="mt-3 p-4 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-sm text-red-800 whitespace-pre-line">⚠️ {redsysError}</p>
+                    </div>
+                  )}
+
+                  {formData.paymentMethod === "val_escolar" && (
+                    <div className="mt-6 p-6 bg-[#eef4ec] border-2 border-[#c5d6bf] rounded-lg">
+                      <div className="flex flex-col items-start gap-2">
+                        <img
+                          src="/pagos/val-escolar.png"
+                          alt="Logotipo Val Escolar formado por materiales escolares"
+                          className="h-20 w-auto max-w-[280px] object-contain rounded-md"
+                        />
+                        <h3 className="text-sm font-semibold text-gray-900">VAL ESCOLAR</h3>
+                        <p className="text-sm text-gray-700">
+                          Nos pondremos en contacto para tramitar el pedido mediante plataforma centro VAL ESCOLAR
+                        </p>
+                      </div>
                     </div>
                   )}
 
