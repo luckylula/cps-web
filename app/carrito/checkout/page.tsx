@@ -649,7 +649,8 @@ function CheckoutForm() {
                         htmlFor="nombreCentro"
                         className="block text-sm font-medium text-gray-700 mb-2"
                       >
-                        Nombre del centro <span className="text-gray-400 text-xs font-normal">(Opcional)</span>
+                        Centro educativo / Entidad{" "}
+                        <span className="text-gray-400 text-xs font-normal">(Opcional)</span>
                       </label>
                       <input
                         type="text"
@@ -658,7 +659,7 @@ function CheckoutForm() {
                         value={formData.nombreCentro}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                        placeholder="Colegio San Juan"
+                        placeholder="Colegio San Juan, Ayuntamiento, Club deportivo..."
                       />
                     </div>
 
@@ -1026,7 +1027,7 @@ function CheckoutForm() {
                           </span>
                         </div>
                         <p className="text-sm text-gray-600 mt-2">
-                          Nos pondremos en contacto para tramitar el pedido mediante plataforma centro VAL ESCOLAR
+                          Necesitamos saber el código de centro de &quot;VAL ESCOLAR&quot;. Indicarlo en el apartado &quot;OBSERVACIONES&quot;
                         </p>
                       </div>
                     </label>
@@ -1074,7 +1075,7 @@ function CheckoutForm() {
                         />
                         <h3 className="text-sm font-semibold text-gray-900">VAL ESCOLAR</h3>
                         <p className="text-sm text-gray-700">
-                          Nos pondremos en contacto para tramitar el pedido mediante plataforma centro VAL ESCOLAR
+                          Necesitamos saber el código de centro de &quot;VAL ESCOLAR&quot;. Indicarlo en el apartado &quot;OBSERVACIONES&quot;
                         </p>
                       </div>
                     </div>
