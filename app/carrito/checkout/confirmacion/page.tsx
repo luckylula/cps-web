@@ -79,7 +79,8 @@ function ConfirmacionContent() {
         )}
 
         <p className="text-sm text-gray-600 mb-6">
-          Te hemos enviado un email de confirmación con los detalles del pedido.
+          Te hemos enviado una copia del pedido por email. Si no lo recibes en
+          unos minutos, revisa la bandeja de spam o correo no deseado.
         </p>
 
         <button

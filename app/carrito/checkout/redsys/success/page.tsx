@@ -45,7 +45,8 @@ function SuccessContent() {
         <p className="text-gray-600 mb-6">
           {status === "checking" && "Comprobando el pago..."}
           {status === "pending" && "Estamos confirmando tu pago. Esta página se actualizará automáticamente."}
-          {status === "ok" && "Tu pedido ha sido procesado correctamente. Recibirás un email de confirmación."}
+          {status === "ok" &&
+            "Tu pedido ha sido procesado correctamente. Te hemos enviado una copia por email; si no la recibes, revisa la bandeja de spam."}
         </p>
         <Link
           href="/"

@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
       try {
         const webhookPayload = {
           orderNumber: order.orderNumber,
+          nifCif: order.nifCif ?? null,
           customer: {
             nombre: order.nombre ?? '',
             apellidos: order.apellidos ?? '',

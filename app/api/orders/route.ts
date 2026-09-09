@@ -361,13 +361,27 @@ export async function POST(request: NextRequest) {
     const webhookUrl = 'https://n8n.lulamartinezperez.com/webhook/pedido-confirmado';
     
     // Preparar datos para el webhook (estructura nueva + legacy para compatibilidad)
+    const paymentMethodLabel =
+      customer.paymentMethod === 'val_escolar'
+        ? 'VAL ESCOLAR'
+        : customer.paymentMethod === 'transferencia'
+          ? 'Transferencia bancaria'
+          : customer.paymentMethod === 'redsys'
+            ? 'Tarjeta (Redsys)'
+            : customer.paymentMethod || null;
+
+    // nifCif también en raíz: el mail de n8n a veces usa $json.nifCif
+    // en vez de $json.customer.nifCif y acaba en "No proporcionado"
+    const nifCifValue = order.nifCif || customer.nifCif?.trim() || null;
+
     const webhookPayload = {
       orderNumber: order.orderNumber,
+      nifCif: nifCifValue,
       customer: {
         // Estructura nueva (separada)
         nombre: customer.nombre,
         apellidos: customer.apellidos,
-        nifCif: customer.nifCif || null,
+        nifCif: nifCifValue,
         direccion: {
           calle: customer.direccion,
           piso: customer.piso || null,
@@ -381,9 +395,11 @@ export async function POST(request: NextRequest) {
         direccionLegacy: order.direccionCompleta,
         // Información de contacto
         nombreCentro: customer.nombreCentro || null,
+        observaciones: customer.observaciones?.trim() || null,
         email: customer.email,
         telefono: customer.telefono,
         paymentMethod: customer.paymentMethod || null,
+        paymentMethodLabel,
         requestInvoice: Boolean(customer.requestInvoice),
       },
       items: order.items.map((item, index) => {
@@ -405,6 +421,7 @@ export async function POST(request: NextRequest) {
       } : null,
       total: Number(order.total),
       requestInvoice: Boolean(customer.requestInvoice),
+      notifyTo: 'pedidos@cpmaterialdeportivo.com',
     };
 
     console.log('==========================================');
