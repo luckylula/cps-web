@@ -48,7 +48,7 @@ interface FormErrors {
 // Componente principal del checkout que maneja toda la lógica
 function CheckoutForm() {
   const router = useRouter();
-  const { items, getTotalPrice, getTotalItems, clearCart, updateQuantity, removeItem } = useCart();
+  const { items, getTotalPrice, getTotalItems, updateQuantity, removeItem } = useCart();
   const { loading: stockLoading, getMaxStock } = useCartStock(items);
   const [stockNotice, setStockNotice] = useState<string | null>(null);
   const [stockBlocked, setStockBlocked] = useState(false);
@@ -377,8 +377,7 @@ function CheckoutForm() {
         return;
       }
 
-      // Transferencia: crear pedido vía /api/orders
-      // Preparar datos del pedido (los totales ya están calculados arriba)
+      // Transferencia / Val Escolar: crear pedido vía /api/orders
       const orderData = {
         customer: {
           // Nombre separado
@@ -404,6 +403,8 @@ function CheckoutForm() {
         cart: {
           items: items.map((item) => ({
             id: item.id,
+            productId: item.productId,
+            variantId: item.variantId,
             name: item.name,
             slug: item.slug,
             price: item.price,
@@ -431,42 +432,20 @@ function CheckoutForm() {
       if (!response.ok) {
         const errorMessage = result.error || 'Error al procesar el pedido';
         const errorDetails = result.details ? `\n\nDetalles:\n${result.details.join('\n')}` : '';
-        alert(`${errorMessage}${errorDetails}`);
+        const detail = result.detail ? `\n\n${result.detail}` : '';
+        alert(`${errorMessage}${errorDetails}${detail}`);
+        setIsSubmitting(false);
         return;
       }
 
-      // Pedido creado exitosamente
-      console.log("==========================================");
-      console.log("📦 PEDIDO CREADO EXITOSAMENTE");
-      console.log("==========================================");
-      console.log("\n📋 INFORMACIÓN DEL PEDIDO:");
-      console.log(`   Número de pedido: ${result.order.orderNumber}`);
-      console.log(`   ID: ${result.order.id}`);
-      console.log(`   Estado: ${result.order.status}`);
-      console.log(`   Total: ${result.order.total}€`);
-      console.log(`   Artículos: ${result.order.itemsCount}`);
-      console.log(`   Fecha: ${new Date(result.order.createdAt).toLocaleString("es-ES")}`);
-      console.log("\n👤 DATOS DEL CLIENTE:");
-      console.log(JSON.stringify(orderData.customer, null, 2));
-      console.log("\n🛒 PRODUCTOS DEL CARRITO:");
-      console.log(JSON.stringify(orderData.cart.items, null, 2));
-      console.log("\n==========================================");
-      console.log("✅ Pedido guardado en la base de datos");
-      console.log("==========================================\n");
-
-      clearCart();
-
-      alert(
-        `¡Pedido registrado exitosamente!\n\nNúmero de pedido: ${result.order.orderNumber}\n\nTe hemos enviado un email de confirmación.`
+      // Ir a página de confirmación (el carrito se vacía allí)
+      router.push(
+        `/carrito/checkout/confirmacion?order=${encodeURIComponent(result.order.orderNumber)}&method=${encodeURIComponent(formData.paymentMethod)}`
       );
-
-      setTimeout(() => {
-        router.push(`/?order=${result.order.orderNumber}`);
-      }, 1500);
+      return;
     } catch (error) {
       console.error("Error al procesar el pedido:", error);
       alert("Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.");
-    } finally {
       setIsSubmitting(false);
     }
   };

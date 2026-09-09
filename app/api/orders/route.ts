@@ -496,7 +496,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Error interno del servidor al procesar el pedido' },
+      {
+        error: 'Error interno del servidor al procesar el pedido',
+        detail: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }
