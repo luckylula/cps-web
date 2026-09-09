@@ -382,13 +382,13 @@ export default function CarritoPage() {
                 href="/carrito/checkout"
                 className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                Ir a Checkout
+                Revisar y pagar
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
               <p className="mt-3 text-xs text-gray-500 text-center">
-                Completa tus datos de envío en la página de checkout
+                Completa tus datos de envío en la página de revisar y pagar
               </p>
             </div>
 

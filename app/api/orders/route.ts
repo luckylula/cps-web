@@ -29,6 +29,7 @@ interface CreateOrderRequest {
     codigoPostal: string;
     ciudad: string;
     provincia: string;
+    observaciones?: string;
 
     // Información de contacto
     nombreCentro?: string;
@@ -248,6 +249,9 @@ export async function POST(request: NextRequest) {
         customer.codigoPostal,
         customer.ciudad,
         customer.provincia,
+        customer.observaciones?.trim()
+          ? `Observaciones: ${customer.observaciones.trim()}`
+          : null,
       ].filter(Boolean).join(', ');
 
       // Crear el pedido
@@ -263,6 +267,7 @@ export async function POST(request: NextRequest) {
           codigoPostal: customer.codigoPostal.trim(),
           ciudad: customer.ciudad.trim(),
           provincia: customer.provincia.trim(),
+          observaciones: customer.observaciones?.trim() || null,
           // Campos legacy para compatibilidad
           nombreCompleto: `${customer.nombre.trim()} ${customer.apellidos.trim()}`,
           direccionCompleta,

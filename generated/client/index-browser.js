@@ -213,6 +213,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   nombre: 'nombre',
   piso: 'piso',
   provincia: 'provincia',
+  observaciones: 'observaciones',
   redsysOrderId: 'redsysOrderId',
   shippingCost: 'shippingCost'
 };

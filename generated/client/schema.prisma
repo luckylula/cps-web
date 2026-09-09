@@ -122,6 +122,7 @@ model Order {
   nombre            String?
   piso              String?
   provincia         String?
+  observaciones     String?
   redsysOrderId     String?     @unique @db.VarChar(12)
   shippingCost      Decimal?    @db.Decimal(10, 2)
   items             OrderItem[]

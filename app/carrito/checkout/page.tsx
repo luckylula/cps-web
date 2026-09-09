@@ -26,6 +26,7 @@ interface FormData {
   codigoPostal: string;
   ciudad: string;
   provincia: string;
+  observaciones: string;
 
   // Opciones
   metodoEntrega: string;
@@ -68,6 +69,7 @@ function CheckoutForm() {
     codigoPostal: "",
     ciudad: "",
     provincia: "",
+    observaciones: "",
     // Opciones
     metodoEntrega: "estandar",
     paymentMethod: "redsys",
@@ -318,6 +320,7 @@ function CheckoutForm() {
             codigoPostal: formData.codigoPostal.trim(),
             ciudad: formData.ciudad.trim(),
             provincia: formData.provincia.trim(),
+            observaciones: formData.observaciones.trim() || undefined,
             nombreCentro: formData.nombreCentro.trim() || undefined,
             email: formData.email.trim(),
             telefono: formData.telefono.trim(),
@@ -389,6 +392,7 @@ function CheckoutForm() {
           codigoPostal: formData.codigoPostal.trim(),
           ciudad: formData.ciudad.trim(),
           provincia: formData.provincia.trim(),
+          observaciones: formData.observaciones.trim() || undefined,
           // Información de contacto
           nombreCentro: formData.nombreCentro.trim() || undefined,
           email: formData.email.trim(),
@@ -556,14 +560,14 @@ function CheckoutForm() {
         {/* Breadcrumb */}
         <nav className="mb-8 flex items-center gap-2 text-sm text-gray-600">
           <Link href="/" className="hover:text-orange-500 transition-colors">
-            Home
+            Inicio
           </Link>
           <span>/</span>
           <Link href="/carrito" className="hover:text-orange-500 transition-colors">
             Carrito
           </Link>
           <span>/</span>
-          <span className="text-gray-900 font-medium">Checkout</span>
+          <span className="text-gray-900 font-medium">Revisar y pagar</span>
         </nav>
 
         {stockNotice && (
@@ -758,10 +762,10 @@ function CheckoutForm() {
                   </div>
                 </div>
 
-                {/* 3. Dirección de Envío */}
+                {/* 3. Dirección de Envío y Observaciones */}
                 <div className="mb-10">
                   <h2 className="text-2xl font-semibold text-gray-900 mb-1">
-                    Dirección de Envío
+                    Dirección de Envío y Observaciones
                   </h2>
                   <p className="text-sm text-gray-500 mb-6">
                     ¿A dónde quieres que enviemos tu pedido?
@@ -879,6 +883,25 @@ function CheckoutForm() {
                       {errors.provincia && (
                         <p className="mt-1.5 text-sm text-red-500">{errors.provincia}</p>
                       )}
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="observaciones"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Observaciones{" "}
+                        <span className="text-gray-400 text-xs font-normal">(Opcional)</span>
+                      </label>
+                      <textarea
+                        id="observaciones"
+                        name="observaciones"
+                        value={formData.observaciones}
+                        onChange={handleInputChange}
+                        rows={3}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all resize-y"
+                        placeholder="Horario de entrega, instrucciones de acceso, etc."
+                      />
                     </div>
                   </div>
                 </div>

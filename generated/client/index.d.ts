@@ -6586,6 +6586,7 @@ export namespace Prisma {
     nombre: string | null
     piso: string | null
     provincia: string | null
+    observaciones: string | null
     redsysOrderId: string | null
     shippingCost: Decimal | null
   }
@@ -6613,6 +6614,7 @@ export namespace Prisma {
     nombre: string | null
     piso: string | null
     provincia: string | null
+    observaciones: string | null
     redsysOrderId: string | null
     shippingCost: Decimal | null
   }
@@ -6640,6 +6642,7 @@ export namespace Prisma {
     nombre: number
     piso: number
     provincia: number
+    observaciones: number
     redsysOrderId: number
     shippingCost: number
     _all: number
@@ -6681,6 +6684,7 @@ export namespace Prisma {
     nombre?: true
     piso?: true
     provincia?: true
+    observaciones?: true
     redsysOrderId?: true
     shippingCost?: true
   }
@@ -6708,6 +6712,7 @@ export namespace Prisma {
     nombre?: true
     piso?: true
     provincia?: true
+    observaciones?: true
     redsysOrderId?: true
     shippingCost?: true
   }
@@ -6735,6 +6740,7 @@ export namespace Prisma {
     nombre?: true
     piso?: true
     provincia?: true
+    observaciones?: true
     redsysOrderId?: true
     shippingCost?: true
     _all?: true
@@ -6849,6 +6855,7 @@ export namespace Prisma {
     nombre: string | null
     piso: string | null
     provincia: string | null
+    observaciones: string | null
     redsysOrderId: string | null
     shippingCost: Decimal | null
     _count: OrderCountAggregateOutputType | null
@@ -6895,6 +6902,7 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    observaciones?: boolean
     redsysOrderId?: boolean
     shippingCost?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
@@ -6924,6 +6932,7 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    observaciones?: boolean
     redsysOrderId?: boolean
     shippingCost?: boolean
   }, ExtArgs["result"]["order"]>
@@ -6951,6 +6960,7 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    observaciones?: boolean
     redsysOrderId?: boolean
     shippingCost?: boolean
   }, ExtArgs["result"]["order"]>
@@ -6978,11 +6988,12 @@ export namespace Prisma {
     nombre?: boolean
     piso?: boolean
     provincia?: boolean
+    observaciones?: boolean
     redsysOrderId?: boolean
     shippingCost?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombreCompleto" | "nombreCentro" | "email" | "telefono" | "direccion" | "status" | "total" | "createdAt" | "updatedAt" | "couponCode" | "discountAmount" | "paymentMethod" | "apellidos" | "ciudad" | "codigoPostal" | "direccionCompleta" | "nifCif" | "nombre" | "piso" | "provincia" | "redsysOrderId" | "shippingCost", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "nombreCompleto" | "nombreCentro" | "email" | "telefono" | "direccion" | "status" | "total" | "createdAt" | "updatedAt" | "couponCode" | "discountAmount" | "paymentMethod" | "apellidos" | "ciudad" | "codigoPostal" | "direccionCompleta" | "nifCif" | "nombre" | "piso" | "provincia" | "observaciones" | "redsysOrderId" | "shippingCost", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -7018,6 +7029,7 @@ export namespace Prisma {
       nombre: string | null
       piso: string | null
       provincia: string | null
+      observaciones: string | null
       redsysOrderId: string | null
       shippingCost: Prisma.Decimal | null
     }, ExtArgs["result"]["order"]>
@@ -7466,6 +7478,7 @@ export namespace Prisma {
     readonly nombre: FieldRef<"Order", 'String'>
     readonly piso: FieldRef<"Order", 'String'>
     readonly provincia: FieldRef<"Order", 'String'>
+    readonly observaciones: FieldRef<"Order", 'String'>
     readonly redsysOrderId: FieldRef<"Order", 'String'>
     readonly shippingCost: FieldRef<"Order", 'Decimal'>
   }
@@ -12536,6 +12549,7 @@ export namespace Prisma {
     nombre: 'nombre',
     piso: 'piso',
     provincia: 'provincia',
+    observaciones: 'observaciones',
     redsysOrderId: 'redsysOrderId',
     shippingCost: 'shippingCost'
   };
@@ -13181,6 +13195,7 @@ export namespace Prisma {
     nombre?: StringNullableFilter<"Order"> | string | null
     piso?: StringNullableFilter<"Order"> | string | null
     provincia?: StringNullableFilter<"Order"> | string | null
+    observaciones?: StringNullableFilter<"Order"> | string | null
     redsysOrderId?: StringNullableFilter<"Order"> | string | null
     shippingCost?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     items?: OrderItemListRelationFilter
@@ -13209,6 +13224,7 @@ export namespace Prisma {
     nombre?: SortOrderInput | SortOrder
     piso?: SortOrderInput | SortOrder
     provincia?: SortOrderInput | SortOrder
+    observaciones?: SortOrderInput | SortOrder
     redsysOrderId?: SortOrderInput | SortOrder
     shippingCost?: SortOrderInput | SortOrder
     items?: OrderItemOrderByRelationAggregateInput
@@ -13241,6 +13257,7 @@ export namespace Prisma {
     nombre?: StringNullableFilter<"Order"> | string | null
     piso?: StringNullableFilter<"Order"> | string | null
     provincia?: StringNullableFilter<"Order"> | string | null
+    observaciones?: StringNullableFilter<"Order"> | string | null
     shippingCost?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     items?: OrderItemListRelationFilter
   }, "id" | "orderNumber" | "redsysOrderId">
@@ -13268,6 +13285,7 @@ export namespace Prisma {
     nombre?: SortOrderInput | SortOrder
     piso?: SortOrderInput | SortOrder
     provincia?: SortOrderInput | SortOrder
+    observaciones?: SortOrderInput | SortOrder
     redsysOrderId?: SortOrderInput | SortOrder
     shippingCost?: SortOrderInput | SortOrder
     _count?: OrderCountOrderByAggregateInput
@@ -13303,6 +13321,7 @@ export namespace Prisma {
     nombre?: StringNullableWithAggregatesFilter<"Order"> | string | null
     piso?: StringNullableWithAggregatesFilter<"Order"> | string | null
     provincia?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    observaciones?: StringNullableWithAggregatesFilter<"Order"> | string | null
     redsysOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     shippingCost?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
   }
@@ -14166,6 +14185,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    observaciones?: string | null
     redsysOrderId?: string | null
     shippingCost?: Decimal | DecimalJsLike | number | string | null
     items?: OrderItemCreateNestedManyWithoutOrderInput
@@ -14194,6 +14214,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    observaciones?: string | null
     redsysOrderId?: string | null
     shippingCost?: Decimal | DecimalJsLike | number | string | null
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -14222,6 +14243,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    observaciones?: NullableStringFieldUpdateOperationsInput | string | null
     redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     shippingCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     items?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -14250,6 +14272,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    observaciones?: NullableStringFieldUpdateOperationsInput | string | null
     redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     shippingCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -14278,6 +14301,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    observaciones?: string | null
     redsysOrderId?: string | null
     shippingCost?: Decimal | DecimalJsLike | number | string | null
   }
@@ -14305,6 +14329,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    observaciones?: NullableStringFieldUpdateOperationsInput | string | null
     redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     shippingCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -14332,6 +14357,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    observaciones?: NullableStringFieldUpdateOperationsInput | string | null
     redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     shippingCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -15245,6 +15271,7 @@ export namespace Prisma {
     nombre?: SortOrder
     piso?: SortOrder
     provincia?: SortOrder
+    observaciones?: SortOrder
     redsysOrderId?: SortOrder
     shippingCost?: SortOrder
   }
@@ -15278,6 +15305,7 @@ export namespace Prisma {
     nombre?: SortOrder
     piso?: SortOrder
     provincia?: SortOrder
+    observaciones?: SortOrder
     redsysOrderId?: SortOrder
     shippingCost?: SortOrder
   }
@@ -15305,6 +15333,7 @@ export namespace Prisma {
     nombre?: SortOrder
     piso?: SortOrder
     provincia?: SortOrder
+    observaciones?: SortOrder
     redsysOrderId?: SortOrder
     shippingCost?: SortOrder
   }
@@ -16764,6 +16793,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    observaciones?: string | null
     redsysOrderId?: string | null
     shippingCost?: Decimal | DecimalJsLike | number | string | null
   }
@@ -16791,6 +16821,7 @@ export namespace Prisma {
     nombre?: string | null
     piso?: string | null
     provincia?: string | null
+    observaciones?: string | null
     redsysOrderId?: string | null
     shippingCost?: Decimal | DecimalJsLike | number | string | null
   }
@@ -16904,6 +16935,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    observaciones?: NullableStringFieldUpdateOperationsInput | string | null
     redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     shippingCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -16931,6 +16963,7 @@ export namespace Prisma {
     nombre?: NullableStringFieldUpdateOperationsInput | string | null
     piso?: NullableStringFieldUpdateOperationsInput | string | null
     provincia?: NullableStringFieldUpdateOperationsInput | string | null
+    observaciones?: NullableStringFieldUpdateOperationsInput | string | null
     redsysOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     shippingCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
