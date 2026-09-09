@@ -1018,19 +1018,15 @@ function CheckoutForm() {
                       <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
                           <span className="text-gray-600 font-medium">Titular:</span>
-                          <span className="text-gray-900 font-semibold">Control Play Sports S.L.</span>
+                          <span className="text-gray-900 font-semibold">Control Play Services S.L.</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">IBAN:</span>
-                          <span className="text-gray-900 font-mono font-semibold">ES12 1234 5678 9012 3456 7890</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">SWIFT/BIC:</span>
-                          <span className="text-gray-900 font-mono font-semibold">ABCDESMMXXX</span>
+                        <div className="flex justify-between gap-4">
+                          <span className="text-gray-600 font-medium shrink-0">IBAN:</span>
+                          <span className="text-gray-900 font-mono font-semibold text-right">ES82 0182 3419 7502 0182 1344</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600 font-medium">Banco:</span>
-                          <span className="text-gray-900 font-semibold">Banco Ejemplo</span>
+                          <span className="text-gray-900 font-semibold">BBVA</span>
                         </div>
                         <div className="mt-4 pt-4 border-t border-blue-200">
                           <p className="text-xs text-gray-600">
