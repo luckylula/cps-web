@@ -230,7 +230,9 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   productId: 'productId',
   variantId: 'variantId',
   proveedor: 'proveedor',
-  refProveedor: 'refProveedor'
+  refProveedor: 'refProveedor',
+  color: 'color',
+  talla: 'talla'
 };
 
 exports.Prisma.CouponScalarFieldEnum = {

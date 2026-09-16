@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/client';
 import { calculateCouponDiscount, validateCoupon } from '@/app/lib/coupon';
+import { resolveOrderItemSnapshot } from '@/app/lib/orderItemSnapshot';
 
 interface OrderItemInput {
   id: string;
@@ -290,6 +291,7 @@ export async function POST(request: NextRequest) {
               const product = products.find((p) => p.id === productId)!;
               const price = new Prisma.Decimal(item.price);
               const subtotal = price.mul(item.quantity);
+              const snapshot = resolveOrderItemSnapshot(product, variants, item);
 
               return {
                 productId: productId,
@@ -299,7 +301,10 @@ export async function POST(request: NextRequest) {
                 quantity: item.quantity,
                 price,
                 subtotal,
-                proveedor: product.proveedor ?? null,
+                proveedor: snapshot.proveedor,
+                refProveedor: snapshot.refProveedor,
+                color: snapshot.color,
+                talla: snapshot.talla,
               };
             }),
           },
@@ -316,6 +321,9 @@ export async function POST(request: NextRequest) {
               price: true,
               subtotal: true,
               proveedor: true,
+              refProveedor: true,
+              color: true,
+              talla: true,
               product: {
                 select: {
                   id: true,
@@ -402,19 +410,17 @@ export async function POST(request: NextRequest) {
         paymentMethodLabel,
         requestInvoice: Boolean(customer.requestInvoice),
       },
-      items: order.items.map((item, index) => {
-        const cartItem = cart.items[index];
-        return {
-          name: item.productName,
-          quantity: item.quantity,
-          price: Number(item.price),
-          subtotal: Number(item.subtotal),
-          variantId: item.variantId || null,
-          proveedor: item.proveedor ?? null,
-          color: cartItem?.color || null,
-          talla: cartItem?.talla || null,
-        };
-      }),
+      items: order.items.map((item) => ({
+        name: item.productName,
+        quantity: item.quantity,
+        price: Number(item.price),
+        subtotal: Number(item.subtotal),
+        variantId: item.variantId || null,
+        proveedor: item.proveedor ?? null,
+        refProveedor: item.refProveedor ?? null,
+        color: item.color ?? null,
+        talla: item.talla ?? null,
+      })),
       coupon: order.couponCode ? {
         code: order.couponCode,
         discountAmount: order.discountAmount ? Number(order.discountAmount) : 0,

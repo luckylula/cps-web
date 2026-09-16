@@ -138,8 +138,8 @@ export async function POST(request: NextRequest) {
             variantId: item.variantId,
             proveedor: item.proveedor ?? null,
             refProveedor: item.refProveedor ?? null,
-            color: null,
-            talla: null,
+            color: item.color ?? null,
+            talla: item.talla ?? null,
           })),
           coupon: order.couponCode
             ? { code: order.couponCode, discountAmount: order.discountAmount ? Number(order.discountAmount) : 0 }

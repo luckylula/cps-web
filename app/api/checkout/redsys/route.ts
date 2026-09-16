@@ -11,6 +11,7 @@ import {
 } from '@/app/lib/redsys';
 import { randomTransactionId } from 'redsys-easy';
 import { calculateCouponDiscount, validateCoupon } from '@/app/lib/coupon';
+import { resolveOrderItemSnapshot } from '@/app/lib/orderItemSnapshot';
 
 // Forzar runtime Node (las variables de entorno pueden no estar en Edge)
 export const runtime = 'nodejs';
@@ -322,6 +323,8 @@ export async function POST(request: NextRequest) {
                 throw new Error(`[Redsys] Producto no encontrado para ítem del carrito: ${item.id}`);
               }
 
+              const snapshot = resolveOrderItemSnapshot(product, variants, item);
+
               return {
                 productId: product.id,
                 variantId: item.variantId || null,
@@ -330,8 +333,10 @@ export async function POST(request: NextRequest) {
                 quantity: item.quantity,
                 price,
                 subtotal,
-                proveedor: product.proveedor ?? null,
-                refProveedor: product.ref_proveedor ?? null,
+                proveedor: snapshot.proveedor,
+                refProveedor: snapshot.refProveedor,
+                color: snapshot.color,
+                talla: snapshot.talla,
               };
             }),
           },
