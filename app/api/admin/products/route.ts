@@ -1,31 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { notifyStockAlertsIfBackInStock } from '@/app/lib/stockAlerts';
-
-// Validar el token de autenticación
-function validateAuthToken(request: Request): boolean {
-  const authHeader = request.headers.get('authorization');
-  const apiKey = request.headers.get('x-api-key');
-  
-  // Verificar Authorization Bearer token
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7);
-    const expectedToken = process.env.ADMIN_API_TOKEN;
-    if (expectedToken && token === expectedToken) {
-      return true;
-    }
-  }
-  
-  // Verificar X-API-Key header
-  if (apiKey) {
-    const expectedKey = process.env.ADMIN_API_KEY;
-    if (expectedKey && apiKey === expectedKey) {
-      return true;
-    }
-  }
-  
-  return false;
-}
+import { unauthorizedAdminResponse, validateAdminAuth } from '@/app/lib/adminAuth';
 
 // Validar los datos del producto
 function validateProductData(data: any): { valid: boolean; errors: string[] } {
@@ -74,11 +50,8 @@ function generateSlug(name: string): string {
 export async function POST(request: Request) {
   try {
     // Validar autenticación
-    if (!validateAuthToken(request)) {
-      return NextResponse.json(
-        { error: 'No autorizado. Se requiere un token de autenticación válido.' },
-        { status: 401 }
-      );
+    if (!validateAdminAuth(request)) {
+      return unauthorizedAdminResponse();
     }
 
     // Parsear el body
@@ -282,11 +255,8 @@ export async function POST(request: Request) {
 
 // Método GET para verificar que la API está funcionando (solo con autenticación)
 export async function GET(request: Request) {
-  if (!validateAuthToken(request)) {
-    return NextResponse.json(
-      { error: 'No autorizado' },
-      { status: 401 }
-    );
+  if (!validateAdminAuth(request)) {
+    return unauthorizedAdminResponse();
   }
 
   return NextResponse.json({
