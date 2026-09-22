@@ -144,3 +144,46 @@ export async function PATCH(
     return NextResponse.json({ error: 'Error al actualizar el pedido' }, { status: 500 });
   }
 }
+
+/** Solo se pueden borrar pedidos ya anulados (el stock ya se repuso al anular). */
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ orderNumber: string }> }
+) {
+  if (!validateAdminAuth(request)) {
+    return unauthorizedAdminResponse();
+  }
+
+  try {
+    const { orderNumber } = await context.params;
+    const order = await prisma.order.findUnique({
+      where: { orderNumber },
+      select: { id: true, orderNumber: true, status: true },
+    });
+
+    if (!order) {
+      return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 });
+    }
+
+    if (order.status !== 'CANCELLED') {
+      return NextResponse.json(
+        {
+          error:
+            'Solo se pueden eliminar pedidos anulados. Anula el pedido primero.',
+        },
+        { status: 400 }
+      );
+    }
+
+    // OrderItem tiene onDelete: Cascade
+    await prisma.order.delete({ where: { id: order.id } });
+
+    return NextResponse.json({
+      ok: true,
+      deleted: order.orderNumber,
+    });
+  } catch (error) {
+    console.error('[Admin Orders] DELETE error:', error);
+    return NextResponse.json({ error: 'Error al eliminar el pedido' }, { status: 500 });
+  }
+}

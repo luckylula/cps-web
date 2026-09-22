@@ -73,6 +73,7 @@ export default function AdminPedidoDetallePage() {
   const [statusDraft, setStatusDraft] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -158,6 +159,36 @@ export default function AdminPedidoDetallePage() {
       setStatusDraft(order.status);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function deleteOrder() {
+    if (!token || !order || order.status !== "CANCELLED") return;
+
+    const ok = window.confirm(
+      `¿Eliminar definitivamente el pedido ${order.orderNumber}?\n\nDesaparecerá del listado y no se podrá recuperar. El stock no se modifica (ya se repuso al anular).`
+    );
+    if (!ok) return;
+
+    setDeleting(true);
+    setError("");
+    setMessage("");
+    try {
+      const res = await fetch(
+        `/api/admin/orders/${encodeURIComponent(orderNumber)}`,
+        {
+          method: "DELETE",
+          headers: adminAuthHeaders(token),
+        }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "No se pudo eliminar");
+      }
+      router.replace("/admin/pedidos");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error al eliminar");
+      setDeleting(false);
     }
   }
 
@@ -252,6 +283,24 @@ export default function AdminPedidoDetallePage() {
             </p>
           )}
         </section>
+
+        {order.status === "CANCELLED" && (
+          <section className="bg-white border border-red-200 rounded-xl p-5">
+            <h2 className="font-semibold text-gray-900 mb-1">Eliminar pedido</h2>
+            <p className="text-sm text-gray-600 mb-3">
+              Solo disponible en pedidos anulados. Lo quita del listado de forma
+              definitiva (útil para pruebas).
+            </p>
+            <button
+              type="button"
+              onClick={deleteOrder}
+              disabled={deleting}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-40"
+            >
+              {deleting ? "Eliminando…" : "Eliminar definitivamente"}
+            </button>
+          </section>
+        )}
 
         <section className="bg-white border border-gray-200 rounded-xl p-5 grid sm:grid-cols-2 gap-4 text-sm">
           <div>
