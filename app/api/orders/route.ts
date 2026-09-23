@@ -425,6 +425,7 @@ export async function POST(request: NextRequest) {
         code: order.couponCode,
         discountAmount: order.discountAmount ? Number(order.discountAmount) : 0,
       } : null,
+      shippingCost: shippingCostNumber,
       total: Number(order.total),
       requestInvoice: Boolean(customer.requestInvoice),
       notifyTo: 'pedidos@cpmaterialdeportivo.com',

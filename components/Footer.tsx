@@ -20,6 +20,9 @@ export default function Footer() {
           <Link href="/politica-de-devoluciones" className="hover:text-gray-700">
             Política de Devoluciones
           </Link>
+          <Link href="/admin/pedidos" className="hover:text-gray-700">
+            Pedidos
+          </Link>
         </div>
         <p>© 2025 Control Play Services, S.L. Todos los derechos reservados.</p>
       </div>
