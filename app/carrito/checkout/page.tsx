@@ -9,6 +9,12 @@ import Navigation from "@/app/components/Navigation";
 import { useRouter } from "next/navigation";
 import { getFirstValidImage } from "@/app/lib/imageUtils";
 import { useCartStock } from "@/app/hooks/useCartStock";
+import {
+  calculateShippingCost,
+  EXPRESS_SHIPPING,
+  FREE_SHIPPING_THRESHOLD,
+  STANDARD_SHIPPING,
+} from "@/app/lib/shipping";
 
 interface FormData {
   // Información Personal
@@ -77,7 +83,11 @@ function CheckoutForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountPercent: number;
+    freeShipping?: boolean;
+  } | null>(null);
   const [couponError, setCouponError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [redsysError, setRedsysError] = useState("");
@@ -122,18 +132,15 @@ function CheckoutForm() {
     return maxStock !== undefined && (maxStock === 0 || item.quantity > maxStock);
   });
 
-  // Envío: gratis si subtotal >= 120€; si no, estándar 10€ y express 15€
-  const FREE_SHIPPING_THRESHOLD = 120;
-  const STANDARD_SHIPPING = 10;
-  const EXPRESS_SHIPPING = 15;
-
+  // Envío: gratis si subtotal >= 120€ o cupón SINENVIO; si no, estándar 10€ y express 15€
   const subtotal = getTotalPrice();
-  const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const shippingCost = hasFreeShipping
-    ? (formData.metodoEntrega === "express" ? EXPRESS_SHIPPING : 0)
-    : (formData.metodoEntrega === "express" ? EXPRESS_SHIPPING : STANDARD_SHIPPING);
-  const discountAmount = appliedCoupon 
-    ? (subtotal * appliedCoupon.discountPercent) / 100 
+  const shippingCost = calculateShippingCost({
+    subtotal,
+    metodoEntrega: formData.metodoEntrega,
+    freeShippingCoupon: Boolean(appliedCoupon?.freeShipping),
+  });
+  const discountAmount = appliedCoupon
+    ? (subtotal * appliedCoupon.discountPercent) / 100
     : 0;
   const finalTotal = subtotal + shippingCost - discountAmount;
 
@@ -185,6 +192,7 @@ function CheckoutForm() {
         setAppliedCoupon({
           code: data.code,
           discountPercent: data.discountPercent,
+          freeShipping: Boolean(data.freeShipping),
         });
         setCouponError("");
         setCouponCode("");
@@ -915,13 +923,17 @@ function CheckoutForm() {
                             Envío estándar
                           </span>
                           <span className="text-sm font-medium text-gray-600">
-                            {subtotal >= FREE_SHIPPING_THRESHOLD ? "Gratis" : "10,00€"}
+                            {shippingCost === 0 && formData.metodoEntrega === "estandar"
+                              ? "Gratis"
+                              : `${STANDARD_SHIPPING.toFixed(2).replace(".", ",")}€`}
                           </span>
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
-                          {subtotal >= FREE_SHIPPING_THRESHOLD
-                            ? "Pedidos +120€ · 5-7 días laborables"
-                            : "5-7 días laborables · Envío gratis desde 120€"}
+                          {appliedCoupon?.freeShipping
+                            ? "Cupón de envío gratis aplicado · 5-7 días laborables"
+                            : subtotal >= FREE_SHIPPING_THRESHOLD
+                              ? "Pedidos +120€ · 5-7 días laborables"
+                              : "5-7 días laborables · Envío gratis desde 120€"}
                         </p>
                       </div>
                     </label>
@@ -1169,7 +1181,10 @@ function CheckoutForm() {
                         />
                       </svg>
                       <span className="text-sm font-medium text-green-800">
-                        {appliedCoupon.code} - {appliedCoupon.discountPercent}% descuento
+                        {appliedCoupon.code}
+                        {appliedCoupon.freeShipping
+                          ? " — Envío gratis"
+                          : ` - ${appliedCoupon.discountPercent}% descuento`}
                       </span>
                     </div>
                     <button
@@ -1306,7 +1321,11 @@ function CheckoutForm() {
                 ) : (
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Envío</span>
-                    <span className="font-medium text-green-600">Gratis (pedido +120€)</span>
+                    <span className="font-medium text-green-600">
+                      {appliedCoupon?.freeShipping
+                        ? "Gratis (cupón)"
+                        : "Gratis (pedido +120€)"}
+                    </span>
                   </div>
                 )}
                 {appliedCoupon && discountAmount > 0 && (

@@ -7,7 +7,7 @@ export function normalizeCouponCode(code: string): string {
 }
 
 export type CouponValidationResult =
-  | { valid: true; code: string; discountPercent: number }
+  | { valid: true; code: string; discountPercent: number; freeShipping: boolean }
   | { valid: false; error: string };
 
 export async function validateCoupon(
@@ -60,6 +60,7 @@ export async function validateCoupon(
     valid: true,
     code: coupon.code,
     discountPercent: Number(coupon.discountPercent),
+    freeShipping: Boolean(coupon.freeShipping),
   };
 }
 

@@ -10,7 +10,8 @@ import {
   isRedsysProduction,
 } from '@/app/lib/redsys';
 import { randomTransactionId } from 'redsys-easy';
-import { calculateCouponDiscount, validateCoupon } from '@/app/lib/coupon';
+import { validateCoupon } from '@/app/lib/coupon';
+import { resolveOrderTotals } from '@/app/lib/shipping';
 import { resolveOrderItemSnapshot } from '@/app/lib/orderItemSnapshot';
 
 // Forzar runtime Node (las variables de entorno pueden no estar en Edge)
@@ -252,22 +253,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calcular coste de envío en servidor a partir del total (precios ya incluyen IVA)
+    // Totales en servidor (precios ya incluyen IVA)
     const itemsSubtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     let couponCode: string | null = null;
-    let couponDiscount = 0;
+    let couponDiscountPercent = 0;
+    let freeShippingCoupon = false;
     if (body.coupon?.code?.trim()) {
       const couponResult = await validateCoupon(prisma, body.coupon.code, customer.email);
       if (!couponResult.valid) {
         return NextResponse.json({ error: couponResult.error }, { status: 400 });
       }
       couponCode = couponResult.code;
-      couponDiscount = calculateCouponDiscount(itemsSubtotal, couponResult.discountPercent);
+      couponDiscountPercent = couponResult.discountPercent;
+      freeShippingCoupon = couponResult.freeShipping;
     }
 
-    const rawShippingCost = cart.totalPrice - itemsSubtotal + couponDiscount;
-    const shippingCostNumber = Math.max(0, Number(rawShippingCost.toFixed(2)));
+    const { couponDiscount, shippingCost: shippingCostNumber, total: orderTotal } =
+      resolveOrderTotals({
+        itemsSubtotal,
+        metodoEntrega: customer.metodoEntrega,
+        discountPercent: couponDiscountPercent,
+        freeShippingCoupon,
+        clientTotalPrice: cart.totalPrice,
+      });
 
     // Crear identificador de pedido para Redsys (12 dígitos máx.)
     const redsysOrderId = randomTransactionId();
@@ -305,7 +314,7 @@ export async function POST(request: NextRequest) {
           nombreCentro: customer.nombreCentro?.trim() || null,
           email: customer.email.trim(),
           telefono: customer.telefono.trim(),
-          total: new Prisma.Decimal(cart.totalPrice),
+          total: new Prisma.Decimal(orderTotal),
           shippingCost: shippingCostNumber ? new Prisma.Decimal(shippingCostNumber) : null,
           couponCode,
           discountAmount: couponDiscount

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Coupon" ADD COLUMN IF NOT EXISTS "freeShipping" BOOLEAN NOT NULL DEFAULT false;

@@ -9168,6 +9168,7 @@ export namespace Prisma {
     id: string | null
     code: string | null
     discountPercent: Decimal | null
+    freeShipping: boolean | null
     isActive: boolean | null
     singleUsePerEmail: boolean | null
     expiresAt: Date | null
@@ -9179,6 +9180,7 @@ export namespace Prisma {
     id: string | null
     code: string | null
     discountPercent: Decimal | null
+    freeShipping: boolean | null
     isActive: boolean | null
     singleUsePerEmail: boolean | null
     expiresAt: Date | null
@@ -9190,6 +9192,7 @@ export namespace Prisma {
     id: number
     code: number
     discountPercent: number
+    freeShipping: number
     isActive: number
     singleUsePerEmail: number
     expiresAt: number
@@ -9211,6 +9214,7 @@ export namespace Prisma {
     id?: true
     code?: true
     discountPercent?: true
+    freeShipping?: true
     isActive?: true
     singleUsePerEmail?: true
     expiresAt?: true
@@ -9222,6 +9226,7 @@ export namespace Prisma {
     id?: true
     code?: true
     discountPercent?: true
+    freeShipping?: true
     isActive?: true
     singleUsePerEmail?: true
     expiresAt?: true
@@ -9233,6 +9238,7 @@ export namespace Prisma {
     id?: true
     code?: true
     discountPercent?: true
+    freeShipping?: true
     isActive?: true
     singleUsePerEmail?: true
     expiresAt?: true
@@ -9331,6 +9337,7 @@ export namespace Prisma {
     id: string
     code: string
     discountPercent: Decimal
+    freeShipping: boolean
     isActive: boolean
     singleUsePerEmail: boolean
     expiresAt: Date | null
@@ -9361,6 +9368,7 @@ export namespace Prisma {
     id?: boolean
     code?: boolean
     discountPercent?: boolean
+    freeShipping?: boolean
     isActive?: boolean
     singleUsePerEmail?: boolean
     expiresAt?: boolean
@@ -9372,6 +9380,7 @@ export namespace Prisma {
     id?: boolean
     code?: boolean
     discountPercent?: boolean
+    freeShipping?: boolean
     isActive?: boolean
     singleUsePerEmail?: boolean
     expiresAt?: boolean
@@ -9383,6 +9392,7 @@ export namespace Prisma {
     id?: boolean
     code?: boolean
     discountPercent?: boolean
+    freeShipping?: boolean
     isActive?: boolean
     singleUsePerEmail?: boolean
     expiresAt?: boolean
@@ -9394,6 +9404,7 @@ export namespace Prisma {
     id?: boolean
     code?: boolean
     discountPercent?: boolean
+    freeShipping?: boolean
     isActive?: boolean
     singleUsePerEmail?: boolean
     expiresAt?: boolean
@@ -9401,7 +9412,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CouponOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "discountPercent" | "isActive" | "singleUsePerEmail" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["coupon"]>
+  export type CouponOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "discountPercent" | "freeShipping" | "isActive" | "singleUsePerEmail" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["coupon"]>
 
   export type $CouponPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Coupon"
@@ -9410,6 +9421,7 @@ export namespace Prisma {
       id: string
       code: string
       discountPercent: Prisma.Decimal
+      freeShipping: boolean
       isActive: boolean
       singleUsePerEmail: boolean
       expiresAt: Date | null
@@ -9841,6 +9853,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Coupon", 'String'>
     readonly code: FieldRef<"Coupon", 'String'>
     readonly discountPercent: FieldRef<"Coupon", 'Decimal'>
+    readonly freeShipping: FieldRef<"Coupon", 'Boolean'>
     readonly isActive: FieldRef<"Coupon", 'Boolean'>
     readonly singleUsePerEmail: FieldRef<"Coupon", 'Boolean'>
     readonly expiresAt: FieldRef<"Coupon", 'DateTime'>
@@ -12607,6 +12620,7 @@ export namespace Prisma {
     id: 'id',
     code: 'code',
     discountPercent: 'discountPercent',
+    freeShipping: 'freeShipping',
     isActive: 'isActive',
     singleUsePerEmail: 'singleUsePerEmail',
     expiresAt: 'expiresAt',
@@ -13466,6 +13480,7 @@ export namespace Prisma {
     id?: StringFilter<"Coupon"> | string
     code?: StringFilter<"Coupon"> | string
     discountPercent?: DecimalFilter<"Coupon"> | Decimal | DecimalJsLike | number | string
+    freeShipping?: BoolFilter<"Coupon"> | boolean
     isActive?: BoolFilter<"Coupon"> | boolean
     singleUsePerEmail?: BoolFilter<"Coupon"> | boolean
     expiresAt?: DateTimeNullableFilter<"Coupon"> | Date | string | null
@@ -13477,6 +13492,7 @@ export namespace Prisma {
     id?: SortOrder
     code?: SortOrder
     discountPercent?: SortOrder
+    freeShipping?: SortOrder
     isActive?: SortOrder
     singleUsePerEmail?: SortOrder
     expiresAt?: SortOrderInput | SortOrder
@@ -13491,6 +13507,7 @@ export namespace Prisma {
     OR?: CouponWhereInput[]
     NOT?: CouponWhereInput | CouponWhereInput[]
     discountPercent?: DecimalFilter<"Coupon"> | Decimal | DecimalJsLike | number | string
+    freeShipping?: BoolFilter<"Coupon"> | boolean
     isActive?: BoolFilter<"Coupon"> | boolean
     singleUsePerEmail?: BoolFilter<"Coupon"> | boolean
     expiresAt?: DateTimeNullableFilter<"Coupon"> | Date | string | null
@@ -13502,6 +13519,7 @@ export namespace Prisma {
     id?: SortOrder
     code?: SortOrder
     discountPercent?: SortOrder
+    freeShipping?: SortOrder
     isActive?: SortOrder
     singleUsePerEmail?: SortOrder
     expiresAt?: SortOrderInput | SortOrder
@@ -13521,6 +13539,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Coupon"> | string
     code?: StringWithAggregatesFilter<"Coupon"> | string
     discountPercent?: DecimalWithAggregatesFilter<"Coupon"> | Decimal | DecimalJsLike | number | string
+    freeShipping?: BoolWithAggregatesFilter<"Coupon"> | boolean
     isActive?: BoolWithAggregatesFilter<"Coupon"> | boolean
     singleUsePerEmail?: BoolWithAggregatesFilter<"Coupon"> | boolean
     expiresAt?: DateTimeNullableWithAggregatesFilter<"Coupon"> | Date | string | null
@@ -14521,6 +14540,7 @@ export namespace Prisma {
     id?: string
     code: string
     discountPercent: Decimal | DecimalJsLike | number | string
+    freeShipping?: boolean
     isActive?: boolean
     singleUsePerEmail?: boolean
     expiresAt?: Date | string | null
@@ -14532,6 +14552,7 @@ export namespace Prisma {
     id?: string
     code: string
     discountPercent: Decimal | DecimalJsLike | number | string
+    freeShipping?: boolean
     isActive?: boolean
     singleUsePerEmail?: boolean
     expiresAt?: Date | string | null
@@ -14543,6 +14564,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    freeShipping?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     singleUsePerEmail?: BoolFieldUpdateOperationsInput | boolean
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14554,6 +14576,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    freeShipping?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     singleUsePerEmail?: BoolFieldUpdateOperationsInput | boolean
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14565,6 +14588,7 @@ export namespace Prisma {
     id?: string
     code: string
     discountPercent: Decimal | DecimalJsLike | number | string
+    freeShipping?: boolean
     isActive?: boolean
     singleUsePerEmail?: boolean
     expiresAt?: Date | string | null
@@ -14576,6 +14600,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    freeShipping?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     singleUsePerEmail?: BoolFieldUpdateOperationsInput | boolean
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14587,6 +14612,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    freeShipping?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     singleUsePerEmail?: BoolFieldUpdateOperationsInput | boolean
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15525,6 +15551,7 @@ export namespace Prisma {
     id?: SortOrder
     code?: SortOrder
     discountPercent?: SortOrder
+    freeShipping?: SortOrder
     isActive?: SortOrder
     singleUsePerEmail?: SortOrder
     expiresAt?: SortOrder
@@ -15540,6 +15567,7 @@ export namespace Prisma {
     id?: SortOrder
     code?: SortOrder
     discountPercent?: SortOrder
+    freeShipping?: SortOrder
     isActive?: SortOrder
     singleUsePerEmail?: SortOrder
     expiresAt?: SortOrder
@@ -15551,6 +15579,7 @@ export namespace Prisma {
     id?: SortOrder
     code?: SortOrder
     discountPercent?: SortOrder
+    freeShipping?: SortOrder
     isActive?: SortOrder
     singleUsePerEmail?: SortOrder
     expiresAt?: SortOrder

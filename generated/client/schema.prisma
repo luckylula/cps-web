@@ -162,6 +162,7 @@ model Coupon {
   id                String    @id @default(cuid())
   code              String    @unique
   discountPercent   Decimal   @db.Decimal(5, 2)
+  freeShipping      Boolean   @default(false)
   isActive          Boolean   @default(true)
   singleUsePerEmail Boolean   @default(false)
   expiresAt         DateTime?

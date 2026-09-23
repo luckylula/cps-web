@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       valid: true,
       discountPercent: result.discountPercent,
+      freeShipping: result.freeShipping,
       code: result.code,
     });
   } catch (error) {

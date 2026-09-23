@@ -239,6 +239,7 @@ exports.Prisma.CouponScalarFieldEnum = {
   id: 'id',
   code: 'code',
   discountPercent: 'discountPercent',
+  freeShipping: 'freeShipping',
   isActive: 'isActive',
   singleUsePerEmail: 'singleUsePerEmail',
   expiresAt: 'expiresAt',
